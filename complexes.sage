@@ -1,17 +1,3 @@
-class ProjectiveObject(object):
-    def __init__(self, name, twist = 0):
-        self._name = name
-        self._twist = twist
-
-    def __str__(self):
-        return name + "<" + str(twist) + ">"
-
-    def __repr__(self):
-        return name + "<" + str(twist) + ">"
-
-    def twistBy(n = 1):
-        self._twist = self._twist + n
-
 class ProjectiveComplex(object):
     def __init__(self, objects = {}, maps = {}):
         # Put checks to make sure the maps are well-defined
