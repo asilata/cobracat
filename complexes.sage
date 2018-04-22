@@ -4,6 +4,7 @@ class ProjectiveComplex(object):
         # and they form a complex.
         self._objects = objects.copy()
         self._maps = maps.copy()
+        self._names = {}
 
     def __str__(self):
         ks = self._objects.keys()
@@ -18,7 +19,7 @@ class ProjectiveComplex(object):
             if len(objects) == 0:
                 s = s + "0"
             else:
-                s = s + "+".join([str(x) for x in objects])
+                s = s + "+".join([self._names[hash(x)] if hash(x) in self._names else str(x) for x in objects])
             if i < largest:
                 s = s + " → "
         return s
@@ -26,10 +27,14 @@ class ProjectiveComplex(object):
     def __repr__(self):
         return str(self)
 
-    def addObject(self, place, obj):
-        oldObjects = self._objects.get(place, [])
-        oldObjects.append(obj)
-        self._objects[place] = oldObjects        
+    def addObject(self, place, obj, name = None):
+        if place not in self._objects:
+            self._objects[place] = []
+        self._objects[place].append(obj)
+
+        if name != None:
+            self._names[hash(obj)] = name
+        
         
     def addMap(self, place, i, j, scalar):
         # Add sanity checks
