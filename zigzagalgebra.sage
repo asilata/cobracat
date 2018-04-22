@@ -5,6 +5,9 @@ class ZigZagIdeal(Ideal_nc):
         # Kill all length two paths with different sources and targets.
         # Equate all length two loops from each vertex.
         lentwopaths = filter(lambda x: x != 0, [R.prod(m) for m in product(R.arrows(), repeat = 2)])
+        self._twoloops = {}
+        for e in R.idempotents():
+            self._twoloops[e] = filter(lambda x: x != 0, [R.prod([e,x,e]) for x in lentwopaths])
         lenthreepaths = filter(lambda x: x!= 0, [R.prod(m) for m in product(R.arrows(), repeat = 3)])
         relations = lenthreepaths
         for e in R.idempotents():
@@ -18,10 +21,27 @@ class ZigZagIdeal(Ideal_nc):
         
     def reduce(self,x):
         R = self.ring()
-        # UNIMPLEMENTED
-        # Remove any paths of length at least three, or any length two paths that are not loops.
-        # Given a loop, find a canonical representative for it (probably best to fix a total order for the vertices beforehand).
-        # return add([c*R(m) for m,c in x if len(m)<self._power],R(0))
+        monomials = x.sort_by_vertices()
+        reduction = 0
+        for m in monomials:
+            z,v1,v2 =m[0],m[1],m[2]
+            reduction = reduction + add([c*R(m) for m,c in z if len(m) < 2])
+            if v1 == v2:
+                e = self.getIdempotent(v1)
+                l = self._twoloops[e][0] # First loop in chosen order
+                reduction = reduction + add([c*l for m,c in z if len(m) == 2])
+        return reduction
+                
+    def getIdempotent(self,v):
+        vertices = self.ring().quiver().vertices()
+        idempotents = self.ring().idempotents()
+        correspondence = [(x,y) for (x,y) in zip(vertices,idempotents) if x == v]
+        if len(correspondence) != 1:
+            raise Exception("Vertex does not correspond to an idempotent!")
+        else:
+            return correspondence[0][1]
+                
+
 
 # Standard test case        
 d = {1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}}
