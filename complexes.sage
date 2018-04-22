@@ -2,16 +2,40 @@ class ProjectiveComplex(object):
     def __init__(self, objects = {}, maps = {}):
         # Put checks to make sure the maps are well-defined
         # and they form a complex.
-        self._objects = objects
-        self._maps = maps
+        self._objects = objects.copy()
+        self._maps = maps.copy()
+
+    def __str__(self):
+        ks = self._objects.keys()
+        if len(ks) == 0:
+            smallest,largest = 0,0
+        else:
+            smallest,largest = min(ks),max(ks)
+        s = "[" + str(smallest) + "]: "
+
+        for i in range(smallest,largest + 1):
+            objects = self._objects.get(i,[])
+            if len(objects) == 0:
+                s = s + "0"
+            else:
+                s = s + "+".join([str(x) for x in objects])
+            if i < largest:
+                s = s + " → "
+        return s
+
+    def __repr__(self):
+        return str(self)
 
     def addObject(self, place, obj):
         oldObjects = self._objects.get(place, [])
         oldObjects.append(obj)
+        self._objects[place] = oldObjects        
         
     def addMap(self, place, i, j, scalar):
         # Add sanity checks
-        self.__maps.get(place, {})[(i,j)] = scalar
+        if place not in self._maps:
+            self._maps[place] = {}
+        self._maps[place][(i,j)] = scalar
 
     def checkComplexity(self):
         smallest = min(self._objects.keys())
@@ -38,6 +62,3 @@ class ProjectiveComplex(object):
                 return False
 
         return True
-
-    def minimize(self):
-        #???
