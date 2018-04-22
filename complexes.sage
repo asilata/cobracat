@@ -4,12 +4,12 @@ class ProjectiveObject(object):
         self._twist = twist
 
     def __str__(self):
-        return name + "<" + str(twist) + ">"
+        return self._name + "<" + str(self._twist) + ">"
 
     def __repr__(self):
-        return name + "<" + str(twist) + ">"
+        return self._name + "<" + str(self._twist) + ">"
 
-    def twistBy(n = 1):
+    def twistBy(self, n = 1):
         self._twist = self._twist + n
 
 class ProjectiveComplex(object):
@@ -19,9 +19,31 @@ class ProjectiveComplex(object):
         self._objects = objects
         self._maps = maps
 
+    def __str__(self):
+        ks = self._objects.keys()
+        if len(ks) == 0:
+            smallest,largest = 0,0
+        else:
+            smallest,largest = min(ks),max(ks)
+        s = "[" + str(smallest) + "]: "
+
+        for i in range(smallest,largest + 1):
+            objects = self._objects.get(i,[])
+            if len(objects) == 0:
+                s = s + "0"
+            else:
+                s = s + "+".join([str(x) for x in objects])
+            if i < largest:
+                s = s + " → "
+        return s
+
+    def __repr__(self):
+        return str(self)
+
     def addObject(self, place, obj):
         oldObjects = self._objects.get(place, [])
         oldObjects.append(obj)
+        self._objects[place] = oldObjects        
         
     def addMap(self, place, i, j, scalar):
         # Add sanity checks
@@ -52,6 +74,3 @@ class ProjectiveComplex(object):
                 return False
 
         return True
-
-    def minimize(self):
-        #???
