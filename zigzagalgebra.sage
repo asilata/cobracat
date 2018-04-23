@@ -2,21 +2,21 @@ from sage.rings.noncommutative_ideals import Ideal_nc
 from itertools import product
 class ZigZagIdeal(Ideal_nc):
     def __init__(self, R):
-        # Kill all length two paths with different sources and targets.
-        # Equate all length two loops from each vertex.
-        lentwopaths = filter(lambda x: x != 0, [R.prod(m) for m in product(R.arrows(), repeat = 2)])
-        self._twoloops = {}
-        for e in R.idempotents():
-            self._twoloops[e] = filter(lambda x: x != 0, [R.prod([e,x,e]) for x in lentwopaths])
-        lenthreepaths = filter(lambda x: x!= 0, [R.prod(m) for m in product(R.arrows(), repeat = 3)])
-        relations = lenthreepaths
+        len2paths = filter(lambda x: x != 0, [R.prod(m) for m in product(R.arrows(), repeat = 2)])
+        len3paths = filter(lambda x: x!= 0, [R.prod(m) for m in product(R.arrows(), repeat = 3)])
+        self._twosteps = {} # For each pair of idempotents, record all length 2 paths beginning and ending at those vertices.
         for e in R.idempotents():
             for f in R.idempotents():
-                paths = filter(lambda x: x != 0, [R.prod([e,x,f]) for x in lentwopaths])
+                self._twosteps[(e,f)] = filter(lambda x: x != 0, [R.prod([e,x,f]) for x in len2paths])
+
+        relations = len3paths # Kill all paths of length three.
+        for e in R.idempotents():
+            for f in R.idempotents():
+                eTof = self._twosteps[(e,f)]
                 if e == f:
-                    relations.extend([x - y for (x,y) in zip(paths, paths[1:])])
+                    relations.extend([x - y for (x,y) in zip(eTof, eTof[1:])]) # Equate all 2-loops starting at a vertex.
                 else:
-                    relations.extend(paths)
+                    relations.extend(eTof) # Kill all length 2 paths starting and ending at different vertices.
         Ideal_nc.__init__(self, R, relations)
         
     def reduce(self,x):
@@ -25,23 +25,30 @@ class ZigZagIdeal(Ideal_nc):
         reduction = 0
         for m in monomials:
             z,v1,v2 =m[0],m[1],m[2]
-            reduction = reduction + add([c*R(m) for m,c in z if len(m) < 2])
-            if v1 == v2:
-                e = self.getIdempotent(v1)
-                l = self._twoloops[e][0] # First loop in chosen order
-                reduction = reduction + add([c*l for m,c in z if len(m) == 2])
+            reduction = reduction + add([c*R(m) for m,c in z if len(m) < 2]) # Keep everything of length less than 2.
+            if v1 == v2: # If we're looking at loops,
+                e = self.getIdempotent(v1) # get the corresponding idempotent, and
+                l = self._twosteps[(e,e)][0] # select the first 2-loop in the previously chosen order.
+                reduction = reduction + add([c*l for m,c in z if len(m) == 2]) # Then add up copies of this chosen loop.
         return reduction
+
+    def loops(self):
+        R = self.ring()
+        myloops = []
+        for e in R.idempotents():
+            eloops = self._twosteps[(e,e)]
+            if eloops != []:
+                myloops.append(self.reduce(eloops[0]))
                 
     def getIdempotent(self,v):
         vertices = self.ring().quiver().vertices()
         idempotents = self.ring().idempotents()
-        correspondence = [(x,y) for (x,y) in zip(vertices,idempotents) if x == v]
-        if len(correspondence) != 1:
-            raise Exception("Vertex does not correspond to an idempotent!")
+        alist = [(x,y) for (x,y) in zip(vertices,idempotents) if x == v]
+        if len(alist) != 1:
+            raise Exception("Vertex does not correspond to a unique idempotent!")
         else:
-            return correspondence[0][1]
+            return alist[0][1]
                 
-
 
 # Standard test case        
 d = {1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}}
