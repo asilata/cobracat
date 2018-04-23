@@ -29,19 +29,27 @@ class ProjectiveComplex(object):
         return str(self)
 
     def objects(self, i):
-        return self._objects.get(i, [])
+        return list(self._objects.get(i, []))
 
     def maps(self, i):
-        return self._maps.get(i, {})
+        return self._maps.get(i, {}).copy()
 
     def addObject(self, place, obj, name = None):
         if place not in self._objects:
             self._objects[place] = []
         self._objects[place].append(obj)
 
+        if place not in self._maps:
+            self._maps[place] = {}
+
         if name != None:
             self._names[hash(obj)] = name
         
+    def cleanUp(self):
+        for i in self._objects.keys():
+            for k in self._maps[i].keys():
+                if self._maps[i][k] == 0:
+                    self._maps[i].pop(k)
         
     def addMap(self, place, i, j, scalar):
         if i < 0 or i >= len(self.objects(place)):
@@ -72,18 +80,47 @@ class ProjectiveComplex(object):
     
     def minimizeAt(self, i):
         # Assumption: all non-zero maps of degree 0 are isomorphisms
-        
+        k = self._basering.base_ring()
         if len(self.objects(i)) == 0 or len(self.objects(i+1)) == 0:
             print("Nothing to minimize at " + str(i))
             return
 
-        sources = self.objects(i)
-        targets = self.objects(i+1)
-
         # Build a bipartite graph whose vertices are the objects at i and (i+1).
-        graph = {(i,j): [(i+1,k) for j in range(0, len(self.objects(i))) for k in range(0, len(self.objects(i+1)))
-                         if self.maps(i).get((j,k),0).degree() == 0]}
-        
+        graph = {(i,j): [(i+1,k) for k in range(0, len(self.objects(i+1)))
+                         if self.maps(i).get((j,k),self._basering(0)).degree() == 0]
+                 for j in range(0, len(self.objects(i))) }
+
         for comp in Graph(graph).connected_components():
             # Build a matrix
-            
+            print "Component: " + str(comp)
+            sources = [x for x in comp if x[0] == i]
+            targets = [x for x in comp if x[0] == i+1]
+
+            if len(sources) == 0 or len(targets) == 0:
+                continue
+
+            M = matrix(k,{(b,a): self.maps(i).get((sources[a][1], targets[b][1]), 0) for a in range(0, len(sources)) for b in range(0, len(targets))})
+            Minv = matrix(self._basering, M.pseudoinverse())
+            print Minv
+            # Change all the maps
+            newMaps = {}
+            for x in range(0,len(self.objects(i))):
+                for y in range(0,len(self.objects(i+1))):
+                    xW = matrix(self._basering, [[self.maps(i).get((x, z), 0) for (_,z) in targets]]).transpose()
+                    Vy = matrix(self._basering, [[self.maps(i).get((z, y), 0) for (_,z) in sources]])
+                    print xW, Vy
+                    changeMap = (Vy * Minv * xW) [(0,0)]
+                    oldMap = self.maps(i).get((x,y), 0)
+                    newMaps[(x,y)] = oldMap - changeMap
+
+            for x in range(0, len(self.objects(i))):
+                for y in range(0, len(self.objects(i+1))):
+                    self._maps[i][(x,y)] = newMaps[(x,y)]
+                    
+            newM = matrix(k,{(b,a): self.maps(i).get((sources[a][1], targets[b][1]), 0) for a in range(0, len(sources)) for b in range(0, len(targets))})
+
+            # We now factor out the isomorphisms, keeping only ker(M) and ker(Minv)
+            newSourceObjects = [self.objects(i)[sources[0][1]] for j in M.right_kernel().basis()]
+            newTargetObjects = [self.objects(i)[targets[0][1]] for j in Minv.right_kernel().basis()]
+            print newSourceObjects, newTargetObjects
+
