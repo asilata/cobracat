@@ -8,11 +8,13 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         self._path_semigroup = P
         self._basis = list(R.idempotents()) + list(R.arrows()) + I.loops()
         table = [_getMatrix(R, I, self._basis, x) for x in self._basis]
-        super(ZigZagAlgebra, self).__init__(k, table, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
+        names = [str(x).replace('*','') for x in self._basis]
+        super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
 
-    def basis(self):
-        return self._basis
-    
+    def is_unitary(self):
+        self._one = sum(self.basis()[0:len(self._path_semigroup.idempotents())])
+        return True
+
     def _getCoefficients(R, I, basis, x):
         coeffDict = {R(k):v for k,v in R(I.reduce(x)).monomial_coefficients().items()}
         return [coeffDict.get(b,0) for b in basis]
