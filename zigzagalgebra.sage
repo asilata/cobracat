@@ -27,20 +27,21 @@ class ZigZagIdeal(Ideal_nc):
             z,v1,v2 =m[0],m[1],m[2]
             reduction = reduction + add([c*R(m) for m,c in z if len(m) < 2]) # Keep everything of length less than 2.
             if v1 == v2: # If we're looking at loops,
-                e = self.getIdempotent(v1) # get the corresponding idempotent, and
+                e = self._getIdempotent(v1) # get the corresponding idempotent, and
                 l = self._twosteps[(e,e)][0] # select the first 2-loop in the previously chosen order.
                 reduction = reduction + add([c*l for m,c in z if len(m) == 2]) # Then add up copies of this chosen loop.
         return reduction
 
     def loops(self):
         R = self.ring()
-        myloops = []
+        loops = []
         for e in R.idempotents():
             eloops = self._twosteps[(e,e)]
             if eloops != []:
-                myloops.append(self.reduce(eloops[0]))
+                loops.append(self.reduce(eloops[0]))
+        return loops
                 
-    def getIdempotent(self,v):
+    def _getIdempotent(self,v):
         vertices = self.ring().quiver().vertices()
         idempotents = self.ring().idempotents()
         alist = [(x,y) for (x,y) in zip(vertices,idempotents) if x == v]
@@ -51,6 +52,7 @@ class ZigZagIdeal(Ideal_nc):
                 
 
 # Standard test case        
-d = {1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}}
-G = DiGraph(d)
+ds = {1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}}
+G = DiGraph(ds)
 A = G.path_semigroup().algebra(QQ)
+
