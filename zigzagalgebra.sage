@@ -1,5 +1,28 @@
 from sage.rings.noncommutative_ideals import Ideal_nc
 from itertools import product
+
+class ZigZagAlgebra(FiniteDimensionalAlgebra):
+    def __init__(self, k, P): # k = base field, P = path semigroup of a quiver
+        R = P.algebra(k)
+        I = ZigZagIdeal(R)
+        self._path_semigroup = P
+        self._basis = list(R.idempotents()) + list(R.arrows()) + I.loops()
+        table = [_getMatrix(R, I, self._basis, x) for x in self._basis]
+        super(ZigZagAlgebra, self).__init__(k, table, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
+
+    def basis(self):
+        return self._basis
+    
+    def _getCoefficients(R, I, basis, x):
+        coeffDict = {R(k):v for k,v in R(I.reduce(x)).monomial_coefficients().items()}
+        return [coeffDict.get(b,0) for b in basis]
+    
+    def _getMatrix(R, I, basis, x):
+        xMatrix = []
+        for y in basis:
+            xMatrix.append(_getCoefficients(R, I, basis, y*x))
+            return matrix(xMatrix).transpose()
+
 class ZigZagIdeal(Ideal_nc):
     def __init__(self, R):
         len2paths = filter(lambda x: x != 0, [R.prod(m) for m in product(R.arrows(), repeat = 2)])
