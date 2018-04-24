@@ -81,9 +81,19 @@ class ZigZagIdeal(Ideal_nc):
             return alist[0][1]
                 
 
-# Standard test case        
-# ds = {1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}}
-ds = {1: {2: 'a'}, 2:{1:'b'}}
-G = DiGraph(ds)
-A = G.path_semigroup().algebra(QQ)
+# Tests
+# Test constructor
+def make_test(graph, k=QQ):
+    test = {}
+    test['A'] = graph.path_semigroup().algebra(k)
+    test['I'] = ZigZagIdeal(test['A'])
+    test['Z'] = ZigZagAlgebra(test['A'].base_ring(),test['A'].semigroup())
+    return test
+
+# Some standard graphs
+a2graph = DiGraph({1: {2: 'a'}, 2:{1:'b'}})
+a3graph = DiGraph({1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}})
+d4graph = DiGraph({1:{2:'a', 3:'b', 4:'c'}, 2:{1:'d'}, 3:{1:'e'}, 4:{1:'f'}})
+
+
 
