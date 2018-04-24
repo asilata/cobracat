@@ -99,13 +99,23 @@ class ProjectiveComplex(object):
                 continue
 
             # Change the maps from place to place+1
+
+            def invert(alpha):
+                try:
+                    return 1/alpha
+                except TypeError:
+                    try:
+                        return alpha.inverse():
+                    except AttributeError(e):
+                        raise e
+            
             newMapsPlace = {}
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
                     if (i,j) == (source, target):
                         changeij = 0
                     else:
-                        changeij = self.maps(place).get((source,j), 0) * alpha.inverse() *  self.maps(place).get((i,target), 0) 
+                        changeij = self.maps(place).get((source,j), 0) * invert(alpha) *  self.maps(place).get((i,target), 0) 
                     newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) + changeij
 
 
