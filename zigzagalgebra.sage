@@ -11,10 +11,6 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         names = [str(x).replace('*','') for x in self._basis]
         super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
 
-    def is_unitary(self):
-        self._one = sum(self.basis()[0:len(self._path_semigroup.idempotents())])
-        return True
-
 
 # Returns the coefficients of x wrt the given basis, after reducing modulo the ideal I.
 def _getCoefficients(I, basis, x):
