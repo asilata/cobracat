@@ -101,6 +101,16 @@ class ProjectiveComplex(object):
                 continue
 
             # Change the maps from place to place+1
+
+            def invert(alpha):
+                try:
+                    return 1/alpha
+                except TypeError:
+                    try:
+                        return alpha.inverse():
+                    except AttributeError(e):
+                        raise e
+            
             newMapsPlace = {}
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
