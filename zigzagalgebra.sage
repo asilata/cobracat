@@ -30,7 +30,7 @@ def _getMatrix(I, basis, x):
     xMatrix = []
     for y in basis:
         xMatrix.append(_getCoefficients(I, basis, y*x))
-    return matrix(xMatrix).transpose()
+    return matrix(xMatrix)
     
 class ZigZagIdeal(Ideal_nc):
     def __init__(self, R):
