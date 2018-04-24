@@ -87,7 +87,7 @@ def make_test(graph, k=QQ):
     test = {}
     test['A'] = graph.path_semigroup().algebra(k)
     test['I'] = ZigZagIdeal(test['A'])
-    test['Z'] = ZigZagAlgebra(test['A'].base_ring(),test['A'].semigroup())
+    test['Z'] = ZigZagAlgebra(k,graph.path_semigroup())
     return test
 
 # Some standard graphs
