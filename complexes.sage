@@ -82,6 +82,7 @@ class ProjectiveComplex(object):
         # Assumption: all non-zero maps of degree 0 are isomorphisms
         k = self._basering.base_ring()
 
+        
         # Find an object at i and an object at (i+1) with an isomorphism between them.
         def _findIso(place):
             for i in range(0, len(self.objects(place))):
@@ -91,47 +92,50 @@ class ProjectiveComplex(object):
                         return i,j, fij
             return None, None, None
 
-        source, target, alpha = _findIso(place)
-        if source == None or target == None or alpha == None:
-            print("Nothing to minimize at " + str(place))
-            return 
-        
-        # Change the maps from place to place+1
-        newMapsPlace = {}
-        for i in range(0, len(self.objects(place))):
-            for j in range(0, len(self.objects(place+1))):
-                if (i,j) == (source, target):
-                    changeij = 0
-                else:
-                    changeij = self.maps(place).get((source,j), 0) * 1/alpha *  self.maps(place).get((i,target), 0) 
-                newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) + changeij
+        alreadyMinimized = False
+        while not alreadyMinimized:
+            source, target, alpha = _findIso(place)
+            if source == None or target == None or alpha == None:
+                print("Nothing left to minimize at " + str(place))
+                alreadyMinimized = True
+                continue
+
+            # Change the maps from place to place+1
+            newMapsPlace = {}
+            for i in range(0, len(self.objects(place))):
+                for j in range(0, len(self.objects(place+1))):
+                    if (i,j) == (source, target):
+                        changeij = 0
+                    else:
+                        changeij = self.maps(place).get((source,j), 0) * 1/alpha *  self.maps(place).get((i,target), 0) 
+                    newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) + changeij
 
 
-        # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
-        # Now we update the maps
-        for i in range(0, len(self.objects(place))):
-            for j in range(0, len(self.objects(place+1))):
-                self._maps[place][(i,j)] = newMapsPlace[(i,j)]
+            # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
+            # Now we update the maps
+            for i in range(0, len(self.objects(place))):
+                for j in range(0, len(self.objects(place+1))):
+                    self._maps[place][(i,j)] = newMapsPlace[(i,j)]
 
-        # At this point, our complex is a direct sum of F (source) -> F (target) and another complex
-        # We simply drop the source and the target
-        self._objects[place].pop(source)
-        self._objects[place+1].pop(target)
+            # At this point, our complex is a direct sum of F (source) -> F (target) and another complex
+            # We simply drop the source and the target
+            self._objects[place].pop(source)
+            self._objects[place+1].pop(target)
 
-        # and re-index as needed
-        matrixAtPlace = matrix(self.maps(place))
-        newMatrixAtPlace = matrixAtPlace.delete_rows([source]).delete_columns([target])
-        self._maps[place] = newMatrixAtPlace.dict()
-        
-        matrixAtPlaceMinus1 = matrix(self.maps(place-1))
-        if matrixAtPlaceMinus1.ncols() > 0:
-            newMatrixAtPlaceMinus1 = matrixAtPlaceMinus1.delete_columns([source])
-            self._maps[place-1] = newMatrixAtPlaceMinus1.dict()
+            # and re-index as needed
+            matrixAtPlace = matrix(self.maps(place))
+            newMatrixAtPlace = matrixAtPlace.delete_rows([source]).delete_columns([target])
+            self._maps[place] = newMatrixAtPlace.dict()
 
-        matrixAtPlacePlus1 = matrix(self.maps(place+1))
-        if matrixAtPlacePlus1.nrows() > 0:
-            newMatrixAtPlacePlus1 = matrixAtPlacePlus1.delete_rows([target])
-            self._maps[place+1] = newMatrixAtPlacePlus1.dict()
+            matrixAtPlaceMinus1 = matrix(self.maps(place-1))
+            if matrixAtPlaceMinus1.ncols() > 0:
+                newMatrixAtPlaceMinus1 = matrixAtPlaceMinus1.delete_columns([source])
+                self._maps[place-1] = newMatrixAtPlaceMinus1.dict()
+
+            matrixAtPlacePlus1 = matrix(self.maps(place+1))
+            if matrixAtPlacePlus1.nrows() > 0:
+                newMatrixAtPlacePlus1 = matrixAtPlacePlus1.delete_rows([target])
+                self._maps[place+1] = newMatrixAtPlacePlus1.dict()
 
         #Finally we do a cleanup
         self.cleanUp()
