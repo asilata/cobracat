@@ -11,20 +11,25 @@ class ZigZagModule(object):
 
 
     def twistBy(self, n = 1):
-        self._twist = self._twist + 1
+        self._twist = self._twist + n
 
-    def _repr_(self):
-        return name + "<" + str(twist) + ">"
+    def __repr__(self):
+        return self._name + "<" + str(self._twist) + ">"
 
-    def _str_(self):
+    def __str__(self):
         return self._repr_
 
     def idempotent(self):
         return self._idempotent
 
+    def twist(self):
+        return self._twist
+
     def tensor(self, other):
-        tensors = [self._idempotent * b * other.idempotent for b in self._ring.basis()]
+        tensors = [self.idempotent() * b * other.idempotent() for b in self._ring.basis()]
+        nonZeroTensors = [x for x in tensors if x != 0]
         answer = {}
-        for t in tensors:
-            answer[R.deg(t)] = answer.get(R.deg(t), 0) + 1
+        for t in nonZeroTensors:
+            d = R.deg(t) + self.twist() + other.twist()
+            answer[d] = answer.get(d, 0) + 1
         return answer
