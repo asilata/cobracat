@@ -79,16 +79,14 @@ class ProjectiveComplex(object):
         return True
     
     def minimizeAt(self, place):
-        # Assumption: all non-zero maps of degree 0 are isomorphisms
         k = self._basering.base_ring()
-
         
         # Find an object at i and an object at (i+1) with an isomorphism between them.
         def _findIso(place):
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
                     fij = self.maps(place).get((i,j), self._basering(0))
-                    if fij != 0 and fij.degree() == 0:
+                    if fij.is_invertible():
                         return i,j, fij
             return None, None, None
 
@@ -107,7 +105,7 @@ class ProjectiveComplex(object):
                     if (i,j) == (source, target):
                         changeij = 0
                     else:
-                        changeij = self.maps(place).get((source,j), 0) * 1/alpha *  self.maps(place).get((i,target), 0) 
+                        changeij = self.maps(place).get((source,j), 0) * alpha.inverse() *  self.maps(place).get((i,target), 0) 
                     newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) + changeij
 
 
