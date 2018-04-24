@@ -7,9 +7,9 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         I = ZigZagIdeal(R)
         self._path_semigroup = P
         self._basis = list(R.idempotents()) + list(R.arrows()) + I.loops()
-        table = [_getMatrix(R, I, self._basis, x) for x in self._basis]
-        names = [str(x).replace('*','') for x in self._basis]
-        super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
+        self._table = [_getMatrix(I, self._basis, x) for x in self._basis]
+        #names = [str(x).replace('*','') for x in self._basis]
+        super(ZigZagAlgebra, self).__init__(k, self._table, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
 
     def is_unitary(self):
         self._one = sum(self.basis()[0:len(self._path_semigroup.idempotents())])
@@ -84,7 +84,8 @@ class ZigZagIdeal(Ideal_nc):
                 
 
 # Standard test case        
-ds = {1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}}
+# ds = {1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}}
+ds = {1: {2: 'a'}, 2:{1:'b'}}
 G = DiGraph(ds)
 A = G.path_semigroup().algebra(QQ)
 
