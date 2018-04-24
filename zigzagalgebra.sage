@@ -1,7 +1,24 @@
 from sage.rings.noncommutative_ideals import Ideal_nc
 from itertools import product
+from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element import FiniteDimensionalAlgebraElement
+
+class ZigZagAlgebraElement(FiniteDimensionalAlgebraElement):
+    # def _div_(self, y):
+    #     """
+    #     If ``y`` is invertible, then return the quotient of ``self`` by ``y``.
+    #     """
+    #     if y.is_invertible():
+    #         return x*y.inverse()
+    #     else:
+    #         raise ZeroDivisionError("Element {0} is not invertible".format(y))
+            
+    def __init__(self, A):
+        super(FiniteDimensionalAlgebraElement, self).__init__(self, A)
+    
 
 class ZigZagAlgebra(FiniteDimensionalAlgebra):
+    # Element = ZigZagAlgebraElement
+    
     def __init__(self, k, P): # k = base field, P = path semigroup of a quiver
         R = P.algebra(k)
         I = ZigZagIdeal(R)
@@ -10,10 +27,6 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         table = [_getMatrix(I, self._basis, x) for x in self._basis]
         names = [str(x).replace('*','') for x in self._basis]
         super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
-
-    def is_unitary(self):
-        self._one = sum(self.basis()[0:len(self._path_semigroup.idempotents())])
-        return True
 
 
 # Returns the coefficients of x wrt the given basis, after reducing modulo the ideal I.
