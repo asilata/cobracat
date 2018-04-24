@@ -7,9 +7,9 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         I = ZigZagIdeal(R)
         self._path_semigroup = P
         self._basis = list(R.idempotents()) + list(R.arrows()) + I.loops()
-        self._table = [_getMatrix(I, self._basis, x) for x in self._basis]
-        #names = [str(x).replace('*','') for x in self._basis]
-        super(ZigZagAlgebra, self).__init__(k, self._table, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
+        table = [_getMatrix(I, self._basis, x) for x in self._basis]
+        names = [str(x).replace('*','') for x in self._basis]
+        super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
 
     def is_unitary(self):
         self._one = sum(self.basis()[0:len(self._path_semigroup.idempotents())])
