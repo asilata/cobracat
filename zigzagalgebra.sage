@@ -15,16 +15,23 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         self._one = sum(self.basis()[0:len(self._path_semigroup.idempotents())])
         return True
 
-    def _getCoefficients(R, I, basis, x):
-        coeffDict = {R(k):v for k,v in R(I.reduce(x)).monomial_coefficients().items()}
-        return [coeffDict.get(b,0) for b in basis]
-    
-    def _getMatrix(R, I, basis, x):
-        xMatrix = []
-        for y in basis:
-            xMatrix.append(_getCoefficients(R, I, basis, y*x))
-            return matrix(xMatrix).transpose()
 
+# Returns the coefficients of x wrt the given basis, after reducing modulo the ideal I.
+def _getCoefficients(I, basis, x):
+    print x
+    R = I.ring()
+    coeffDict = {R(k):v for k,v in R(I.reduce(x)).monomial_coefficients().items()}
+    print coeffDict
+    return [coeffDict.get(b,0) for b in basis]
+
+# Returns the matrix of right multiplication by x in the given basis, modulo the ideal I.
+def _getMatrix(I, basis, x):
+    R = I.ring()
+    xMatrix = []
+    for y in basis:
+        xMatrix.append(_getCoefficients(I, basis, y*x))
+    return matrix(xMatrix).transpose()
+    
 class ZigZagIdeal(Ideal_nc):
     def __init__(self, R):
         len2paths = filter(lambda x: x != 0, [R.prod(m) for m in product(R.arrows(), repeat = 2)])
