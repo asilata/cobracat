@@ -17,6 +17,6 @@ P.addObject(0, F)
 P.addObject(1, F)
 P.addMap(0,0,1,2)
 P.addMap(0,1,1,1)
-P.minimizeAt(0)
 
-Q = ProjectiveComplex(R)
+
+

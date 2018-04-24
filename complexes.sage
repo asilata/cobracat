@@ -78,49 +78,88 @@ class ProjectiveComplex(object):
 
         return True
     
-    def minimizeAt(self, i):
+    def minimizeAt(self, place):
         # Assumption: all non-zero maps of degree 0 are isomorphisms
         k = self._basering.base_ring()
-        if len(self.objects(i)) == 0 or len(self.objects(i+1)) == 0:
-            print("Nothing to minimize at " + str(i))
-            return
 
-        # Build a bipartite graph whose vertices are the objects at i and (i+1).
-        graph = {(i,j): [(i+1,k) for k in range(0, len(self.objects(i+1)))
-                         if self.maps(i).get((j,k),self._basering(0)).degree() == 0]
-                 for j in range(0, len(self.objects(i))) }
+        # Find an object at i and an object at (i+1) with an isomorphism between them.
+        def _findIso(place):
+            for i in range(0, len(self.objects(place))):
+                for j in range(0, len(self.objects(place+1))):
+                    fij = self.maps(place).get((i,j), self._basering(0))
+                    if fij != 0 and fij.degree() == 0:
+                        return i,j, fij
+            return None, None, None
 
-        for comp in Graph(graph).connected_components():
-            # Build a matrix
-            print "Component: " + str(comp)
-            sources = [x for x in comp if x[0] == i]
-            targets = [x for x in comp if x[0] == i+1]
+        source, target, alpha = _findIso(place)
+        if source == None or target == None or alpha == None:
+            print("Nothing to minimize at " + str(place))
+            return 
+        
+        # Change the maps from place to place+1
+        newMapsPlace = {}
+        for i in range(0, len(self.objects(place))):
+            for j in range(0, len(self.objects(place+1))):
+                if (i,j) == (source, target):
+                    changeij = 0
+                else:
+                    changeij = self.maps(place).get((source,j), 0) * 1/alpha *  self.maps(place).get((i,target), 0) 
+                newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) + changeij
 
-            if len(sources) == 0 or len(targets) == 0:
-                continue
 
-            M = matrix(k,{(b,a): self.maps(i).get((sources[a][1], targets[b][1]), 0) for a in range(0, len(sources)) for b in range(0, len(targets))})
-            Minv = matrix(self._basering, M.pseudoinverse())
-            print Minv
-            # Change all the maps
-            newMaps = {}
-            for x in range(0,len(self.objects(i))):
-                for y in range(0,len(self.objects(i+1))):
-                    xW = matrix(self._basering, [[self.maps(i).get((x, z), 0) for (_,z) in targets]]).transpose()
-                    Vy = matrix(self._basering, [[self.maps(i).get((z, y), 0) for (_,z) in sources]])
-                    print xW, Vy
-                    changeMap = (Vy * Minv * xW) [(0,0)]
-                    oldMap = self.maps(i).get((x,y), 0)
-                    newMaps[(x,y)] = oldMap - changeMap
+        # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
+        # Now we update the maps
+        for i in range(0, len(self.objects(place))):
+            for j in range(0, len(self.objects(place+1))):
+                self._maps[place][(i,j)] = newMapsPlace[(i,j)]
 
-            for x in range(0, len(self.objects(i))):
-                for y in range(0, len(self.objects(i+1))):
-                    self._maps[i][(x,y)] = newMaps[(x,y)]
-                    
-            newM = matrix(k,{(b,a): self.maps(i).get((sources[a][1], targets[b][1]), 0) for a in range(0, len(sources)) for b in range(0, len(targets))})
+        # At this point, our complex is a direct sum of F (source) -> F (target) and another complex
+        # We simply drop the source and the target
+        self._objects[place].pop(source)
+        self._objects[place+1].pop(target)
 
-            # We now factor out the isomorphisms, keeping only ker(M) and ker(Minv)
-            newSourceObjects = [self.objects(i)[sources[0][1]] for j in M.right_kernel().basis()]
-            newTargetObjects = [self.objects(i)[targets[0][1]] for j in Minv.right_kernel().basis()]
-            print newSourceObjects, newTargetObjects
+        # and re-index as needed
+        
+
+
+        newMapsPlaceMinus1 = {}
+        for i in range(0, len(self.objects(place-1))):
+            for j in range(0, len(self.objects(place))):
+                if j < source:
+                    newMapsPlaceMinus1[(i,j)] = self.maps(place-1).get((i,j), 0)
+                elif j >= source:
+                    newMapsPlaceMinus1[(i,j)] = self.maps(place-1).get((i,j+1), 0)
+        
+        for i in range(0, len(self.objects(place-1))):
+            for j in range(0, len(self.objects(place))):
+                self._maps[place-1][(i,j)] = newMapsPlaceMinus1[(i,j)]
+
+        for i in range(0, len(self.objects(place-1))):
+            last = len(self.objects(place))
+            if (i, last) in self._maps[place-1]:
+                self._maps[place-1].pop((i,last))
+
+
+        newMapsPlacePlus1 = {}
+        for i in range(0, len(self.objects(place+1))):
+            for j in range(0, len(self.objects(place+2))):
+                if i < target:
+                    newMapsPlacePlus1[(i,j)] = self.maps(place+1).get((i,j), 0)
+                elif i >= target:
+                    newMapsPlacePlus1[(i,j)] = self.maps(place+1).get((i+1,j), 0)
+
+        for i in range(0, len(self.objects(place+1))):
+            for j in range(0, len(self.objects(place+2))):
+                self._maps[place+1][(i,j)] = newMapsPlacePlus1[(i,j)]
+
+        for j in range(0, len(self.objects(place+2))):
+            last = len(self.objects(place+1))
+            if (last, j) in self._maps[place+1]:
+                self._maps[place+1].pop((last,j))
+
+
+
+        #Finally we do a cleanup
+        self.cleanUp()
+        return 
 
