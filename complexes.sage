@@ -119,45 +119,19 @@ class ProjectiveComplex(object):
         self._objects[place+1].pop(target)
 
         # and re-index as needed
+        matrixAtPlace = matrix(self.maps(place))
+        newMatrixAtPlace = matrixAtPlace.delete_rows([source]).delete_columns([target])
+        self._maps[place] = newMatrixAtPlace.dict()
         
+        matrixAtPlaceMinus1 = matrix(self.maps(place-1))
+        if matrixAtPlaceMinus1.ncols() > 0:
+            newMatrixAtPlaceMinus1 = matrixAtPlaceMinus1.delete_columns([source])
+            self._maps[place-1] = newMatrixAtPlaceMinus1.dict()
 
-
-        newMapsPlaceMinus1 = {}
-        for i in range(0, len(self.objects(place-1))):
-            for j in range(0, len(self.objects(place))):
-                if j < source:
-                    newMapsPlaceMinus1[(i,j)] = self.maps(place-1).get((i,j), 0)
-                elif j >= source:
-                    newMapsPlaceMinus1[(i,j)] = self.maps(place-1).get((i,j+1), 0)
-        
-        for i in range(0, len(self.objects(place-1))):
-            for j in range(0, len(self.objects(place))):
-                self._maps[place-1][(i,j)] = newMapsPlaceMinus1[(i,j)]
-
-        for i in range(0, len(self.objects(place-1))):
-            last = len(self.objects(place))
-            if (i, last) in self._maps[place-1]:
-                self._maps[place-1].pop((i,last))
-
-
-        newMapsPlacePlus1 = {}
-        for i in range(0, len(self.objects(place+1))):
-            for j in range(0, len(self.objects(place+2))):
-                if i < target:
-                    newMapsPlacePlus1[(i,j)] = self.maps(place+1).get((i,j), 0)
-                elif i >= target:
-                    newMapsPlacePlus1[(i,j)] = self.maps(place+1).get((i+1,j), 0)
-
-        for i in range(0, len(self.objects(place+1))):
-            for j in range(0, len(self.objects(place+2))):
-                self._maps[place+1][(i,j)] = newMapsPlacePlus1[(i,j)]
-
-        for j in range(0, len(self.objects(place+2))):
-            last = len(self.objects(place+1))
-            if (last, j) in self._maps[place+1]:
-                self._maps[place+1].pop((last,j))
-
-
+        matrixAtPlacePlus1 = matrix(self.maps(place+1))
+        if matrixAtPlacePlus1.nrows() > 0:
+            newMatrixAtPlacePlus1 = matrixAtPlacePlus1.delete_rows([target])
+            self._maps[place+1] = newMatrixAtPlacePlus1.dict()
 
         #Finally we do a cleanup
         self.cleanUp()
