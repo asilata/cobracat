@@ -18,10 +18,8 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
 # Returns the coefficients of x wrt the given basis, after reducing modulo the ideal I.
 def _getCoefficients(I, basis, x):
-    print x
     R = I.ring()
     coeffDict = {R(k):v for k,v in R(I.reduce(x)).monomial_coefficients().items()}
-    print coeffDict
     return [coeffDict.get(b,0) for b in basis]
 
 # Returns the matrix of right multiplication by x in the given basis, modulo the ideal I.
