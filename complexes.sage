@@ -1,7 +1,23 @@
+############################################################
+#
+# The homotopy category of projective complexes in sage
+#
+############################################################
 class ProjectiveComplex(object):
+    '''The class of ProjectiveComplexes over a ring (not necessarily
+    commutative). A projective complex is a complex of projective objects. 
+    '''
     def __init__(self, basering, objects = {}, maps = {}, names={}):
-        # Put checks to make sure the maps are well-defined
-        # and they form a complex.
+        '''
+        Arguments -
+        basering: Base ring (not necessarily commutative)
+
+        objects: A dictionary of type {i: [P]} where i is an integer and P is projective module over the base ring. The internal details of P are never used, so it may as well be a blob. But in all constructions, it will be used as if it were a projective module.
+
+        maps: A dictionary of type {i: {(a,b): r}} where i is an integer, (a,b) is a pair of positive integers, and r is an element of basering. The key i represents the map from the i-th to (i+1)-th place of the complex. The pair (a,b) says that the map is from the a-th object in the list of objects at the i-th place to the b-th object in the list of objects at the (i+1)-th place. The value r says that the map is given by right multiplication by r. Currently, there is no provision to specify more complicated maps. 
+
+        names: A dictionary of type {P: n} where P is a projective module and n is a string that acts as a short name for P to put in the string representation of the complex.
+        '''
         self._objects = objects.copy()
         self._maps = maps.copy()
         self._names = names.copy()
@@ -12,6 +28,9 @@ class ProjectiveComplex(object):
         else:
             self._minIndex = 0
             self._maxIndex = 0
+
+        if not self.checkComplexity():
+            print("Warning: This is not a chain complex!")
 
     def __str__(self):
         ks = self._objects.keys()
@@ -26,7 +45,7 @@ class ProjectiveComplex(object):
             if len(objects) == 0:
                 s = s + "0"
             else:
-                s = s + "+".join([self._names[x] if x in self._names else str(x) for x in objects])
+                s = s + "+".join([self._names[x] if x in self._names.keys() else str(x) for x in objects])
             if i < largest:
                 s = s + " → "
         return s
@@ -34,22 +53,43 @@ class ProjectiveComplex(object):
     def __repr__(self):
         return str(self)
 
+    def basering(self):
+        return self._basering
+
     def minIndex(self):
+        '''
+        An integer n such that self.objects(m) = [] for m < n.
+        '''
         return self._minIndex
 
     def maxIndex(self):
+        '''
+        An integer n such that self.objects(m) = [] for m > n.
+        '''
         return self._maxIndex
 
-    def objects(self, i = None):
+    def objects(self, i):
+        '''
+        A list of projective objects whose direct sum forms the i-th component of self.
+        '''
         return list(self._objects.get(i, []))
 
     def maps(self, i):
+        '''
+        The map from the i-th to the (i+1)-th component, represented as a dictionary {(a,b): r}. The map corresponds to (right) multiplication by the matrix associated to this dictionary.
+        '''
         return self._maps.get(i, {}).copy()
 
     def names(self):
+        '''
+        Short, readable names for the projective objects in the complex.
+        '''
         return self._names.copy()
 
     def shift(self, n = 1):
+        '''
+        A new complex obtained by homologically shifting self by [n].
+        '''
         def shiftDict(d, n):
             return {x-n: d[x] for x in d.keys()}
         return ProjectiveComplex(self._basering,
@@ -62,6 +102,9 @@ class ProjectiveComplex(object):
         return ProjectiveComplex(self._basering, self._objects, self._maps, self._names)
 
     def addObject(self, place, obj, name = None):
+        '''
+        Add object `obj` at place `place` with name `name`. It goes as the last entry of the list of objects at place `place`.
+        '''
         if place not in self._objects:
             self._objects[place] = []
         self._objects[place].append(obj)
@@ -76,6 +119,9 @@ class ProjectiveComplex(object):
         self._maxIndex = max(place, self._maxIndex)
         
     def cleanUp(self):
+        '''
+        Remove spurious matrix entries (zeros) and spurious object lists (empty lists).
+        '''
         # Remove maps
         for i in self._maps.keys():
             for k in self._maps[i].keys():
@@ -94,11 +140,17 @@ class ProjectiveComplex(object):
             self._maxIndex = 0
 
     def minimize(self):
+        '''
+        Apply minimizeAt(i) for all i.
+        '''
         for i in range(self.minIndex(), self.maxIndex()):
             self.minimizeAt(i)
         
 
     def addMap(self, place, i, j, scalar):
+        '''
+        Add a map from the i-th object at place to the j-th object at place+1 given by right multiplication by scalar.
+        '''
         # All actions are right actions!
         if i < 0 or i >= len(self.objects(place)):
             raise IndexError("Index out of bounds")
@@ -110,6 +162,9 @@ class ProjectiveComplex(object):
         self._maps[place][(i,j)] = self._basering(scalar)
 
     def checkComplexity(self):
+        '''
+        Check that this forms a chain complex.
+        '''
         matrices = {}
         for i in range(self.minIndex(), self.maxIndex()):
             sourceDim = len(self._objects.get(i, []))
@@ -124,6 +179,9 @@ class ProjectiveComplex(object):
         return True
 
     def directSum(self, Q):
+        '''
+        Direct sum of this complex and the complex Q
+        '''
         # By convention, the objects of Q go after the objects of self, in order.
         objs, maps = {}, {}
         names = self.names()
@@ -142,6 +200,9 @@ class ProjectiveComplex(object):
         return ProjectiveComplex(self._basering, objs, maps, names)
                       
     def minimizeAt(self, place):
+        '''
+        Factor out a complex (presumably the biggest such) that is chain homotopic to zero and is concentrated in degrees place and place+1.
+        '''
         k = self._basering.base_ring()
         
         # Find an object at i and an object at (i+1) with an isomorphism between them.
@@ -222,6 +283,9 @@ class ProjectiveComplex(object):
         return 
 
 def cone(P, Q, M):
+    '''
+    The cone of M: P -> Q. M must define a map of chain complexes from P to Q.
+    '''
     if not checkMap(P, Q, M):
         raise TypeError("Not a chain map. Cannot make a cone.")
     
@@ -234,6 +298,10 @@ def cone(P, Q, M):
     
 
 def checkMap(P, Q, M):
+    '''
+    Check that M defines a map of chain complexes from P to Q.
+    M must have the type {i: d} where i is an integer and d is a dictionary {(a,b): r} whose associated matrix defines the map from P to Q (by right multiplication).
+    '''
     minIndex = min(P.minIndex(), Q.minIndex())
     maxIndex = max(P.maxIndex(), Q.maxIndex())
     for i in range(minIndex, maxIndex):
