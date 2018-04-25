@@ -1,10 +1,10 @@
 class ProjectiveComplex(object):
-    def __init__(self, basering, objects = {}, maps = {}):
+    def __init__(self, basering, objects = {}, maps = {}, names={}):
         # Put checks to make sure the maps are well-defined
         # and they form a complex.
         self._objects = objects.copy()
         self._maps = maps.copy()
-        self._names = {}
+        self._names = names.copy()
         self._basering = basering
         if len(objects.keys()) > 0:
             self._minIndex = min(objects.keys())
@@ -45,6 +45,10 @@ class ProjectiveComplex(object):
 
     def maps(self, i):
         return self._maps.get(i, {}).copy()
+
+    def copy(self):
+        return ProjectiveComplex(self._basering, self._objects, self._maps, self._names):
+        
 
     def addObject(self, place, obj, name = None):
         if place not in self._objects:
