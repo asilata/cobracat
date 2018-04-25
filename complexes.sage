@@ -52,6 +52,7 @@ class ProjectiveComplex(object):
                     self._maps[i].pop(k)
         
     def addMap(self, place, i, j, scalar):
+        # All actions are right actions!
         if i < 0 or i >= len(self.objects(place)):
             raise IndexError("Index out of bounds")
         if j < 0 or j >= len(self.objects(place+1)):
@@ -69,10 +70,10 @@ class ProjectiveComplex(object):
         for i in range(smallest, largest):
             sourceDim = len(self._objects.get(i, []))
             targetDim = len(self._objects.get(i+1, []))
-            matrices[i] = matrix(targetDim, sourceDim, self._maps.get(i, {}))
+            matrices[i] = matrix(targetDim, sourceDim, self._maps.get(i, {})).transpose() # Right actions!
 
         for i in range(smallest, largest-1):
-            if matrices[i+1] * matrices[i] != 0:
+            if matrices[i] * matrices[i+1] != 0:
                 print "Differential squared not zero at " + str(i) + "."
                 return False
 
@@ -107,7 +108,7 @@ class ProjectiveComplex(object):
                     return 1/alpha
                 except TypeError:
                     try:
-                        return alpha.inverse():
+                        return alpha.inverse()
                     except AttributeError(e):
                         raise e
             
@@ -117,8 +118,8 @@ class ProjectiveComplex(object):
                     if (i,j) == (source, target):
                         changeij = 0
                     else:
-                        changeij = self.maps(place).get((source,j), 0) * 1/alpha *  self.maps(place).get((i,target), 0) 
-                    newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) + changeij
+                        changeij = self.maps(place).get((i,target), 0) * invert(alpha) * self.maps(place).get((source,j), 0)
+                    newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) - changeij
 
 
             # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
@@ -133,19 +134,19 @@ class ProjectiveComplex(object):
             self._objects[place+1].pop(target)
 
             # and re-index as needed
-            matrixAtPlace = matrix(self.maps(place))
-            newMatrixAtPlace = matrixAtPlace.delete_rows([source]).delete_columns([target])
-            self._maps[place] = newMatrixAtPlace.dict()
+            matrixAtPlace = matrix(self.maps(place)).transpose() # Right action!
+            newMatrixAtPlace = matrixAtPlace.delete_columns([source]).delete_rows([target])
+            self._maps[place] = newMatrixAtPlace.transpose().dict()
 
-            matrixAtPlaceMinus1 = matrix(self.maps(place-1))
-            if matrixAtPlaceMinus1.ncols() > 0:
-                newMatrixAtPlaceMinus1 = matrixAtPlaceMinus1.delete_columns([source])
-                self._maps[place-1] = newMatrixAtPlaceMinus1.dict()
+            matrixAtPlaceMinus1 = matrix(self.maps(place-1)).transpose()
+            if matrixAtPlaceMinus1.nrows() > 0:
+                newMatrixAtPlaceMinus1 = matrixAtPlaceMinus1.delete_rows([source])
+                self._maps[place-1] = newMatrixAtPlaceMinus1.transpose().dict()
 
-            matrixAtPlacePlus1 = matrix(self.maps(place+1))
-            if matrixAtPlacePlus1.nrows() > 0:
-                newMatrixAtPlacePlus1 = matrixAtPlacePlus1.delete_rows([target])
-                self._maps[place+1] = newMatrixAtPlacePlus1.dict()
+            matrixAtPlacePlus1 = matrix(self.maps(place+1)).transpose()
+            if matrixAtPlacePlus1.ncols() > 0:
+                newMatrixAtPlacePlus1 = matrixAtPlacePlus1.delete_columns([target])
+                self._maps[place+1] = newMatrixAtPlacePlus1.transpose().dict()
 
         #Finally we do a cleanup
         self.cleanUp()
