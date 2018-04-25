@@ -78,6 +78,20 @@ class ProjectiveComplex(object):
                 return False
 
         return True
+
+    def directSum(self, Q):
+        R = Q.copy()
+        smallest = min(self._objects.keys())
+        largest = max(self._objects.keys())
+
+        for i in range(smallest, largest+1):
+            R.objects(i).extend(self.objects(i))
+        for k in range(smallest, largest):
+            lk, lkplusone = len(Q.objects(k)), len(Q.objects(k+1))
+            kmaps = self.maps(k)
+            for (p,q) in kmaps:
+                R.maps(i)[(p+lk,q+lkplusone)] = kmaps[(p,q)]
+        return R.cleanup()
     
     def minimizeAt(self, place):
         # Assumption: all non-zero maps of degree 0 are isomorphisms
