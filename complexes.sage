@@ -1,11 +1,17 @@
 class ProjectiveComplex(object):
-    def __init__(self, basering, objects = {}, maps = {}):
+    def __init__(self, basering, objects = {}, maps = {}, names={}):
         # Put checks to make sure the maps are well-defined
         # and they form a complex.
         self._objects = objects.copy()
         self._maps = maps.copy()
-        self._names = {}
+        self._names = names.copy()
         self._basering = basering
+        if len(objects.keys()) > 0:
+            self._minIndex = min(objects.keys())
+            self._maxIndex = max(objects.keys())
+        else:
+            self._minIndex = 0
+            self._maxIndex = 0
 
     def __str__(self):
         ks = self._objects.keys()
@@ -28,11 +34,21 @@ class ProjectiveComplex(object):
     def __repr__(self):
         return str(self)
 
-    def objects(self, i):
+    def minIndex(self):
+        return self._minIndex
+
+    def maxIndex(self):
+        return self._maxIndex
+
+    def objects(self, i = None):
         return list(self._objects.get(i, []))
 
     def maps(self, i):
         return self._maps.get(i, {}).copy()
+
+    def copy(self):
+        return ProjectiveComplex(self._basering, self._objects, self._maps, self._names):
+        
 
     def addObject(self, place, obj, name = None):
         if place not in self._objects:
@@ -44,6 +60,9 @@ class ProjectiveComplex(object):
 
         if name != None:
             self._names[hash(obj)] = name
+
+        self._minIndex = min(place, self._minIndex)
+        self._maxIndex = max(place, self._maxIndex)
         
     def cleanUp(self):
         for i in self._objects.keys():
