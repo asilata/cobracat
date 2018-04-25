@@ -112,10 +112,10 @@ class ProjectiveComplex(object):
             
         for k in range(smallest, largest):
             maps[k] = self.maps(k)
-            l,w = len(self.objects(i)), len(self.objects(i+1))
+            l,w = len(self.objects(k)), len(self.objects(k+1))
             for (p,q) in Q.maps(k):
                 maps[k][(p+l,q+w)] = Q.maps(k)[(p,q)]
-        return ProjectiveComplex(self._basering, objs, maps)
+        return ProjectiveComplex(self._basering, objs, maps, names)
                       
     def minimizeAt(self, place):
         # Assumption: all non-zero maps of degree 0 are isomorphisms

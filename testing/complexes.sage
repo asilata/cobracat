@@ -24,3 +24,5 @@ P = ProjectiveComplex(k, {0: [F, F], 1:[F]}, {0:matrix([[1, -1]]).dict()}, {F: '
 Map = {0: (3*identity_matrix(2)).dict(), 1:(3*identity_matrix(1)).dict()}
 Trap = {0: (3*identity_matrix(2)).dict(), 1:(2*identity_matrix(1)).dict()}
 
+# Test for direct sum.
+Q = ProjectiveComplex(k, {-2: [F, F, F], -1:[F], 1: [F]}, {-2:matrix([[2,3,1]]).dict()}, {})
