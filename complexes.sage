@@ -76,11 +76,28 @@ class ProjectiveComplex(object):
         self._maxIndex = max(place, self._maxIndex)
         
     def cleanUp(self):
-        for i in self._objects.keys():
+        # Remove maps
+        for i in self._maps.keys():
             for k in self._maps[i].keys():
                 if self._maps[i][k] == 0:
                     self._maps[i].pop(k)
+        # Remove objects
+        for i in self._objects.keys():
+            if self._objects[i] == []:
+                self._objects.pop(i)
+
+        if len(self._objects.keys()) > 0:
+            self._minIndex = min(self._objects.keys())
+            self._maxIndex = max(self._objects.keys())
+        else:
+            self._minIndex = 0
+            self._maxIndex = 0
+
+    def minimize(self):
+        for i in range(self.minIndex(), self.maxIndex()):
+            self.minimizeAt(i)
         
+
     def addMap(self, place, i, j, scalar):
         # All actions are right actions!
         if i < 0 or i >= len(self.objects(place)):
@@ -93,16 +110,13 @@ class ProjectiveComplex(object):
         self._maps[place][(i,j)] = self._basering(scalar)
 
     def checkComplexity(self):
-        smallest = min(self._objects.keys())
-        largest = max(self._objects.keys())
-
         matrices = {}
-        for i in range(smallest, largest):
+        for i in range(self.minIndex(), self.maxIndex()):
             sourceDim = len(self._objects.get(i, []))
             targetDim = len(self._objects.get(i+1, []))
-            matrices[i] = matrix(targetDim, sourceDim, self._maps.get(i, {})).transpose() # Right actions!
+            matrices[i] = matrix(sourceDim, targetDim, self._maps.get(i, {}))
 
-        for i in range(smallest, largest-1):
+        for i in range(self.minIndex(), self.maxIndex()-1):
             if matrices[i] * matrices[i+1] != 0:
                 print "Differential squared not zero at " + str(i) + "."
                 return False
@@ -110,6 +124,7 @@ class ProjectiveComplex(object):
         return True
 
     def directSum(self, Q):
+        # By convention, the objects of Q go after the objects of self, in order.
         objs, maps = {}, {}
         names = self.names()
         names.update(Q.names())
@@ -136,7 +151,7 @@ class ProjectiveComplex(object):
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
                     fij = self.maps(place).get((i,j), self._basering(0))
-                    if fij != 0 and fij.degree() == 0:
+                    if fij.is_unit():
                         return i,j, fij
             return None, None, None
 
@@ -181,32 +196,44 @@ class ProjectiveComplex(object):
             self._objects[place+1].pop(target)
 
             # and re-index as needed
-            matrixAtPlace = matrix(self.maps(place)).transpose() # Right action!
-            newMatrixAtPlace = matrixAtPlace.delete_columns([source]).delete_rows([target])
-            self._maps[place] = newMatrixAtPlace.transpose().dict()
+            matrixAtPlace = matrix(len(self.objects(place))+1, len(self.objects(place+1))+1, self.maps(place))
+            newMatrixAtPlace = matrixAtPlace.delete_rows([source]).delete_columns([target])
+            self._maps[place] = newMatrixAtPlace.dict()
 
-            matrixAtPlaceMinus1 = matrix(self.maps(place-1)).transpose()
-            if matrixAtPlaceMinus1.nrows() > 0:
-                newMatrixAtPlaceMinus1 = matrixAtPlaceMinus1.delete_rows([source])
-                self._maps[place-1] = newMatrixAtPlaceMinus1.transpose().dict()
+            matrixAtPlaceMinus1 = matrix(len(self.objects(place-1)), len(self.objects(place))+1, self.maps(place-1))
+            if matrixAtPlaceMinus1.ncols() > 0:
+                newMatrixAtPlaceMinus1 = matrixAtPlaceMinus1.delete_columns([source])
+                self._maps[place-1] = newMatrixAtPlaceMinus1.dict()
 
-            matrixAtPlacePlus1 = matrix(self.maps(place+1)).transpose()
-            if matrixAtPlacePlus1.ncols() > 0:
-                newMatrixAtPlacePlus1 = matrixAtPlacePlus1.delete_columns([target])
-                self._maps[place+1] = newMatrixAtPlacePlus1.transpose().dict()
+            matrixAtPlacePlus1 = matrix(len(self.objects(place+1))+1, len(self.objects(place+2)) ,self.maps(place+1))
+            if matrixAtPlacePlus1.nrows() > 0:
+                newMatrixAtPlacePlus1 = matrixAtPlacePlus1.delete_rows([target])
+                self._maps[place+1] = newMatrixAtPlacePlus1.dict()
 
         #Finally we do a cleanup
         self.cleanUp()
         return 
 
+def cone(P, Q, M):
+    if not checkMap(P, Q, M):
+        raise TypeError("Not a chain map. Cannot make a cone.")
+    
+    D = P.directSum(Q.shift(-1))
+    for place in M.keys():
+        for (i,j) in M[place]:
+            D.addMap(place, i, j+len(P.objects(place+1)), M[place][(i,j)])
+
+    return D
+    
+
 def checkMap(P, Q, M):
     minIndex = min(P.minIndex(), Q.minIndex())
     maxIndex = max(P.maxIndex(), Q.maxIndex())
     for i in range(minIndex, maxIndex):
-        dPi = matrix(P.maps(i)).transpose() #Right action!
-        dQi = matrix(Q.maps(i)).transpose()
-        Mi = matrix(len(Q.objects(i)), len(P.objects(i)), M[i]).transpose()
-        Mip1 = matrix(len(Q.objects(i+1)), len(P.objects(i+1)), M[i+1]).transpose()
+        dPi = matrix(P.maps(i))
+        dQi = matrix(Q.maps(i))
+        Mi = matrix(len(Q.objects(i)), len(P.objects(i)), M[i])
+        Mip1 = matrix(len(Q.objects(i+1)), len(P.objects(i+1)), M[i+1])
         if dPi * Mip1 != Mi * dQi:
             return False
     return True
