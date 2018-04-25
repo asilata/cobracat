@@ -25,4 +25,6 @@ Map = {0: (3*identity_matrix(2)).dict(), 1:(3*identity_matrix(1)).dict()}
 Trap = {0: (3*identity_matrix(2)).dict(), 1:(2*identity_matrix(1)).dict()}
 
 # Test for direct sum.
-Q = ProjectiveComplex(k, {-2: [F, F, F], -1:[F], 1: [F]}, {-2:matrix([[2,3,1]]).dict()}, {})
+Q = ProjectiveComplex(k, {-2: [F, F, F], -1:[F], 1: [F]}, {-2:matrix([[2,3,1]]).dict()}, {F:'F'})
+Q2 = Q.shift(2)
+Qm2 = Q.shift(-2)

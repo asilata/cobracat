@@ -49,6 +49,15 @@ class ProjectiveComplex(object):
     def names(self):
         return self._names.copy()
 
+    def shift(self, n = 1):
+        def shiftDict(d, n):
+            return {x-n: d[x] for x in d.keys()}
+        return ProjectiveComplex(self._basering,
+                                 {x-n: self._objects[x] for x in self._objects.keys()},
+                                 {x-n: {k: (-1)^n * self._maps[x][k] for k in self._maps[x].keys()}
+                                  for x in self._maps.keys()},
+                                 self._names)
+
     def copy(self):
         return ProjectiveComplex(self._basering, self._objects, self._maps, self._names)
 
