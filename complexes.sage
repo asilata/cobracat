@@ -26,7 +26,7 @@ class ProjectiveComplex(object):
             if len(objects) == 0:
                 s = s + "0"
             else:
-                s = s + "+".join([self._names[hash(x)] if hash(x) in self._names else str(x) for x in objects])
+                s = s + "+".join([self._names[x] if x in self._names else str(x) for x in objects])
             if i < largest:
                 s = s + " → "
         return s
@@ -47,7 +47,7 @@ class ProjectiveComplex(object):
         return self._maps.get(i, {}).copy()
 
     def copy(self):
-        return ProjectiveComplex(self._basering, self._objects, self._maps, self._names):
+        return ProjectiveComplex(self._basering, self._objects, self._maps, self._names)
         
 
     def addObject(self, place, obj, name = None):
@@ -59,7 +59,7 @@ class ProjectiveComplex(object):
             self._maps[place] = {}
 
         if name != None:
-            self._names[hash(obj)] = name
+            self._names[obj] = name
 
         self._minIndex = min(place, self._minIndex)
         self._maxIndex = max(place, self._maxIndex)
