@@ -26,7 +26,7 @@ class ProjectiveComplex(object):
             if len(objects) == 0:
                 s = s + "0"
             else:
-                s = s + "+".join([self._names[x] if x in self._names else str(x) for x in objects])
+                s = s + "+".join([self._names[x] if x in self._names.keys() else str(x) for x in objects])
             if i < largest:
                 s = s + " → "
         return s
