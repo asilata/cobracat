@@ -26,7 +26,7 @@ class ProjectiveComplex(object):
             if len(objects) == 0:
                 s = s + "0"
             else:
-                s = s + "+".join([self._names[hash(x)] if hash(x) in self._names else str(x) for x in objects])
+                s = s + "+".join([self._names[x] if x in self._names else str(x) for x in objects])
             if i < largest:
                 s = s + " → "
         return s
@@ -50,7 +50,7 @@ class ProjectiveComplex(object):
         return self._names.copy()
 
     def copy(self):
-        return ProjectiveComplex(self._basering, self._objects, self._maps, self._names)        
+        return ProjectiveComplex(self._basering, self._objects, self._maps, self._names)
 
     def addObject(self, place, obj, name = None):
         if place not in self._objects:
@@ -61,7 +61,7 @@ class ProjectiveComplex(object):
             self._maps[place] = {}
 
         if name != None:
-            self._names[hash(obj)] = name
+            self._names[obj] = name
 
         self._minIndex = min(place, self._minIndex)
         self._maxIndex = max(place, self._maxIndex)
@@ -190,3 +190,16 @@ class ProjectiveComplex(object):
         self.cleanUp()
         return 
 
+    def checkMap(P, Q, M):
+        minIndex = min(P.minIndex(), Q.minIndex())
+        maxIndex = max(P.maxIndex(), Q.maxIndex())
+        for i in range(minIndex, maxIndex):
+            dPi = matrix(P.maps(i)).transpose() #Right action!
+            dQi = matrix(Q.maps(i)).transpose()
+            Mi = matrix(len(Q.objects(i)), len(P.objects(i)), M[i]).transpose()
+            Mip1 = matrix(len(Q.objects(i+1)), len(P.objects(i+1)), M[i+1]).transpose()
+            if dPi * Mip1 != Mi * dQi:
+                return False
+        return True
+    
+    
