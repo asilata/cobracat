@@ -46,9 +46,11 @@ class ProjectiveComplex(object):
     def maps(self, i):
         return self._maps.get(i, {}).copy()
 
+    def names(self):
+        return self._names.copy()
+
     def copy(self):
-        return ProjectiveComplex(self._basering, self._objects, self._maps, self._names):
-        
+        return ProjectiveComplex(self._basering, self._objects, self._maps, self._names)        
 
     def addObject(self, place, obj, name = None):
         if place not in self._objects:
@@ -99,19 +101,22 @@ class ProjectiveComplex(object):
         return True
 
     def directSum(self, Q):
-        R = Q.copy()
-        smallest = min(self._objects.keys())
-        largest = max(self._objects.keys())
+        objs, maps = {}, {}
+        names = self.names()
+        names.update(Q.names())
+        smallest = min([self.minIndex(),Q.minIndex()])
+        largest = max([self.maxIndex(),Q.maxIndex()])
 
-        for i in range(smallest, largest+1):
-            R.objects(i).extend(self.objects(i))
+        for i in range(smallest, largest + 1):
+            objs[i] = self.objects(i) + Q.objects(i)
+            
         for k in range(smallest, largest):
-            lk, lkplusone = len(Q.objects(k)), len(Q.objects(k+1))
-            kmaps = self.maps(k)
-            for (p,q) in kmaps:
-                R.maps(i)[(p+lk,q+lkplusone)] = kmaps[(p,q)]
-        return R.cleanup()
-    
+            maps[k] = self.maps(k)
+            l,w = len(self.objects(i)), len(self.objects(i+1))
+            for (p,q) in Q.maps(k):
+                maps[k][(p+l,q+w)] = Q.maps(k)[(p,q)]
+        return ProjectiveComplex(self._basering, objs, maps)
+                      
     def minimizeAt(self, place):
         # Assumption: all non-zero maps of degree 0 are isomorphisms
         k = self._basering.base_ring()
