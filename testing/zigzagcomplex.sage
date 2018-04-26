@@ -1,24 +1,16 @@
 load("../complexes.sage")
 load("../zigzagalgebra.sage")
+load("../zigzagmodules.sage")
+load("../braidactions.sage")
 
-a2 = make_test(a2graph)
-R = a2['Z']
-F = 'P1'
-x = R.gens()[2]
+a3 = make_test(a3graph)
+R = a3['Z']
+F = ZigZagModule(R, 1, name = "P1")
 
 P = ProjectiveComplex(R)
-P.addObject(0,F)
-P.addObject(1,F)
-P.addObject(1,F)
-P.addObject(-3,F)
-P.addMap(0,0,0,3)
-#P.checkComplexity()
-#P.addMap(0, 0, 1, 1)
-#P.addObject(0, F)
-#P.addObject(0, F)
-#P.addObject(1, F)
-#P.addMap(0,0,1,2)
-#P.addMap(0,1,1,1)
-#P.checkComplexity()
+P.addObject(0, F)
+Q1 = sigmaInverseComplex(R, 2, P)
+Q2 = sigmaInverseComplex(R, 2, Q1)
+
 
 

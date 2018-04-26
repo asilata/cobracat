@@ -1,14 +1,14 @@
 class ZigZagModule(object):
-'''
-Projective (left) modules over the Zigzag algebra
-'''
+    '''
+    Projective (left) modules over the Zigzag algebra
+    '''
     def __init__(self, R, i, twist = 0, name="P"):
         '''
         The projective module P = R*e, where e is the i-th idempotent in R.idempotents()
         '''
         self._ring = R
         self._i = i
-        self._idempotent = R.idempotents()[i-i]  # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
+        self._idempotent = R.idempotents()[i-1]  # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
         self._twist = twist
         self._name = name
 

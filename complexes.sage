@@ -197,7 +197,7 @@ class ProjectiveComplex(object):
 
         for i in range(smallest, largest + 1):
             objs[i] = self.objects(i) + Q.objects(i)
-            
+
         for k in range(smallest, largest):
             maps[k] = self.maps(k)
             l,w = len(self.objects(k)), len(self.objects(k+1))
@@ -302,11 +302,12 @@ def checkMap(P, Q, M):
     minIndex = min(P.minIndex(), Q.minIndex())
     maxIndex = max(P.maxIndex(), Q.maxIndex())
     for i in range(minIndex, maxIndex):
-        dPi = matrix(P.maps(i))
-        dQi = matrix(Q.maps(i))
-        Mi = matrix(len(Q.objects(i)), len(P.objects(i)), M[i])
-        Mip1 = matrix(len(Q.objects(i+1)), len(P.objects(i+1)), M[i+1])
+        dPi = matrix(len(P.objects(i)), len(P.objects(i+1)), P.maps(i))
+        dQi = matrix(len(Q.objects(i)), len(Q.objects(i+1)), Q.maps(i))
+        Mi = matrix(len(P.objects(i)), len(Q.objects(i)), M[i])
+        Mip1 = matrix(len(P.objects(i+1)), len(Q.objects(i+1)), M[i+1])
         for k, v in (dPi*Mip1 - Mi*dQi).dict().items():
+            print (k,v)
             if not P.objects(i)[k[0]].is_zero(v):
                 return False
     return True

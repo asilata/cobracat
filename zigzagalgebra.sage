@@ -31,6 +31,10 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     def idempotents(self):
         return self.basis()[0:len(self._path_semigroup.idempotents())]
 
+    def coeff(self, r, monomial):
+        i = self.basis().index(monomial)
+        return r.monomial_coefficients().get(i, 0)
+
     def arrows(self):
         return self.basis()[len(self._path_semigroup.idempotents()):len(self._path_semigroup.idempotents())+len(self._path_semigroup.arrows())]
 
@@ -106,6 +110,7 @@ class ZigZagIdeal(Ideal_nc):
             if eloops != []:
                 loops.append(self.reduce(eloops[0]))
         return loops
+
                 
     def _getIdempotent(self,v):
         vertices = self.ring().quiver().vertices()
@@ -115,6 +120,7 @@ class ZigZagIdeal(Ideal_nc):
             raise Exception("Vertex does not correspond to a unique idempotent!")
         else:
             return alist[0][1]
+
                 
 
 # Tests
