@@ -279,7 +279,8 @@ class ProjectiveComplex(object):
 
 def cone(P, Q, M):
     '''
-    The cone of M: P -> Q. M must define a map of chain complexes from P to Q.
+    The cone of M: P -> Q. 
+    M must define a map of chain complexes from P to Q.
     '''
     if not checkMap(P, Q, M):
         raise TypeError("Not a chain map. Cannot make a cone.")
