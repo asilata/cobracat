@@ -31,6 +31,30 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     def _repr_(self):
         return "Zig-zag algebra of {0} over {1}".format(self._path_semigroup.quiver(), self._base)
 
+    def idempotents(self):
+        return self.basis()[0:len(self._path_semigroup.idempotents())]
+
+    def arrows(self):
+        return self.basis()[len(self._path_semigroup.idempotents()):len(self._path_semigroup.idempotents())+len(self._path_semigroup.arrows())]
+
+    # Returns the degree of a homogeneous element.
+    def deg(self,a):
+        mons = a.monomials()
+        if mons == []:
+            return -1
+        degs = []
+        for x in mons:
+            if x in self.idempotents():
+                degs = degs + [0]
+            elif x in self.arrows():
+                degs = degs + [1]
+            else:
+                degs = degs + [2]
+        if len(uniq(degs)) == 1:
+            return degs[0]
+        else:
+            raise Exception("Element not homogeneous: " + str(a))
+
 # Returns the coefficients of x wrt the given basis, after reducing modulo the ideal I.
 def _getCoefficients(I, basis, x):
     R = I.ring()
