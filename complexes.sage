@@ -3,6 +3,7 @@
 # The homotopy category of projective complexes in sage
 #
 ############################################################
+
 class ProjectiveComplex(object):
     '''The class of ProjectiveComplexes over a ring (not necessarily
     commutative). A projective complex is a complex of projective objects. 
@@ -12,7 +13,11 @@ class ProjectiveComplex(object):
         Arguments -
         basering: Base ring (not necessarily commutative)
 
-        objects: A dictionary of type {i: [P]} where i is an integer and P is projective module over the base ring. The internal details of P are never used, so it may as well be a blob. But in all constructions, it will be used as if it were a projective module.
+        objects: A dictionary of type {i: [P]} where i is an integer and P is projective module over the base ring. A projective module can be anything that implements the following methods: 
+        (1) P.is_zero(r) : Is right multiplication by r the zero map on P?
+        (2) P.is_invertible(r): Is right multiplication by r an invertible map on P?
+        (3) P.invert(r): If right multiplication by r is invertible, return a ring element which acts as its inverse.
+        See the class ProjectiveModuleOverField for an example.
 
         maps: A dictionary of type {i: {(a,b): r}} where i is an integer, (a,b) is a pair of positive integers, and r is an element of basering. The key i represents the map from the i-th to (i+1)-th place of the complex. The pair (a,b) says that the map is from the a-th object in the list of objects at the i-th place to the b-th object in the list of objects at the (i+1)-th place. The value r says that the map is given by right multiplication by r. Currently, there is no provision to specify more complicated maps. 
 
@@ -211,7 +216,7 @@ class ProjectiveComplex(object):
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
                     fij = self.maps(place).get((i,j), self._basering(0))
-                    if fij.is_unit():
+                    if self.objects(place)[i].is_invertible(fij):
                         return i,j, fij
             return None, None, None
 
@@ -225,22 +230,13 @@ class ProjectiveComplex(object):
 
             # Change the maps from place to place+1
 
-            def invert(alpha):
-                try:
-                    return 1/alpha
-                except TypeError:
-                    try:
-                        return alpha.inverse()
-                    except AttributeError(e):
-                        raise e
-            
             newMapsPlace = {}
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
                     if (i,j) == (source, target):
                         changeij = 0
                     else:
-                        changeij = self.maps(place).get((i,target), 0) * invert(alpha) * self.maps(place).get((source,j), 0)
+                        changeij = self.maps(place).get((i,target), 0) * self.objects(place)[source].invert(alpha) * self.maps(place).get((source,j), 0)
                     newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) - changeij
 
 
@@ -305,4 +301,32 @@ def checkMap(P, Q, M):
             return False
     return True
     
+class ProjectiveModuleOverField(object):
+    ''''
+    The class of projective modules over a field (also known as vector spaces).
+    '''
+    def __init__(self, basefield, dimension):
+        if not basefield.is_field():
+            raise TypeError("Basefield not a field.")
+        if not dimension.is_integral() or dimension < 0:
+            raise TypeError("Invalid dimension.")
+        self._vsp = VectorSpace(basefield,dimension)
+
+    def __str__(self):
+        return self._vsp.__str__()
+
+    def __repr__(self):
+        return self._vsp.__repr__()
+
+    def is_zero(self, r):
+        return (r == 0)
+
+    def is_invertible(self, r):
+        return (r != 0)
     
+    def invert(self, r):
+        if r != 0:
+            return 1/r
+        else:
+            raise TypeError("Not invertible.")
+
