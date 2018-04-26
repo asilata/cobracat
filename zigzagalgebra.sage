@@ -28,6 +28,8 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         names = [str(x).replace('*','') for x in self._basis]
         super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
 
+    def _repr_(self):
+        return "Zig-zag algebra of {0} over {1}".format(self._path_semigroup.quiver(), self._base)
 
 # Returns the coefficients of x wrt the given basis, after reducing modulo the ideal I.
 def _getCoefficients(I, basis, x):
