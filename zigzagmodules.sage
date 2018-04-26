@@ -16,6 +16,9 @@ class ZigZagModule(object):
         return ZigZagModule(self._ring, self._i, self._twist, self._name)
         
     def twistBy(self, n = 1):
+        '''
+        Degree twist by n.
+        '''
         return ZigZagModule(self._ring, self._i, self._twist + n, self._name)
 
     def __repr__(self):
@@ -35,9 +38,15 @@ class ZigZagModule(object):
 
     # Here the module is supposed to be the left R-module Re, but the map is right multiplication by r.
     def is_zero(self, r):
+        '''
+        Is right multiplication by r the zero map on self?
+        '''
         return (self._idempotent * r == 0)
 
     def is_invertible(self, r):
+        '''
+        Is right multiplication by r an invertible map on self?
+        '''
         ir = self._idempotent * r
         if ir == 0:
             return False
@@ -49,6 +58,10 @@ class ZigZagModule(object):
         return (ir == multiple*self._idempotent)
 
     def invert(self, r):
+        '''
+        An element s in basering such that right multiplication by s is the inverse of right multiplication by r.
+        Assumes that right multiplication by r is invertible.
+        '''
         if not self.is_invertible(r):
             raise TypeError("Not invertible")
         else:
