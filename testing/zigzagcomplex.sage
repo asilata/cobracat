@@ -38,6 +38,6 @@ Q3 = sigmaInverse(R, 2, Q2)
 R1 = sigma(R, 1, P)
 R2 = sigma(R, 1, R1)
 
-C = s2(t1(s2(t1(s2(P)))))
+#C = s1(s1(s1(s1(s2(t1(s2(t1(s2(P)))))))))
 
 
