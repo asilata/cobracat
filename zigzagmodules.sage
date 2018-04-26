@@ -37,12 +37,14 @@ class ZigZagModule(object):
         return self._name
 
     # Here the module is supposed to be the left R-module Re, but the map is right multiplication by r.
+    @cached_method
     def is_zero(self, r):
         '''
         Is right multiplication by r the zero map on self?
         '''
         return (self._idempotent * r == 0)
 
+    @cached_method
     def is_invertible(self, r):
         '''
         Is right multiplication by r an invertible map on self?
@@ -57,6 +59,7 @@ class ZigZagModule(object):
 
         return (ir == multiple*self._idempotent)
 
+    @cached_method
     def invert(self, r):
         '''
         An element s in basering such that right multiplication by s is the inverse of right multiplication by r.
