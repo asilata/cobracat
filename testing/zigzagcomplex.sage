@@ -5,6 +5,7 @@ load("../braidactions.sage")
 
 a3 = make_test(a3graph)
 R = a3['Z']
+R.inject_variables()
 F = ZigZagModule(R, 1, name = "P1")
 
 P = ProjectiveComplex(R)
