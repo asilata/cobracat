@@ -1,4 +1,4 @@
-* Cobracat: Computation of Baid Actions on Categories 
+* Cobracat: Computation of Braid Actions on Categories 
 
 We implement braid group actions on the homotopy category of complexes of projective modules over the zig-zag algebra as defined in the article "Notes on link homology" by Asaeda and Khovanov.
 
