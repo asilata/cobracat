@@ -11,7 +11,11 @@ def sigma(Z, i, C):
     '''
     e = Z.idempotents()[i-1] # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
     Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
-    
+    pathsFromE = {}
+    for i in range(0, len(Z.idempotents())):
+        f = Z.idempotents()[i]
+        pathsFromE[i] = filter(lambda x: x != 0, [e * x * f for x in Z.basis()])
+
     # We now form a complex Q whose objects are shifts of copies of Pi 
     QObjects = {}
     mapsQtoC = {}
@@ -23,7 +27,7 @@ def sigma(Z, i, C):
         for i in range(0, len(C.objects(place))):
             p = C.objects(place)[i]
             f = p.idempotent()
-            EXF = filter(lambda x: x != 0, [e*x*f for x in Z.basis()])
+            EXF = pathsFromE[Z.idempotents().index(f)]
             EXFs[place][i] = EXF
             for k in range(0, len(EXF)):
                 monomial = EXF[k]
