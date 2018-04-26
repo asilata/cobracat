@@ -38,6 +38,33 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     def arrows(self):
         return self.basis()[len(self._path_semigroup.idempotents()):len(self._path_semigroup.idempotents())+len(self._path_semigroup.arrows())]
 
+    def loops(self):
+        return self.basis()[len(self._path_semigroup.idempotents()) + len(self._path_semigroup.arrows()):]
+
+    def source(self, b):
+        if b not in self.basis():
+            raise Exception("{0} is not a basis element.".format(b))
+        for e in self.idempotents():
+            if e * b != 0:
+                return e
+        raise Exception("Something went wrong: {0} does not seem to have a head.".format(b))
+
+    def target(self, b):
+        if b not in self.basis():
+            raise Exception("{0} is not a basis element.".format(b))
+        for e in self.idempotents():
+            if b * e != 0:
+                return e
+        raise Exception("Something went wrong: {0} does not seem to have a head.".format(b))
+    
+    def dualize(self, b):
+        if b not in self.basis():
+            raise Exception("{0} is not a basis element.".format(b))
+        s,t = self.source(b),self.target(b)
+        for c in self.basis():
+            if b * t * c * s in self.loops():
+                return c
+    
     # Returns the degree of a homogeneous element.
     def deg(self,a):
         mons = a.monomials()

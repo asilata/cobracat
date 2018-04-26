@@ -31,17 +31,22 @@ def sigmaInverseComplex(Z, i, C):
     # We now form a complex Q whose objects are shifts of copies of Pi 
     QObjects = {}
     mapsCtoQ = {}
+    EXFs = {}
     for place in range(C.minIndex(), C.maxIndex()+1):
         QObjects[place] = {}
         mapsCtoQ[place] = {}
+        EXFs[place] = {}
         for i in range(0, len(C.objects(place))):
             p = C.objects(place)[i]
             f = p.idempotent()
             EXF = filter(lambda x: x != 0, [e*x*f for x in Z.basis()])
+            EXFs[place][i] = EXF
+            dualPairs = [(path, Z.dualize(path)) for path in [x * e for x in Z.basis()] if path != 0]
+            dualPairsf = [(t, v*f) for (t,v) in dualPairs]
             for k in range(0, len(EXF)):
                 monomial = EXF[k]
-                QObjects[place][(i,k)] = Pi.twistBy(p.twist() + Z.deg(monomial))
-                mapsCtoQ[place][(i,k)] = monomial
+                QObjects[place][(i,k)] = Pi.twistBy(p.twist() + 2 - Z.deg(monomial))
+                mapsCtoQ[place][(i,k)] = sum([t * Z.coeff(Z(vf), monomial) for (t,vf) in dualPairsf])
 
     QMaps = {}
     for place in range(C.minIndex(), C.maxIndex()):
@@ -49,9 +54,9 @@ def sigmaInverseComplex(Z, i, C):
         for (i,k) in QObjects[place]:
             for (j, l) in QObjects[place+1]:
                 r = C.maps(place).get((i,j), 0)
-                targetMonomial = mapsCtoQ[place+1][(j,l)]
-                sourceMonomial = mapsCtoQ[place][(i,k)]
-                QMaps[place][((i,k), (j,l))] = Z.coeff(r * sourceMonomial, targetMonomial)
+                targetMonomial = EXFs[place+1][j][l]
+                sourceMonomial = EXFs[place][i][k]
+                QMaps[place][((i,k), (j,l))] = Z.coeff(sourceMonomial * r, targetMonomial)
 
     # Now flatten everything
     Q = ProjectiveComplex(Z)
