@@ -177,8 +177,9 @@ class ProjectiveComplex(object):
             matrices[i] = matrix(sourceDim, targetDim, self._maps.get(i, {}))
 
         for i in range(self.minIndex(), self.maxIndex()-1):
-            if matrices[i] * matrices[i+1] != 0:
-                print "Differential squared not zero at " + str(i) + "."
+            for k, v in (matrices[i] * matrices[i+1]).dict().items():
+                if not self.objects(i)[k[0]].is_zero(v):
+                    print "Differential squared not zero at " + str(i) + "."
                 return False
 
         return True
@@ -297,8 +298,9 @@ def checkMap(P, Q, M):
         dQi = matrix(Q.maps(i))
         Mi = matrix(len(Q.objects(i)), len(P.objects(i)), M[i])
         Mip1 = matrix(len(Q.objects(i+1)), len(P.objects(i+1)), M[i+1])
-        if dPi * Mip1 != Mi * dQi:
-            return False
+        for k, v in (dPi*Mip1 - Mi*dQi).dict().items():
+            if not P.objects(i)[k[0]].is_zero(v):
+                return False
     return True
     
 class ProjectiveModuleOverField(object):
