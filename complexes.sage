@@ -95,8 +95,6 @@ class ProjectiveComplex(object):
         '''
         A new complex obtained by homologically shifting self by [n].
         '''
-        def shiftDict(d, n):
-            return {x-n: d[x] for x in d.keys()}
         return ProjectiveComplex(self._basering,
                                  {x-n: self._objects[x] for x in self._objects.keys()},
                                  {x-n: {k: (-1)^n * self._maps[x][k] for k in self._maps[x].keys()}
@@ -285,10 +283,10 @@ def cone(P, Q, M):
     '''
     if not checkMap(P, Q, M):
         raise TypeError("Not a chain map. Cannot make a cone.")
-    
+
     D = P.directSum(Q.shift(-1))
     for place in M.keys():
-        for (i,j) in M[place]:
+        for (i,j) in M.get(place,{}):
             D.addMap(place, i, j+len(P.objects(place+1)), M[place][(i,j)])
 
     return D
@@ -299,15 +297,15 @@ def checkMap(P, Q, M):
     Check that M defines a map of chain complexes from P to Q.
     M must have the type {i: d} where i is an integer and d is a dictionary {(a,b): r} whose associated matrix defines the map from P to Q (by right multiplication).
     '''
+
     minIndex = min(P.minIndex(), Q.minIndex())
     maxIndex = max(P.maxIndex(), Q.maxIndex())
     for i in range(minIndex, maxIndex):
         dPi = matrix(len(P.objects(i)), len(P.objects(i+1)), P.maps(i))
         dQi = matrix(len(Q.objects(i)), len(Q.objects(i+1)), Q.maps(i))
-        Mi = matrix(len(P.objects(i)), len(Q.objects(i)), M[i])
-        Mip1 = matrix(len(P.objects(i+1)), len(Q.objects(i+1)), M[i+1])
+        Mi = matrix(len(P.objects(i)), len(Q.objects(i)), M.get(i,{}))
+        Mip1 = matrix(len(P.objects(i+1)), len(Q.objects(i+1)), M.get(i+1,{}))
         for k, v in (dPi*Mip1 - Mi*dQi).dict().items():
-            print (k,v)
             if not P.objects(i)[k[0]].is_zero(v):
                 return False
     return True
