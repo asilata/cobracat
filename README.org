@@ -1,4 +1,4 @@
-* COmputation of BRaid Actions on CATegories
+* Cobracat: Computation of Baid Actions on Categories 
 
 We implement braid group actions on the homotopy category of complexes of projective modules over the zig-zag algebra as defined in the article "Notes on link homology" by Asaeda and Khovanov.
 
@@ -6,7 +6,7 @@ This is what the various files do.
 
 ** complexes.sage
 
-Defines the sage class `ProjectiveComplex` for complexes of projective modules over a possibly non-commutative but finite dimensional (finite length) algebra over a field.
+Defines the sage class for complexes of projective modules over a possibly non-commutative but finite dimensional (finite length) algebra over a field.
 
 ** zigzagalgebra.sage
 
