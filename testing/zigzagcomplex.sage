@@ -1,24 +1,44 @@
 load("../complexes.sage")
 load("../zigzagalgebra.sage")
+load("../zigzagmodules.sage")
+load("../braidactions.sage")
 
-a2 = make_test(a2graph)
-R = a2['Z']
-F = 'P1'
-x = R.gens()[2]
+a3 = make_test(a3graph)
+R = a3['Z']
+R.inject_variables()
+F = ZigZagModule(R, 1, name = "P1")
 
 P = ProjectiveComplex(R)
-P.addObject(0,F)
-P.addObject(1,F)
-P.addObject(1,F)
-P.addObject(-3,F)
-P.addMap(0,0,0,3)
-#P.checkComplexity()
-#P.addMap(0, 0, 1, 1)
-#P.addObject(0, F)
-#P.addObject(0, F)
-#P.addObject(1, F)
-#P.addMap(0,0,1,2)
-#P.addMap(0,1,1,1)
-#P.checkComplexity()
+P.addObject(0, F)
+
+def s1(C):
+    D = sigma(R, 1, C)
+    D.minimize()
+    return D
+
+def s2(C):
+    D = sigma(R, 2, C)
+    D.minimize()
+    return D
+
+def t1(C):
+    D = sigmaInverse(R, 1, C)
+    D.minimize()
+    return D
+
+def t2(C):
+    D = sigmaInverse(R, 2, C)
+    D.minimize()
+    return D
+
+Q1 = sigmaInverse(R, 2, P)
+Q2 = sigmaInverse(R, 2, Q1)
+Q2.minimize()
+Q3 = sigmaInverse(R, 2, Q2)
+
+R1 = sigma(R, 1, P)
+R2 = sigma(R, 1, R1)
+
+C = s2(t1(s2(t1(s2(P)))))
 
 

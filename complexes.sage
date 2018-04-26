@@ -95,8 +95,6 @@ class ProjectiveComplex(object):
         '''
         A new complex obtained by homologically shifting self by [n].
         '''
-        def shiftDict(d, n):
-            return {x-n: d[x] for x in d.keys()}
         return ProjectiveComplex(self._basering,
                                  {x-n: self._objects[x] for x in self._objects.keys()},
                                  {x-n: {k: (-1)^n * self._maps[x][k] for k in self._maps[x].keys()}
@@ -197,7 +195,7 @@ class ProjectiveComplex(object):
 
         for i in range(smallest, largest + 1):
             objs[i] = self.objects(i) + Q.objects(i)
-            
+
         for k in range(smallest, largest):
             maps[k] = self.maps(k)
             l,w = len(self.objects(k)), len(self.objects(k+1))
@@ -213,20 +211,13 @@ class ProjectiveComplex(object):
         
         # Find an object at i and an object at (i+1) with an isomorphism between them.
         def _findIso(place):
-            def invertible(alpha):
-                try:
-                    return alpha.is_unit()
-                except NotImplementedError:
-                    try:
-                        return alpha.is_invertible()
-                    except Exception(e):
-                        raise e
-            
-            for i in range(0, len(self.objects(place))):
-                for j in range(0, len(self.objects(place+1))):
-                    fij = self.maps(place).get((i,j), self._basering(0))
-                    if self.objects(place)[i].is_invertible(fij):
-                        return i,j, fij
+            maps = self.maps(place)
+            objects = self.objects(place)
+            zero = self._basering(0)
+            for (i,j) in maps:
+                fij = maps.get((i,j), zero)
+                if objects[i].is_invertible(fij):
+                    return i, j, fij
             return None, None, None
 
         alreadyMinimized = False
@@ -240,20 +231,19 @@ class ProjectiveComplex(object):
             # Change the maps from place to place+1
 
             newMapsPlace = {}
+            alphaInverse = self.objects(place)[source].invert(alpha)
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
                     if (i,j) == (source, target):
                         changeij = 0
                     else:
-                        changeij = self.maps(place).get((i,target), 0) * self.objects(place)[source].invert(alpha) * self.maps(place).get((source,j), 0)
+                        changeij = self.maps(place).get((i,target), 0) * alphaInverse * self.maps(place).get((source,j), 0)
                     newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) - changeij
 
 
             # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
             # Now we update the maps
-            for i in range(0, len(self.objects(place))):
-                for j in range(0, len(self.objects(place+1))):
-                    self._maps[place][(i,j)] = newMapsPlace[(i,j)]
+            self._maps[place] = newMapsPlace
 
             # At this point, our complex is a direct sum of F (source) -> F (target) and another complex
             # We simply drop the source and the target
@@ -281,14 +271,15 @@ class ProjectiveComplex(object):
 
 def cone(P, Q, M):
     '''
-    The cone of M: P -> Q. M must define a map of chain complexes from P to Q.
+    The cone of M: P -> Q. 
+    M must define a map of chain complexes from P to Q.
     '''
     if not checkMap(P, Q, M):
         raise TypeError("Not a chain map. Cannot make a cone.")
-    
+
     D = P.directSum(Q.shift(-1))
     for place in M.keys():
-        for (i,j) in M[place]:
+        for (i,j) in M.get(place,{}):
             D.addMap(place, i, j+len(P.objects(place+1)), M[place][(i,j)])
 
     return D
@@ -299,13 +290,14 @@ def checkMap(P, Q, M):
     Check that M defines a map of chain complexes from P to Q.
     M must have the type {i: d} where i is an integer and d is a dictionary {(a,b): r} whose associated matrix defines the map from P to Q (by right multiplication).
     '''
+
     minIndex = min(P.minIndex(), Q.minIndex())
     maxIndex = max(P.maxIndex(), Q.maxIndex())
     for i in range(minIndex, maxIndex):
-        dPi = matrix(P.maps(i))
-        dQi = matrix(Q.maps(i))
-        Mi = matrix(len(Q.objects(i)), len(P.objects(i)), M[i])
-        Mip1 = matrix(len(Q.objects(i+1)), len(P.objects(i+1)), M[i+1])
+        dPi = matrix(len(P.objects(i)), len(P.objects(i+1)), P.maps(i))
+        dQi = matrix(len(Q.objects(i)), len(Q.objects(i+1)), Q.maps(i))
+        Mi = matrix(len(P.objects(i)), len(Q.objects(i)), M.get(i,{}))
+        Mip1 = matrix(len(P.objects(i+1)), len(Q.objects(i+1)), M.get(i+1,{}))
         for k, v in (dPi*Mip1 - Mi*dQi).dict().items():
             if not P.objects(i)[k[0]].is_zero(v):
                 return False
