@@ -39,3 +39,29 @@ class ZigZagModule(object):
             d = R.deg(t) + self.twist() + other.twist()
             answer[d] = answer.get(d, 0) + 1
         return answer
+
+    # Here the module is supposed to be the left R-module Ri, but the map is right multiplication by r.
+    def is_zero(self, r):
+        return (self._idempotent * r == 0)
+
+    def is_invertible(self, r):
+        ir = self._idempotent * r
+        if ir == 0:
+            return False
+
+        c = ir.coefficients(sort=True)[0]
+        d = self._idempotent.coefficients(sort=True)[0]
+        multiple = c/d
+
+        return (ir == multiple*self._idempotent)
+
+    def invert(self, r):
+        if not self.is_invertible(r):
+            raise TypeError("Not invertible")
+        else:
+            ir = self._idempotent * r
+            c = ir.coefficients(sort=True)[0]
+            d = self._idempotent.coefficients(sort=True)[0]
+            multiple = c/d
+            return d/c * self._idempotent
+        
