@@ -62,7 +62,11 @@ def sigma(Z, i, C):
 def sigmaInverse(Z, i, C):
     e = Z.idempotents()[i-1] # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
     Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
-    
+    pathsFromE = {}
+    for i in range(0, len(Z.idempotents())):
+        f = Z.idempotents()[i]
+        pathsFromE[i] = filter(lambda x: x != 0, [e * x * f for x in Z.basis()])
+
     # We now form a complex Q whose objects are shifts of copies of Pi 
     QObjects = {}
     mapsCtoQ = {}
@@ -74,7 +78,7 @@ def sigmaInverse(Z, i, C):
         for i in range(0, len(C.objects(place))):
             p = C.objects(place)[i]
             f = p.idempotent()
-            EXF = filter(lambda x: x != 0, [e*x*f for x in Z.basis()])
+            EXF = pathsFromE[Z.idempotents().index(f)]
             EXFs[place][i] = EXF
             dualPairs = [(path, Z.dualize(path)) for path in [x * e for x in Z.basis()] if path != 0]
             dualPairsf = [(t, v*f) for (t,v) in dualPairs]
