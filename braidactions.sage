@@ -1,4 +1,14 @@
 def sigma(Z, i, C):
+    '''The spherical twist corresponding to the i-th projective module of
+    the ZigZagAlgebra Z.
+
+    More explicitly, let Pi = Z * Z.idempotents()[i]. Consider the map
+    K of bimodules Z -> Pi tensor_k iP. Then sigma(Z, i, C) is the
+    cone over the map of complexes obtained by tensoring K by C.
+
+    sigma(Z, i, C) = Cone(P_i tensor_k iP tensor C -> C)[1]
+
+    '''
     e = Z.idempotents()[i-1] # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
     Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
     
@@ -56,6 +66,16 @@ def sigma(Z, i, C):
     
 
 def sigmaInverse(Z, i, C):
+    '''The inverse spherical twist corresponding to the i-th projective
+    module of the ZigZagAlgebra Z.
+
+    More explicitly, let Pi = Z * Z.idempotents()[i]. Consider the map
+    K of bimodules Z -> Pi tensor_k iP. Then sigmaInverse(Z, i, C) is
+    the cone over the map of complexes obtained by tensoring K by C.
+
+    sigmaInverse(Z, i, C) = Cone(C -> P_i tensor_k iP tensor C)
+
+    '''
     e = Z.idempotents()[i-1] # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
     Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
     
