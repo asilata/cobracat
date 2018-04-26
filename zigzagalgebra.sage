@@ -29,12 +29,14 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     def _repr_(self):
         return "Zig-zag algebra of {0} over {1}".format(self._path_semigroup.quiver(), self._base)
 
+    @cached_method
     def idempotents(self):
         '''
         The list of idempotents of self.
         '''
         return self.basis()[0:len(self._path_semigroup.idempotents())]
 
+    @cached_method
     def coeff(self, r, monomial):
         '''
         The coefficient of monomial in the expansion of r in the basis. 
@@ -43,18 +45,21 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         i = self.basis().index(monomial)
         return r.monomial_coefficients().get(i, 0)
 
+    @cached_method
     def arrows(self):
         '''
         The list of elements of this algebra representing the arrows in the underlying (doubled) quiver.
         '''
         return self.basis()[len(self._path_semigroup.idempotents()):len(self._path_semigroup.idempotents())+len(self._path_semigroup.arrows())]
 
+    @cached_method
     def loops(self):
         '''
         The list of elements of this algebra representing the loops. Note that there is a unique loop at every vertex.
         '''
         return self.basis()[len(self._path_semigroup.idempotents()) + len(self._path_semigroup.arrows()):]
 
+    @cached_method
     def source(self, b):
         '''
         The idempotent corresponding to the source vertex of the arrow represented by b.
@@ -66,6 +71,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
                 return e
         raise Exception("Something went wrong: {0} does not seem to have a head.".format(b))
 
+    @cached_method
     def target(self, b):
         '''
         The idempotent corresponding to the target vertex of the arrow represented by b.
@@ -76,7 +82,8 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
             if b * e != 0:
                 return e
         raise Exception("Something went wrong: {0} does not seem to have a head.".format(b))
-    
+
+    @cached_method
     def dualize(self, b):
         '''
         The element a such that a*b and b*a are both loops. Note that deg(a) + deg(b) = 2.
@@ -90,6 +97,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
                 return c
     
     # Returns the degree of a homogeneous element.
+    @cached_method    
     def deg(self,a):
         '''
         Degree of a, assuming a is homogeneous.
@@ -118,7 +126,6 @@ def _getCoefficients(I, basis, x):
     R = I.ring()
     coeffDict = {R(k):v for k,v in R(I.reduce(x)).monomial_coefficients().items()}
     return [coeffDict.get(b,0) for b in basis]
-
 
 def _getMatrix(I, basis, x):
     '''
@@ -151,7 +158,8 @@ class ZigZagIdeal(Ideal_nc):
                 else:
                     relations.extend(eTof) # Kill all length 2 paths starting and ending at different vertices.
         Ideal_nc.__init__(self, R, relations)
-        
+
+    @cached_method
     def reduce(self,x):
         R = self.ring()
         monomials = x.sort_by_vertices()
@@ -165,6 +173,7 @@ class ZigZagIdeal(Ideal_nc):
                 reduction = reduction + add([c*l for m,c in z if len(m) == 2]) # Then add up copies of this chosen loop.
         return reduction
 
+    @cached_method
     def loops(self):
         R = self.ring()
         loops = []
@@ -174,7 +183,7 @@ class ZigZagIdeal(Ideal_nc):
                 loops.append(self.reduce(eloops[0]))
         return loops
 
-                
+    @cached_method                
     def _getIdempotent(self,v):
         vertices = self.ring().quiver().vertices()
         idempotents = self.ring().idempotents()
