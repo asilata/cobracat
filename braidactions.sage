@@ -111,10 +111,4 @@ def sigmaInverse(Z, i, C):
         for (i,k) in QObjects[place].keys():
             M[place][(i, keyDict[place][(i,k)])] = mapsCtoQ[place][(i,k)]
 
-    print C
-    print C.maps(0)
-    print Q
-    print Q.maps(0)
-    print M
-    
     return cone(C, Q, M)
