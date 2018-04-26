@@ -211,20 +211,13 @@ class ProjectiveComplex(object):
         
         # Find an object at i and an object at (i+1) with an isomorphism between them.
         def _findIso(place):
-            def invertible(alpha):
-                try:
-                    return alpha.is_unit()
-                except NotImplementedError:
-                    try:
-                        return alpha.is_invertible()
-                    except Exception(e):
-                        raise e
-            
-            for i in range(0, len(self.objects(place))):
-                for j in range(0, len(self.objects(place+1))):
-                    fij = self.maps(place).get((i,j), self._basering(0))
-                    if self.objects(place)[i].is_invertible(fij):
-                        return i,j, fij
+            maps = self.maps(place)
+            objects = self.objects(place)
+            zero = self._basering(0)
+            for (i,j) in maps:
+                fij = maps.get((i,j), zero)
+                if objects[i].is_invertible(fij):
+                    return i, j, fij
             return None, None, None
 
         alreadyMinimized = False
@@ -238,20 +231,19 @@ class ProjectiveComplex(object):
             # Change the maps from place to place+1
 
             newMapsPlace = {}
+            alphaInverse = self.objects(place)[source].invert(alpha)
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
                     if (i,j) == (source, target):
                         changeij = 0
                     else:
-                        changeij = self.maps(place).get((i,target), 0) * self.objects(place)[source].invert(alpha) * self.maps(place).get((source,j), 0)
+                        changeij = self.maps(place).get((i,target), 0) * alphaInverse * self.maps(place).get((source,j), 0)
                     newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) - changeij
 
 
             # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
             # Now we update the maps
-            for i in range(0, len(self.objects(place))):
-                for j in range(0, len(self.objects(place+1))):
-                    self._maps[place][(i,j)] = newMapsPlace[(i,j)]
+            self._maps[place] = newMapsPlace
 
             # At this point, our complex is a direct sum of F (source) -> F (target) and another complex
             # We simply drop the source and the target
