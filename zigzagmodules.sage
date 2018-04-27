@@ -53,7 +53,8 @@ class ZigZagModule(object):
         if ir == 0:
             return False
 
-        m,d = self._idempotent.monomial_coefficients().items()[0]
+        nonZeroCoeffs = [(x,y) for (x,y) in self._idempotent.monomial_coefficients().items() if y != 0]
+        m,d = nonZeroCoeffs[0]
         c = ir.monomial_coefficients().get(m, 0)
         multiple = c/d
 
@@ -69,7 +70,8 @@ class ZigZagModule(object):
             raise TypeError("Not invertible")
         else:
             ir = self._idempotent * r
-            m,d = self._idempotent.monomial_coefficients().items()[0]
+            nonZeroCoeffs = [(x,y) for (x,y) in self._idempotent.monomial_coefficients().items() if y != 0]
+            m,d = nonZeroCoeffs[0]
             c = ir.monomial_coefficients().get(m, 0)
             multiple = c/d
             return d/c * self._idempotent
