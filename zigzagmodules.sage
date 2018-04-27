@@ -1,7 +1,18 @@
-class ZigZagModule(object):
+from sage.modules.module import Module
+from sage.structure.element import ModuleElement
+
+class ZigZagModuleElement(ModuleElement):
+    def __init__(self, parent, x):
+        self.x = x
+        ModuleElement.__init__(self, parent = parent)
+
+class ZigZagModule(Module):
     '''
     Projective (left) modules over the Zigzag algebra
     '''
+
+    Element = ZigZagModuleElement
+    
     def __init__(self, R, i, twist = 0, name="P"):
         '''
         The projective module P = R*e, where e is the i-th idempotent in R.idempotents()
@@ -11,6 +22,7 @@ class ZigZagModule(object):
         self._idempotent = R.idempotents()[i-1]  # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
         self._twist = twist
         self._name = name
+        Module.__init__(self, R, category=LeftModules(R))
 
     def copy(self):
         return ZigZagModule(self._ring, self._i, self._twist, self._name)

@@ -3,15 +3,15 @@ from itertools import product
 from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element import FiniteDimensionalAlgebraElement
 
 class ZigZagAlgebraElement(FiniteDimensionalAlgebraElement):
-    def __init__(self, A):
-        super(FiniteDimensionalAlgebraElement, self).__init__(self, A)
-    
+    def __init__(self, A, elt=None, check=True):
+        FiniteDimensionalAlgebraElement.__init__(self, A = A, elt = elt, check = check)
+        
 
 class ZigZagAlgebra(FiniteDimensionalAlgebra):
     '''
     The class for the ZigZag Algebra equipped with a basis.
     '''
-    # Element = ZigZagAlgebraElement
+    Element = ZigZagAlgebraElement
     
     def __init__(self, k, P): # k = base field, P = path semigroup of a quiver
         '''
@@ -24,7 +24,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         self._basis = list(R.idempotents()) + list(R.arrows()) + I.loops()
         table = [_getMatrix(I, self._basis, x) for x in self._basis]
         names = [str(x).replace('*','') for x in self._basis]
-        super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().WithBasis().Associative())
+        super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().Graded().WithBasis().Associative())
 
     def _repr_(self):
         return "Zig-zag algebra of {0} over {1}".format(self._path_semigroup.quiver(), self._base)
