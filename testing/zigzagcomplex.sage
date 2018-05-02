@@ -19,6 +19,11 @@ P2.addObject(0, G)
 P3 = ProjectiveComplex(R)
 P3.addObject(0, H)
 
+from functools import reduce
+def composeAll(list_of_functions):
+    return reduce (lambda x,y : lambda t : x(y(t)), list_of_functions, lambda x: x)
+
+
 def s(i, C):
     D = sigma(R, i, C)
     D.minimize()
