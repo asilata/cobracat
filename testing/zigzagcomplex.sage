@@ -65,6 +65,12 @@ def v(C):
 def vi(C):
     return s1(s2(t3(t2(t1(C)))))
 
+def actOnPs(b):
+    return b(P1),b(P2),b(P3)
+
+def actOnQs(b):
+    return b(P1),b(s1(P2)),b(s1(s2(P3)))
+
 #Q1 = sigmaInverse(R, 2, P)
 #Q2 = sigmaInverse(R, 2, Q1)
 #Q2.minimize()
