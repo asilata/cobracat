@@ -122,7 +122,7 @@ class ProjectiveComplex(object):
         self._maxIndex = max(place, self._maxIndex)
 
 
-    def show(self):
+    def show(self, **args):
         D = DiGraph()
         # Add objects
         objNames = {}
@@ -139,9 +139,9 @@ class ProjectiveComplex(object):
         # Add edges
         for i in range(self.minIndex(), self.maxIndex()):
             for m in self.maps(i):
-                D.add_edge((objNames[(i,m[0])], objNames[(i+1,m[1])]))
+                D.add_edge((objNames[(i,m[0])], objNames[(i+1,m[1])]), label=str(self.maps(i)[m]))
 
-	return D.plot(heights=heights, layout="acyclic")
+	return D.plot(heights=heights, layout="acyclic", **args)
 
         
     def cleanUp(self):
