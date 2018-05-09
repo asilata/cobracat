@@ -140,3 +140,7 @@ def sigmaInverse(Z, i, C):
             M[place][(i, keyDict[place][(i,k)])] = mapsCtoQ[place][(i,k)]
 
     return cone(C, Q, M)
+
+from functools import reduce
+def composeAll(list_of_functions):
+    return reduce (lambda x,y : lambda t : x(y(t)), list_of_functions, lambda x: x)
