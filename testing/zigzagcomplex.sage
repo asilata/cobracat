@@ -1,4 +1,4 @@
-load("../complexes.sage")
+laffioad("../complexes.sage")
 load("../zigzagalgebra.sage")
 load("../zigzagmodules.sage")
 load("../braidactions.sage")
