@@ -120,6 +120,29 @@ class ProjectiveComplex(object):
 
         self._minIndex = min(place, self._minIndex)
         self._maxIndex = max(place, self._maxIndex)
+
+
+    def show(self):
+        D = DiGraph()
+        # Add objects
+        objNames = {}
+        heights = {}
+        for i in range(self.minIndex(), self.maxIndex()+1):
+            heights[i] = []
+            obj = self.objects(i)
+            for j in range(0,len(obj)):
+                ob = obj[j]
+                objNames[(i,j)] = "{0}({1},{2})".format(str(ob),i,j)
+                D.add_vertex(objNames[(i,j)])
+                heights[i].append(objNames[(i,j)])
+
+        # Add edges
+        for i in range(self.minIndex(), self.maxIndex()):
+            for m in self.maps(i):
+                D.add_edge((objNames[(i,m[0])], objNames[(i+1,m[1])]))
+
+	return D.plot(heights=heights, layout="acyclic")
+
         
     def cleanUp(self):
         '''
@@ -333,4 +356,3 @@ class ProjectiveModuleOverField(object):
             return 1/r
         else:
             raise TypeError("Not invertible.")
-
