@@ -224,7 +224,7 @@ class ProjectiveComplex(object):
         while not alreadyMinimized:
             source, target, alpha = _findIso(place)
             if source == None or target == None or alpha == None:
-                print("Nothing left to minimize at " + str(place))
+                #print("Nothing left to minimize at " + str(place))
                 alreadyMinimized = True
                 continue
 

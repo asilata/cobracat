@@ -60,4 +60,6 @@ def actOnPs(b):
 def actOnAll(b):
     return b(P1),b(P2),b(P3),b(s1(P2)), b(s2(P3)), b(s1(P3))
 
+def actOnQs(b):
+    return b(s1(s3(s2(P1)))), b(s1(s3(s2(t1(P3))))), b(s1(s3(s2(t1(t3(P2)))))), b(s1(s3(s2(t1(t3(t2(P3))))))), b(s1(s3(s2(t1(t3(t2(t3(P1))))))))
               
