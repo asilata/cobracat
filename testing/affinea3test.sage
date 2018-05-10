@@ -62,5 +62,3 @@ def actOnAll(b):
 
 def actOnQs(b):
     return b(s1(s3(s2(P1)))), b(s1(s3(s2(t1(P3))))), b(s1(s3(s2(t1(t3(P2)))))), b(s1(s3(s2(t1(t3(t2(P3))))))), b(s1(s3(s2(t1(t3(t2(t3(P1))))))))
-              
-X = y(P1)
