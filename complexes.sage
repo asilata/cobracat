@@ -141,8 +141,50 @@ class ProjectiveComplex(object):
             for m in self.maps(i):
                 D.add_edge((objNames[(i,m[0])], objNames[(i+1,m[1])]), label=str(self.maps(i)[m]))
 
-	return D.plot(heights=heights, layout="acyclic", **args)
+        # Try to modify the positions to minimize intersections.
+        plot = D.graphplot(heights=heights, layout="acyclic", save_pos=True)
+        positions = D.get_pos()
 
+
+        new_positions = {}
+        # The algorithm to get new positions is a bit hacky, but the idea is the following.
+        # First, we create add the reverses of all edges, effectively making the graph undirected.
+        # Then we find traverse the longest (simple) path and add the vertices we encounter to a sequence.
+        # At every height, we sort the vertices so that the ones encountered earlier are to the left.
+
+        G = D.to_undirected().to_directed()
+        walk_index = {}
+        i = 0
+        paths = G.all_simple_paths()
+        paths.sort(key=len, reverse=true)
+        for p in paths:
+            for v in p:
+                if v not in walk_index.keys():
+                    walk_index[v] = i
+                    i = i + 1
+        
+        # Traverse vertices that were not a part of a path.
+        for v in G.vertices():
+            if v not in walk_index.keys():
+                walk_index[v] = i
+                i = i + 1
+
+        for vertices_at_h in heights.values():
+            vertices_at_h.sort(key=lambda v: walk_index[v])
+            positions_at_h = [positions[v] for v in vertices_at_h]
+            positions_at_h.sort(key=lambda (x,y): x)
+            for i in range(0, len(vertices_at_h)):
+                new_positions[vertices_at_h[i]] = positions_at_h[i]
+
+        # Let us reverse (x,y) so that the complex shows up horizontally.
+        flip = lambda (x,y): (y,x)
+        for k in new_positions.keys():
+            new_positions[k] = flip(new_positions[k])
+
+        D.set_pos(new_positions)
+        return D.plot()
+            
+        
         
     def cleanUp(self):
         '''
