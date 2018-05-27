@@ -1,8 +1,10 @@
 e1 = 0.1
-e2 = 0.2
+e2 = 4
 
-a1 = vector([-1,0])
-a2 = vector([0,1+e2])
+#a1 = vector([-1,0])
+a1 = vector([0,1+e2])
+#a2 = vector([0,1+e2])
+a2 = vector([-1,0])
 a3 = vector([1-e1,e1])
 
 M = matrix([a1,a2,a3]).transpose()
@@ -24,5 +26,8 @@ proj = [M*vector(s) for s in root_seq]
 #mr = (2,1,2)
 #rs = [(1,0,0),(1,0,1),(0,0,1)]
 
-mr = (2,1,1)
-rs = [(1,0,0),(1,0,1)]
+#mr = (2,1,1)
+#rs = [(1,0,0),(1,0,1)]
+
+rs,mr=[(1,0,0),(1,1,0),(2,1,1),(2,2,1)],(3,2,2)
+P,Q = rootplot(rs, mr),rootplot([(1,0,0),(0,1,0),(0,0,1)],color='green')

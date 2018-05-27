@@ -182,7 +182,7 @@ class ProjectiveComplex(object):
             new_positions[k] = flip(new_positions[k])
 
         D.set_pos(new_positions)
-        return D.plot()
+        return D.plot(**args)
             
         
         

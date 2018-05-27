@@ -54,6 +54,8 @@ x = composeAll([t3,s1,s2,t1,t3])
 y = composeAll([s2,t3,s1,s2,t1,s3,t2])
 
 
+objects = [P1, P2, P3, s1(P2), s1(P3), s2(P3)]
+
 def actOnPs(b):
     return b(P1),b(P2),b(P3)
 
