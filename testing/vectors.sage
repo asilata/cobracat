@@ -1,10 +1,11 @@
+
 e1 = 0.1
 e2 = 4
 
-#a1 = vector([-1,0])
-a1 = vector([0,1+e2])
-#a2 = vector([0,1+e2])
-a2 = vector([-1,0])
+a1 = vector([-1,0])
+#a1 = vector([0,1+e2])
+a2 = vector([0,1+e2])
+#a2 = vector([-1,0])
 a3 = vector([1-e1,e1])
 
 M = matrix([a1,a2,a3]).transpose()
