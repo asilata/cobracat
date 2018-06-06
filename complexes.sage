@@ -53,6 +53,7 @@ class ProjectiveComplex(object):
                 s = s + "+".join([self._names[x] if x in self._names.keys() else str(x) for x in objects])
             if i < largest:
                 s = s + " → "
+        s = s + " :[" + str(largest) + "]"
         return s
 
     def __repr__(self):
@@ -127,6 +128,7 @@ class ProjectiveComplex(object):
         # Add objects
         objNames = {}
         heights = {}
+        levelSets = {}
         for i in range(self.minIndex(), self.maxIndex()+1):
             heights[i] = []
             obj = self.objects(i)
@@ -134,6 +136,10 @@ class ProjectiveComplex(object):
                 ob = obj[j]
                 objNames[(i,j)] = "{0}({1},{2})".format(str(ob),i,j)
                 D.add_vertex(objNames[(i,j)])
+                level = i - ob.twist()
+                if level not in levelSets.keys():
+                    levelSets[level] = []
+                levelSets[level].append(objNames[(i,j)])
                 heights[i].append(objNames[(i,j)])
 
         # Add edges
@@ -182,9 +188,10 @@ class ProjectiveComplex(object):
             new_positions[k] = flip(new_positions[k])
 
         D.set_pos(new_positions)
-        return D.plot(**args)
-            
-        
+        # only choose the lighter colors
+        colorlist = [c.rgb() for c in colors.values() if sum(c.rgb()) > 2.0] 
+        vertex_colors = {colorlist[level]:levelSets[level] for level in levelSets.keys()}
+        return D.plot(vertex_colors=vertex_colors, **args)
         
     def cleanUp(self):
         '''
