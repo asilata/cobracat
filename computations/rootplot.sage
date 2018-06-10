@@ -1,10 +1,21 @@
 # Loading this file will provide the rootplot function.
-# Rootplot (a,b,c) plots the Z of the root (a,b,c).
+# Rootplot [list of (a,b,c)] plots the central charge of the roots (a,b,c).
 # The stability condition is such that
 # Z : alpha1 = (-1,0)
 #   : alpha2 = (0, 1+e2)
 #   : alpha3 = (1-e1, e1)
 # These can be changed by changing the assignments at the beginning of the file.
+
+# Useful features of plots: 
+# Plots can be assigned to variables.
+# P = rootplot([(1,0,0),(0,1,1), (1,1,0)])
+# will not show anything, but it will save the graph in P.
+# P.show() 
+# will then show the graph.
+# Plots can be added.
+# Q = P + rootplot([(0,0,1)])
+# will create a new plot Q containing P and the additional vector corresponding to (0,0,1).
+# Again, Q.show() will show it.
 
 e1 = 0.1
 e2 = 4
