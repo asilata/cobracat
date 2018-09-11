@@ -342,6 +342,64 @@ class ProjectiveComplex(object):
         self.cleanUp()
         return 
 
+# The hom complex
+def hom(P, Q, degree=0):
+    def inducedMap1(P1, P2, Q, r, sign=1):
+        #The map from Hom(P2, Q) -> Hom(P1, Q) induced by r: P1 -> P2
+        Z = r.parent()
+        matrix = {}
+        P2Q = P2.hom(Q)
+        P1Q = P1.hom(Q)
+        for i in range(0, len(P2Q)):
+            h = P2Q[i]
+            rh = (r*h).monomial_coefficients()
+            for basis_element_index in rh.keys():
+                basis_element = Z.basis()[basis_element_index]
+                if basis_element not in P1Q:
+                    raise TypeError("Unrecognized hom.")
+                j = P1Q.index(basis_element)
+                matrix[(i,j)] = rh[basis_element_index] * sign
+        return matrix
+
+    def inducedMap2(P, Q1, Q2, r, sign=1):
+        #The map from Hom(P, Q1) -> Hom(P, Q2) induced by r: Q1 -> Q2
+        Z = r.parent()
+        matrix = {}
+        PQ1 = P.hom(Q1)
+        PQ2 = P.hom(Q2)
+        for i in range(0, len(PQ1)):
+            h = PQ1[i]
+            hr = (h*r).monomial_coefficients()
+            for basis_element_index in hr.keys():
+                basis_element = Z.basis()[basis_element_index]
+                if basis_element not in PQ2:
+                    raise TypeError("Unrecognized hom.")
+                j = PQ2.index(basis_element)
+                matrix[(i,j)] = hr[basis_element_index] * sign
+        return matrix
+    
+    Q = Q.shift(degree)
+
+    doubleComplexObjects = {}
+    for i in range(P.minIndex(), P.maxIndex()+1):
+        for j in range(Q.minIndex(), Q.maxIndex()+1):
+            doubleComplexObjects[(i,j)] = [(a,b) for a in range(0,len(P.objects(i))) for b in range(0,len(Q.objects(j)))]
+
+    doubleComplexMaps = {}
+    for (i,j) in doubleComplexObjects.keys():
+        for (a,b) in doubleComplexObjects.get((i,j),[]):
+            for (c,d) in doubleComplexObjects.get((i,j+1),[]):
+                if a == c:
+                    doubleComplexMaps[((i,j,a,b),(i,j+1,c,d))] = inducedMap2(P.objects(i)[a], Q.objects(j)[b], Q.objects(j+1)[d], Q.maps(i).get((b,d), 0))
+
+            for (c,d) in doubleComplexObjects.get((i-1,j),[]):
+                if b == d:
+                    doubleComplexMaps[((i,j,a,b),(i-1,j,c,d))] = inducedMap1(P.objects(i-1)[c], P.objects(i)[a], Q.objects(j)[b], P.maps(i-1).get((c,a),0), sign = -1 * (-1)**(i-j))
+    print doubleComplexObjects
+    print doubleComplexMaps
+    return 
+            
+
 def cone(P, Q, M):
     '''
     The cone of M: P -> Q. 
