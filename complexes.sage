@@ -17,6 +17,7 @@ class ProjectiveComplex(object):
         (1) P.is_zero(r) : Is right multiplication by r the zero map on P?
         (2) P.is_invertible(r): Is right multiplication by r an invertible map on P?
         (3) P.invert(r): If right multiplication by r is invertible, return a ring element which acts as its inverse.
+        (4) P.homs(Q): Returns a set of ring elements (monomials), which by right multiplication, define a basis of Hom(P,Q)
         See the class ProjectiveModuleOverField for an example.
 
         maps: A dictionary of type {i: {(a,b): r}} where i is an integer, (a,b) is a pair of positive integers, and r is an element of basering. The key i represents the map from the i-th to (i+1)-th place of the complex. The pair (a,b) says that the map is from the a-th object in the list of objects at the i-th place to the b-th object in the list of objects at the (i+1)-th place. The value r says that the map is given by right multiplication by r. Currently, there is no provision to specify more complicated maps. 
@@ -399,6 +400,9 @@ class ProjectiveModuleOverField(object):
 
     def is_invertible(self, r):
         return (r != 0)
+
+    def hom(self, Q):
+        return [1]
     
     def invert(self, r):
         if r != 0:
