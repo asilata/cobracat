@@ -17,6 +17,7 @@ class ProjectiveComplex(object):
         (1) P.is_zero(r) : Is right multiplication by r the zero map on P?
         (2) P.is_invertible(r): Is right multiplication by r an invertible map on P?
         (3) P.invert(r): If right multiplication by r is invertible, return a ring element which acts as its inverse.
+        (4) P.homs(Q): Returns a set of ring elements (monomials), which by right multiplication, define a basis of Hom(P,Q)
         See the class ProjectiveModuleOverField for an example.
 
         maps: A dictionary of type {i: {(a,b): r}} where i is an integer, (a,b) is a pair of positive integers, and r is an element of basering. The key i represents the map from the i-th to (i+1)-th place of the complex. The pair (a,b) says that the map is from the a-th object in the list of objects at the i-th place to the b-th object in the list of objects at the (i+1)-th place. The value r says that the map is given by right multiplication by r. Currently, there is no provision to specify more complicated maps. 
@@ -341,6 +342,83 @@ class ProjectiveComplex(object):
         self.cleanUp()
         return 
 
+# The hom complex
+def hom(P, Q, degree=0):
+    def inducedMap1(P1, P2, Q, r, sign=1):
+        #The map from Hom(P2, Q) -> Hom(P1, Q) induced by r: P1 -> P2
+        Z = r.parent()
+        matrix = {}
+        P2Q = P2.hom(Q)
+        P1Q = P1.hom(Q)
+        for i in range(0, len(P2Q)):
+            h = P2Q[i]
+            rh = (r*h).monomial_coefficients()
+            for basis_element_index in rh.keys():
+                basis_element = Z.basis()[basis_element_index]
+                if basis_element not in P1Q:
+                    raise TypeError("Unrecognized hom: " + str(basis_element) +" not in " + P1Q)
+                j = P1Q.index(basis_element)
+                matrix[(i,j)] = rh[basis_element_index] * sign
+        return matrix
+
+    def inducedMap2(P, Q1, Q2, r, sign=1):
+        #The map from Hom(P, Q1) -> Hom(P, Q2) induced by r: Q1 -> Q2
+        Z = r.parent()
+        matrix = {}
+        PQ1 = P.hom(Q1)
+        PQ2 = P.hom(Q2)
+        for i in range(0, len(PQ1)):
+            h = PQ1[i]
+            hr = (h*r).monomial_coefficients()
+            for basis_element_index in hr.keys():
+                basis_element = Z.basis()[basis_element_index]
+                if basis_element not in PQ2:
+                    raise TypeError("Unrecognized hom: " + str(basis_element) +" not in " + str(PQ2))
+                j = PQ2.index(basis_element)
+                matrix[(i,j)] = hr[basis_element_index] * sign
+        return matrix
+    
+    Q = Q.shift(degree)
+
+    doubleComplexObjects = {}
+    for i in range(P.minIndex(), P.maxIndex()+1):
+        for j in range(Q.minIndex(), Q.maxIndex()+1):
+            doubleComplexObjects[(i,j)] = [(a,b) for a in range(0,len(P.objects(i))) for b in range(0,len(Q.objects(j)))]
+
+    doubleComplexMaps = {}
+    for (i,j) in doubleComplexObjects.keys():
+        for (a,b) in doubleComplexObjects.get((i,j),[]):
+            for (c,d) in doubleComplexObjects.get((i,j+1),[]):
+                if a == c:
+                    doubleComplexMaps[((i,j,a,b),(i,j+1,c,d))] = inducedMap2(P.objects(i)[a], Q.objects(j)[b], Q.objects(j+1)[d], Q.maps(j).get((b,d), 0))
+
+            for (c,d) in doubleComplexObjects.get((i-1,j),[]):
+                if b == d:
+                    doubleComplexMaps[((i,j,a,b),(i-1,j,c,d))] = inducedMap1(P.objects(i-1)[c], P.objects(i)[a], Q.objects(j)[b], P.maps(i-1).get((c,a),0), sign = -1 * (-1)**(i-j))
+
+    # Collapsing the double complex to a single complex
+    Z = P.basering()
+    k = Z.base_ring()
+    homComplex = ProjectiveComplex(basering=k)
+    renumberingDictionary = {}
+    for (i,j) in doubleComplexObjects:
+        for (a,b) in doubleComplexObjects[(i,j)]:
+            Source = P.objects(i)[a]
+            Target = Q.objects(j)[b]
+            homs = Source.hom(Target)
+            for hom_index in range(0, len(homs)):
+                # Add a copy of the base field for each hom in the correct degree.
+                homComplex.addObject(j-i, ProjectiveModuleOverField(k,1),name="k<"+str(Z.deg(homs[hom_index]) - Target.twist() + Source.twist())+">")
+                # Remember where the object is stored.
+                renumberingDictionary[(i,j,a,b,hom_index)] = len(homComplex.objects(j-i))-1 
+    # Now add maps
+    for ((i,j,a,b), (I,J,A,B)) in doubleComplexMaps.keys():
+        maps = doubleComplexMaps[((i,j,a,b), (I,J,A,B))]
+        for (alpha, beta) in maps.keys():
+            homComplex.addMap(j-i, renumberingDictionary[(i,j,a,b,alpha)], renumberingDictionary[(I,J,A,B,beta)], maps[(alpha,beta)])
+    return homComplex
+            
+
 def cone(P, Q, M):
     '''
     The cone of M: P -> Q. 
@@ -399,6 +477,9 @@ class ProjectiveModuleOverField(object):
 
     def is_invertible(self, r):
         return (r != 0)
+
+    def hom(self, Q):
+        return [1]
     
     def invert(self, r):
         if r != 0:
