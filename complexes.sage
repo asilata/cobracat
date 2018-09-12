@@ -407,7 +407,7 @@ def hom(P, Q, degree=0):
             Target = Q.objects(j)[b]
             homs = Source.hom(Target)
             for hom_index in range(0, len(homs)):
-                # Add a copy of the base field for each hom.
+                # Add a copy of the base field for each hom in the correct degree.
                 homComplex.addObject(j-i, ProjectiveModuleOverField(k,1),name="k<"+str(Z.deg(homs[hom_index]) - Target.twist() + Source.twist())+">")
                 # Remember where the object is stored.
                 renumberingDictionary[(i,j,a,b,hom_index)] = len(homComplex.objects(j-i))-1 
