@@ -356,7 +356,7 @@ def hom(P, Q, degree=0):
             for basis_element_index in rh.keys():
                 basis_element = Z.basis()[basis_element_index]
                 if basis_element not in P1Q:
-                    raise TypeError("Unrecognized hom.")
+                    raise TypeError("Unrecognized hom: " + str(basis_element) +" not in " + P1Q)
                 j = P1Q.index(basis_element)
                 matrix[(i,j)] = rh[basis_element_index] * sign
         return matrix
@@ -373,7 +373,7 @@ def hom(P, Q, degree=0):
             for basis_element_index in hr.keys():
                 basis_element = Z.basis()[basis_element_index]
                 if basis_element not in PQ2:
-                    raise TypeError("Unrecognized hom.")
+                    raise TypeError("Unrecognized hom: " + str(basis_element) +" not in " + str(PQ2))
                 j = PQ2.index(basis_element)
                 matrix[(i,j)] = hr[basis_element_index] * sign
         return matrix
@@ -390,14 +390,33 @@ def hom(P, Q, degree=0):
         for (a,b) in doubleComplexObjects.get((i,j),[]):
             for (c,d) in doubleComplexObjects.get((i,j+1),[]):
                 if a == c:
-                    doubleComplexMaps[((i,j,a,b),(i,j+1,c,d))] = inducedMap2(P.objects(i)[a], Q.objects(j)[b], Q.objects(j+1)[d], Q.maps(i).get((b,d), 0))
+                    doubleComplexMaps[((i,j,a,b),(i,j+1,c,d))] = inducedMap2(P.objects(i)[a], Q.objects(j)[b], Q.objects(j+1)[d], Q.maps(j).get((b,d), 0))
 
             for (c,d) in doubleComplexObjects.get((i-1,j),[]):
                 if b == d:
                     doubleComplexMaps[((i,j,a,b),(i-1,j,c,d))] = inducedMap1(P.objects(i-1)[c], P.objects(i)[a], Q.objects(j)[b], P.maps(i-1).get((c,a),0), sign = -1 * (-1)**(i-j))
-    print doubleComplexObjects
-    print doubleComplexMaps
-    return 
+
+    # Collapsing the double complex to a single complex
+    Z = P.basering()
+    k = Z.base_ring()
+    homComplex = ProjectiveComplex(basering=k)
+    renumberingDictionary = {}
+    for (i,j) in doubleComplexObjects:
+        for (a,b) in doubleComplexObjects[(i,j)]:
+            Source = P.objects(i)[a]
+            Target = Q.objects(j)[b]
+            homs = Source.hom(Target)
+            for hom_index in range(0, len(homs)):
+                # Add a copy of the base field for each hom.
+                homComplex.addObject(j-i, ProjectiveModuleOverField(k,1),name="k<"+str(Z.deg(homs[hom_index]) - Target.twist() + Source.twist())+">")
+                # Remember where the object is stored.
+                renumberingDictionary[(i,j,a,b,hom_index)] = len(homComplex.objects(j-i))-1 
+    # Now add maps
+    for ((i,j,a,b), (I,J,A,B)) in doubleComplexMaps.keys():
+        maps = doubleComplexMaps[((i,j,a,b), (I,J,A,B))]
+        for (alpha, beta) in maps.keys():
+            homComplex.addMap(j-i, renumberingDictionary[(i,j,a,b,alpha)], renumberingDictionary[(I,J,A,B,beta)], maps[(alpha,beta)])
+    return homComplex
             
 
 def cone(P, Q, M):
