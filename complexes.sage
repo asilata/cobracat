@@ -344,9 +344,9 @@ class ProjectiveComplex(object):
 
 # The hom complex
 def hom(P, Q, degree=0):
+    Z = P.basering()
     def inducedMap1(P1, P2, Q, r, sign=1):
         #The map from Hom(P2, Q) -> Hom(P1, Q) induced by r: P1 -> P2
-        Z = r.parent()
         matrix = {}
         P2Q = P2.hom(Q)
         P1Q = P1.hom(Q)
@@ -354,16 +354,16 @@ def hom(P, Q, degree=0):
             h = P2Q[i]
             rh = (r*h).monomial_coefficients()
             for basis_element_index in rh.keys():
-                basis_element = Z.basis()[basis_element_index]
-                if basis_element not in P1Q:
-                    raise TypeError("Unrecognized hom: " + str(basis_element) +" not in " + P1Q)
-                j = P1Q.index(basis_element)
-                matrix[(i,j)] = rh[basis_element_index] * sign
+                if hr[basis_element_index] != 0:                                
+                    basis_element = Z.basis()[basis_element_index]
+                    if basis_element not in P1Q:
+                        raise TypeError("Unrecognized hom: " + str(basis_element) +" not in " + P1Q)
+                    j = P1Q.index(basis_element)
+                    matrix[(i,j)] = rh[basis_element_index] * sign
         return matrix
 
     def inducedMap2(P, Q1, Q2, r, sign=1):
         #The map from Hom(P, Q1) -> Hom(P, Q2) induced by r: Q1 -> Q2
-        Z = r.parent()
         matrix = {}
         PQ1 = P.hom(Q1)
         PQ2 = P.hom(Q2)
@@ -371,11 +371,12 @@ def hom(P, Q, degree=0):
             h = PQ1[i]
             hr = (h*r).monomial_coefficients()
             for basis_element_index in hr.keys():
-                basis_element = Z.basis()[basis_element_index]
-                if basis_element not in PQ2:
-                    raise TypeError("Unrecognized hom: " + str(basis_element) +" not in " + str(PQ2))
-                j = PQ2.index(basis_element)
-                matrix[(i,j)] = hr[basis_element_index] * sign
+                if hr[basis_element_index] != 0:                
+                    basis_element = Z.basis()[basis_element_index]
+                    if basis_element not in PQ2:
+                        raise TypeError("Unrecognized hom: " + str(basis_element) +" not in " + str(PQ2))
+                    j = PQ2.index(basis_element)
+                    matrix[(i,j)] = hr[basis_element_index] * sign
         return matrix
     
     Q = Q.shift(degree)
@@ -408,6 +409,7 @@ def hom(P, Q, degree=0):
             homs = Source.hom(Target)
             for hom_index in range(0, len(homs)):
                 # Add a copy of the base field for each hom in the correct degree.
+                print str(homs[hom_index]), str(Target), str(Source)
                 homComplex.addObject(j-i, ProjectiveModuleOverField(k,1),name="k<"+str(Z.deg(homs[hom_index]) - Target.twist() + Source.twist())+">")
                 # Remember where the object is stored.
                 renumberingDictionary[(i,j,a,b,hom_index)] = len(homComplex.objects(j-i))-1 
