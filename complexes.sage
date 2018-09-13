@@ -354,7 +354,7 @@ def hom(P, Q, degree=0):
             h = P2Q[i]
             rh = (r*h).monomial_coefficients()
             for basis_element_index in rh.keys():
-                if hr[basis_element_index] != 0:                                
+                if rh[basis_element_index] != 0:                                
                     basis_element = Z.basis()[basis_element_index]
                     if basis_element not in P1Q:
                         raise TypeError("Unrecognized hom: " + str(basis_element) +" not in " + P1Q)
@@ -409,7 +409,6 @@ def hom(P, Q, degree=0):
             homs = Source.hom(Target)
             for hom_index in range(0, len(homs)):
                 # Add a copy of the base field for each hom in the correct degree.
-                print str(homs[hom_index]), str(Target), str(Source)
                 homComplex.addObject(j-i, ProjectiveModuleOverField(k,1),name="k<"+str(Z.deg(homs[hom_index]) - Target.twist() + Source.twist())+">")
                 # Remember where the object is stored.
                 renumberingDictionary[(i,j,a,b,hom_index)] = len(homComplex.objects(j-i))-1 
