@@ -4,6 +4,7 @@
 #
 ############################################################
 
+
 class ProjectiveComplex(object):
     '''The class of ProjectiveComplexes over a ring (not necessarily
     commutative). A projective complex is a complex of projective objects. 
@@ -123,6 +124,15 @@ class ProjectiveComplex(object):
         self._minIndex = min(place, self._minIndex)
         self._maxIndex = max(place, self._maxIndex)
 
+    from sage.misc.lazy_list import lazy_list
+    from itertools import count
+
+    def qPolynomial(self, variables = lazy_list(var('q') for i in count())):
+        answer = 0
+        for i in range(self.minIndex(), self.maxIndex()+1):
+            restVariables = lazy_list(variables[i+1] for i in count())
+            answer = answer + variables[0]^(-i) * sum([obj.qPolynomial(restVariables) for obj in self._objects[i]])
+        return answer
 
     def show(self, **args):
         D = DiGraph()
@@ -409,7 +419,7 @@ def hom(P, Q, degree=0):
             homs = Source.hom(Target)
             for hom_index in range(0, len(homs)):
                 # Add a copy of the base field for each hom in the correct degree.
-                homComplex.addObject(j-i, ProjectiveModuleOverField(k,1),name="k<"+str(Z.deg(homs[hom_index]) - Target.twist() + Source.twist())+">")
+                homComplex.addObject(j-i, GradedProjectiveModuleOverField(k,1,- Z.deg(homs[hom_index]) + Target.twist() - Source.twist(), name="k"))
                 # Remember where the object is stored.
                 renumberingDictionary[(i,j,a,b,hom_index)] = len(homComplex.objects(j-i))-1 
     # Now add maps
@@ -482,6 +492,49 @@ class ProjectiveModuleOverField(object):
     def hom(self, Q):
         return [1]
     
+    def invert(self, r):
+        if r != 0:
+            return 1/r
+        else:
+            raise TypeError("Not invertible.")
+
+class GradedProjectiveModuleOverField(object):
+    ''''
+    The class of projective modules over a field (also known as graded vector spaces).
+    '''
+    def __init__(self, basefield, dimension, grade = 0, name=None):
+        if not basefield.is_field():
+            raise TypeError("Basefield not a field.")
+        if not dimension.is_integral() or dimension < 0:
+            raise TypeError("Invalid dimension.")
+        self._vsp = VectorSpace(basefield,dimension)
+        self._grade = grade
+        if name:
+            self._name = name
+        else:
+            self._name = self._vsp__str__()
+
+    def __str__(self):
+        return self._name + "<" + str(self._grade) +">"
+
+    def __repr__(self):
+        return self._name + "<" + str(self._grade) +">"
+
+    def is_zero(self, r):
+        return (r == 0)
+
+    def grade(self):
+        return self._grade
+
+    def is_invertible(self, r):
+        return (r != 0)
+
+    def hom(self, Q):
+        return [1]
+
+    def qPolynomial(self, variables = [var('q')]):
+        return variables[0]^self._grade
+
     def invert(self, r):
         if r != 0:
             return 1/r
