@@ -3,6 +3,8 @@
 # The homotopy category of projective complexes in sage
 #
 ############################################################
+from sage.misc.lazy_list import lazy_list
+from itertools import count
 
 
 class ProjectiveComplex(object):
@@ -124,14 +126,12 @@ class ProjectiveComplex(object):
         self._minIndex = min(place, self._minIndex)
         self._maxIndex = max(place, self._maxIndex)
 
-    from sage.misc.lazy_list import lazy_list
-    from itertools import count
 
     def qPolynomial(self, variables = lazy_list(var('q') for i in count())):
         answer = 0
         for i in range(self.minIndex(), self.maxIndex()+1):
             restVariables = lazy_list(variables[i+1] for i in count())
-            answer = answer + variables[0]^(-i) * sum([obj.qPolynomial(restVariables) for obj in self._objects[i]])
+            answer = answer + variables[0]^(-i) * sum([obj.qPolynomial(restVariables) for obj in self.objects(i)])
         return answer
 
     def show(self, **args):
