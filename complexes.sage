@@ -132,7 +132,7 @@ class ProjectiveComplex(object):
         for i in range(self.minIndex(), self.maxIndex()+1):
             restVariables = lazy_list(variables[i+1] for i in count())
             answer = answer + variables[0]^(-i) * sum([obj.qPolynomial(restVariables) for obj in self.objects(i)])
-        return answer
+        return answer.expand()
 
     def show(self, **args):
         D = DiGraph()
