@@ -129,6 +129,7 @@ class ProjectiveComplex(object):
 
     def qPolynomial(self, variables = lazy_list(var('q') for i in count())):
         answer = 0
+        self.minimize()
         for i in range(self.minIndex(), self.maxIndex()+1):
             restVariables = lazy_list(variables[i+1] for i in count())
             answer = answer + variables[0]^(-i) * sum([obj.qPolynomial(restVariables) for obj in self.objects(i)])

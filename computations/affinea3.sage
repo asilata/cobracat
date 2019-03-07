@@ -66,3 +66,22 @@ def actOnQs(b):
     return b(s1(s3(s2(P1)))), b(s1(s3(s2(t1(P3))))), b(s1(s3(s2(t1(t3(P2)))))), b(s1(s3(s2(t1(t3(t2(P3))))))), b(s1(s3(s2(t1(t3(t2(t3(P1))))))))
 
 
+def testTriangleInequality(length):
+    basicObjects = [P1, P2, P3]
+    basicTransforms = [s1, s2, s3, t1, t2, t3]
+    def randomObject(length):
+        obj = basicObjects[randint(0, len(basicObjects)-1)]
+        for i in range(0, length):
+            obj = basicTransforms[randint(0, len(basicTransforms) -1)](obj)
+            obj.minimize()
+        return obj
+        
+    A = P1
+    B = randomObject(length)
+    C = s1(B)
+    D = randomObject(length)
+        
+    a = (hom(A,B).qPolynomial()*hom(D,A).qPolynomial()).expand()
+    b = hom(D,B).qPolynomial().expand()
+    c = hom(D,C).qPolynomial().expand()
+    return b == a+c or c == b + q*a or a == q^(-1)*c + b, [A,B,C]
