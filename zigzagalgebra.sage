@@ -30,6 +30,14 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         return "Zig-zag algebra of {0} over {1}".format(self._path_semigroup.quiver(), self._base)
 
     @cached_method
+    def pathsFromTo(self,e,f):
+        ids = self.idempotents()
+        if e not in ids or f not in ids:
+            return []
+        paths = [e * x * f for x in self.basis()]
+        return [p for p in paths if p != 0]
+    
+    @cached_method
     def idempotents(self):
         '''
         The list of idempotents of self.

@@ -9,16 +9,8 @@ def sigma(Z, i, C):
     sigma(Z, i, C) = Cone(P_i tensor_k iP tensor C -> C)[1]
 
     '''
-    ids = Z.idempotents()
-    e = ids[i-1] # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
+    e = Z.idempotents()[i-1] # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
     Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
-    pathsFromE = {}
-    starts = [e * x for x in Z.basis()]
-    nonzero_starts = [p for p in starts if p != 0]
-    for i in range(0, len(ids)):
-        f = ids[i]
-        allPathsFromE = [p * f for p in nonzero_starts]
-        pathsFromE[i] = [p for p in allPathsFromE if p != 0]
 
     # We now form a complex Q whose objects are shifts of copies of Pi 
     QObjects = {}
@@ -31,7 +23,7 @@ def sigma(Z, i, C):
         for i in range(0, len(C.objects(place))):
             p = C.objects(place)[i]
             f = p.idempotent()
-            EXF = pathsFromE[Z.idempotents().index(f)]
+            EXF = Z.pathsFromTo(e,f)
             EXFs[place][i] = EXF
             for k in range(0, len(EXF)):
                 monomial = EXF[k]
@@ -86,10 +78,6 @@ def sigmaInverse(Z, i, C):
     '''
     e = Z.idempotents()[i-1] # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
     Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
-    pathsFromE = {}
-    for i in range(0, len(Z.idempotents())):
-        f = Z.idempotents()[i]
-        pathsFromE[i] = filter(lambda x: x != 0, [e * x * f for x in Z.basis()])
 
     # We now form a complex Q whose objects are shifts of copies of Pi 
     QObjects = {}
@@ -102,7 +90,7 @@ def sigmaInverse(Z, i, C):
         for i in range(0, len(C.objects(place))):
             p = C.objects(place)[i]
             f = p.idempotent()
-            EXF = pathsFromE[Z.idempotents().index(f)]
+            EXF = Z.pathsFromTo(e,f)
             EXFs[place][i] = EXF
             dualPairs = [(path, Z.dualize(path)) for path in [x * e for x in Z.basis()] if path != 0]
             dualPairsf = [(t, v*f) for (t,v) in dualPairs]
