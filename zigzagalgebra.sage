@@ -103,6 +103,11 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         for c in self.basis():
             if b * t * c * s in self.loops():
                 return c
+
+    @cached_method
+    def dualPairs(self, e, f):
+        auxPairs = [(path, self.dualize(path)) for path in [x * e for x in self.basis()] if path != 0]
+        return [(t,v*f) for (t,v) in auxPairs]
     
     # Returns the degree of a homogeneous element.
     @cached_method    

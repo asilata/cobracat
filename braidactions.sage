@@ -92,12 +92,10 @@ def sigmaInverse(Z, i, C):
             f = p.idempotent()
             EXF = Z.pathsFromTo(e,f)
             EXFs[place][i] = EXF
-            dualPairs = [(path, Z.dualize(path)) for path in [x * e for x in Z.basis()] if path != 0]
-            dualPairsf = [(t, v*f) for (t,v) in dualPairs]
             for k in range(0, len(EXF)):
                 monomial = EXF[k]
                 QObjects[place][(i,k)] = Pi.twistBy(p.twist() + 2 - Z.deg(monomial))
-                mapsCtoQ[place][(i,k)] = sum([t * Z.coeff(Z(vf), monomial) for (t,vf) in dualPairsf])
+                mapsCtoQ[place][(i,k)] = sum([t * Z.coeff(Z(vf), monomial) for (t,vf) in Z.dualPairs(e,f)])
 
     QMaps = {}
     for place in range(C.minIndex(), C.maxIndex()):
