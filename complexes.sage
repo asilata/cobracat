@@ -6,6 +6,8 @@
 from sage.misc.lazy_list import lazy_list
 from itertools import count
 
+# Setting this to true calls checkComplexity() each time a complex is created, as well as checkMap() when a cone is created.
+DEBUG = False
 
 class ProjectiveComplex(object):
     '''The class of ProjectiveComplexes over a ring (not necessarily
@@ -38,8 +40,9 @@ class ProjectiveComplex(object):
             self._minIndex = 0
             self._maxIndex = 0
 
-        if not self.checkComplexity():
-            print("Warning: This is not a chain complex!")
+        if DEBUG:
+            if not self.checkComplexity():
+                print("Warning: This is not a chain complex!")
 
     def __str__(self):
         ks = self._objects.keys()
@@ -436,10 +439,9 @@ def cone(P, Q, M):
     The cone of M: P -> Q. 
     M must define a map of chain complexes from P to Q.
     '''
-    # Comment out for speed.
-
-    if not checkMap(P, Q, M):
-        raise TypeError("Not a chain map. Cannot make a cone.")
+    if DEBUG:
+        if not checkMap(P, Q, M):
+            raise TypeError("Not a chain map. Cannot make a cone.")
 
     D = P.directSum(Q.shift(-1))
     for place in M.keys():
