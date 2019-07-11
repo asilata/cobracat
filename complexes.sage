@@ -486,15 +486,19 @@ class ProjectiveModuleOverField(object):
     def __repr__(self):
         return self._vsp.__repr__()
 
+    @cached_method
     def is_zero(self, r):
         return (r == 0)
 
+    @cached_method
     def is_invertible(self, r):
         return (r != 0)
 
+    @cached_method
     def hom(self, Q):
         return [1]
-    
+
+    @cached_method
     def invert(self, r):
         if r != 0:
             return 1/r
@@ -523,21 +527,27 @@ class GradedProjectiveModuleOverField(object):
     def __repr__(self):
         return self._name + "<" + str(self._grade) +">"
 
+    @cached_method
     def is_zero(self, r):
         return (r == 0)
 
+    @cached_method
     def grade(self):
         return self._grade
 
+    @cached_method    
     def is_invertible(self, r):
         return (r != 0)
 
+    @cached_method
     def hom(self, Q):
         return [1]
 
+    @cached_method    
     def qPolynomial(self, variables = [var('q')]):
         return variables[0]^self._grade
 
+    @cached_method    
     def invert(self, r):
         if r != 0:
             return 1/r

@@ -31,6 +31,10 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
     @cached_method
     def pathsFromTo(self,e,f):
+        '''
+        Returns the number of paths in the algebra that go from idempotent e to idempotent f.
+        Returns an empty list if e or f is not a primitive idempotent in the algebra.
+        '''
         ids = self.idempotents()
         if e not in ids or f not in ids:
             return []
