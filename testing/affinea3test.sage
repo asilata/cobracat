@@ -1,13 +1,17 @@
+# * Load files
 load("../complexes.sage")
 load("../zigzagalgebra.sage")
 load("../zigzagmodules.sage")
 load("../braidactions.sage")
+
+# * The A3 quiver and algebra
 
 a3affgraph = DiGraph({1: {2: 'a1', 3: 'c2'}, 2:{1: 'a2', 3:'b1'}, 3:{2:'b2', 1:'c1'}})
 a3aff = make_test(a3affgraph)
 R = a3aff['Z']
 R.inject_variables()
 
+# * Standard objects
 F1 = ZigZagModule(R, 1, name="P1")
 F2 = ZigZagModule(R, 2, name="P2")
 F3 = ZigZagModule(R, 3, name="P3")
@@ -20,6 +24,8 @@ P2.addObject(0, F2)
 
 P3 = ProjectiveComplex(R)
 P3.addObject(0, F3)
+
+# * Standard twists
 
 def s(i, C):
     D = sigma(R, i, C)
@@ -48,6 +54,8 @@ def t2(C):
 
 def t3(C):
     return t(3, C)
+
+# * Tests
 
 u = composeAll([s1,s2,t1])
 x = composeAll([t3,s1,s2,t1,t3])
