@@ -405,12 +405,14 @@ def hom(P, Q, degree=0):
         for (a,b) in doubleComplexObjects.get((i,j),[]):
             for (c,d) in doubleComplexObjects.get((i,j+1),[]):
                 if a == c:
-                    doubleComplexMaps[((i,j,a,b),(i,j+1,c,d))] = inducedMap2(P.objects(i)[a], Q.objects(j)[b], Q.objects(j+1)[d], Q.maps(j).get((b,d), 0))
+                    im2 = inducedMap2(P.objects(i)[a], Q.objects(j)[b], Q.objects(j+1)[d], Q.maps(j).get((b,d), 0))
+                    doubleComplexMaps[((i,j,a,b),(i,j+1,c,d))] = im2
 
             for (c,d) in doubleComplexObjects.get((i-1,j),[]):
                 if b == d:
-                    doubleComplexMaps[((i,j,a,b),(i-1,j,c,d))] = inducedMap1(P.objects(i-1)[c], P.objects(i)[a], Q.objects(j)[b], P.maps(i-1).get((c,a),0), sign = -1 * (-1)**(i-j))
-
+                    im1 = inducedMap1(P.objects(i-1)[c], P.objects(i)[a], Q.objects(j)[b], P.maps(i-1).get((c,a),0), sign = -1 * (-1)**(i-j))
+                    doubleComplexMaps[((i,j,a,b),(i-1,j,c,d))] = im1
+                    
     # Collapsing the double complex to a single complex
     Z = P.basering()
     k = Z.base_ring()
@@ -423,7 +425,12 @@ def hom(P, Q, degree=0):
             homs = Source.hom(Target)
             for hom_index in range(0, len(homs)):
                 # Add a copy of the base field for each hom in the correct degree.
-                homComplex.addObject(j-i, GradedProjectiveModuleOverField(k,1,- Z.deg(homs[hom_index]) + Target.twist() - Source.twist(), name="k"))
+                # Store the hom as a basis, along with source and target indices.
+                homComplex.addObject(j-i, GradedProjectiveModuleOverField(k,
+                                                                          1,
+                                                                          - Z.deg(homs[hom_index]) + Target.twist() - Source.twist(),
+                                                                          name="k",
+                                                                          basis={((i,a), (j,b)): homs[hom_index]}))
                 # Remember where the object is stored.
                 renumberingDictionary[(i,j,a,b,hom_index)] = len(homComplex.objects(j-i))-1 
     # Now add maps
@@ -509,17 +516,18 @@ class GradedProjectiveModuleOverField(object):
     ''''
     The class of projective modules over a field (also known as graded vector spaces).
     '''
-    def __init__(self, basefield, dimension, grade = 0, name=None):
+    def __init__(self, basefield, dimension, grade = 0, name=None, basis=None):
         if not basefield.is_field():
             raise TypeError("Basefield not a field.")
         if not dimension.is_integral() or dimension < 0:
             raise TypeError("Invalid dimension.")
         self._vsp = VectorSpace(basefield,dimension)
         self._grade = grade
+        self._basis = basis
         if name:
             self._name = name
         else:
-            self._name = self._vsp__str__()
+            self._name = self._vsp.__str__()
 
     def __str__(self):
         return self._name + "<" + str(self._grade) +">"
@@ -534,6 +542,10 @@ class GradedProjectiveModuleOverField(object):
     @cached_method
     def grade(self):
         return self._grade
+
+    @cached_method
+    def basis(self):
+        return self._basis
 
     @cached_method    
     def is_invertible(self, r):
@@ -553,3 +565,4 @@ class GradedProjectiveModuleOverField(object):
             return 1/r
         else:
             raise TypeError("Not invertible.")
+
