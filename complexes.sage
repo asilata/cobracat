@@ -316,9 +316,9 @@ class ProjectiveComplex(object):
                 continue
 
             # Change the maps from place to place+1
-
             newMapsPlace = {}
             alphaInverse = self.objects(place)[source].invert(alpha)
+            sourceBasis = self.objects(place)[source].basis()
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
                     if (i,j) == (source, target):
@@ -326,18 +326,26 @@ class ProjectiveComplex(object):
                     else:
                         changeij = self.maps(place).get((i,target), 0) * alphaInverse * self.maps(place).get((source,j), 0)
                     newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) - changeij
-
+                    # If the objects have bases, we update them to reflect the splitting.
+                    # This only needs to be done at place, not place-1, or place+1.
+                    if sourceBasis != None:
+                        iBasis = self.objects(place)[i].basis()
+                        if iBasis != None:
+                            change = self.maps(place).get((i,target), 0) * alphaInverse
+                            for elt in sourceBasis:
+                                iBasis[elt] = iBasis.get(elt,0) - change
 
             # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
             # Now we update the maps
             self._maps[place] = newMapsPlace
 
-            # At this point, our complex is a direct sum of F (source) -> F (target) and another complex
+            # At this point, our complex is a direct sum of F (source) -> F (target) and another complex C
             # We simply drop the source and the target
             self._objects[place].pop(source)
             self._objects[place+1].pop(target)
 
-            # and re-index as needed
+
+            # We now re-index as needed
             matrixAtPlace = matrix(len(self.objects(place))+1, len(self.objects(place+1))+1, self.maps(place))
             newMatrixAtPlace = matrixAtPlace.delete_rows([source]).delete_columns([target])
             self._maps[place] = newMatrixAtPlace.dict()
