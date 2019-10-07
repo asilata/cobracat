@@ -524,6 +524,9 @@ class GradedProjectiveModuleOverField(object):
     ''''
     The class of projective modules over a field (also known as graded vector spaces).
     '''
+    # What is a basis?
+    # Basis is supposed to be a dictionary {x:v} where the keys x could be anything, but the values v should be elements of a k-module.
+    # The dictionary {x:v} is supposed to represent the element formal sum v*x.
     def __init__(self, basefield, dimension, grade = 0, name=None, basis=None):
         if not basefield.is_field():
             raise TypeError("Basefield not a field.")
@@ -531,6 +534,8 @@ class GradedProjectiveModuleOverField(object):
             raise TypeError("Invalid dimension.")
         self._vsp = VectorSpace(basefield,dimension)
         self._grade = grade
+        if dimension > 1 and basis != None:
+            raise NotImplementedError("Basis only implemented for one dimensional spaces")
         self._basis = basis
         if name:
             self._name = name
