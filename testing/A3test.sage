@@ -3,6 +3,7 @@ load("../complexes.sage")
 load("../zigzagalgebra.sage")
 load("../zigzagmodules.sage")
 load("../braidactions.sage")
+load("../HN.sage")
 
 # * The A3 quiver and algebra
 
@@ -56,19 +57,23 @@ def t3(C):
     return t(3, C)
 
 # * Tests
+x = s1(P2)
+y = s2(P3)
+z = s1(y)
 
-u = composeAll([s1,s2,t1])
-x = composeAll([t3,s1,s2,t1,t3])
-y = composeAll([s2,t3,s1,s2,t1,s3,t2])
+sx = composeAll([s1,s2,t1])
+sy = composeAll([s2,s3,t2])
+sx = composeAll([s1,s2,t1])
+sz = composeAll([s1,s2,s3,t2,t1])
+stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2),P1]
 
+# * HN Filtrations
+# Let us go through the charts
 
-objects = [P1, P2, P3, s1(P2), s1(P3), s2(P3)]
-
-def actOnPs(b):
-    return b(P1),b(P2),b(P3)
-
-def actOnAll(b):
-    return b(P1),b(P2),b(P3),b(s1(P2)), b(s2(P3)), b(s1(P3))
-
-def actOnQs(b):
-    return b(s1(s3(s2(P1)))), b(s1(s3(s2(t1(P3))))), b(s1(s3(s2(t1(t3(P2)))))), b(s1(s3(s2(t1(t3(t2(P3))))))), b(s1(s3(s2(t1(t3(t2(t3(P1))))))))
+HN(P2, stab)
+HN(s3(P2), stab)
+HN(sz(s3(P2)), stab)
+HN(s1(sz(s3(P2))), stab)
+HN(s2(s1(sz(s3(P2)))), stab)    
+HN(t3(s2(s1(sz(s3(P2))))),stab)
+HN(s2(t3(s2(s1(sz(s3(P2)))))),stab)
