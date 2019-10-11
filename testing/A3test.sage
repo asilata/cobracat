@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 # * Load files
 load("../complexes.sage")
 load("../zigzagalgebra.sage")
