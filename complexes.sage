@@ -316,9 +316,9 @@ class ProjectiveComplex(object):
                 continue
 
             # Change the maps from place to place+1
-
             newMapsPlace = {}
             alphaInverse = self.objects(place)[source].invert(alpha)
+            sourceBasis = self.objects(place)[source].basis()
             for i in range(0, len(self.objects(place))):
                 for j in range(0, len(self.objects(place+1))):
                     if (i,j) == (source, target):
@@ -326,18 +326,26 @@ class ProjectiveComplex(object):
                     else:
                         changeij = self.maps(place).get((i,target), 0) * alphaInverse * self.maps(place).get((source,j), 0)
                     newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) - changeij
-
+                    # If the objects have bases, we update them to reflect the splitting.
+                    # This only needs to be done at place, not place-1, or place+1.
+                    if sourceBasis != None:
+                        iBasis = self.objects(place)[i].basis()
+                        if iBasis != None:
+                            change = self.maps(place).get((i,target), 0) * alphaInverse
+                            for elt in sourceBasis:
+                                iBasis[elt] = iBasis.get(elt,0) - change
 
             # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
             # Now we update the maps
             self._maps[place] = newMapsPlace
 
-            # At this point, our complex is a direct sum of F (source) -> F (target) and another complex
+            # At this point, our complex is a direct sum of F (source) -> F (target) and another complex C
             # We simply drop the source and the target
             self._objects[place].pop(source)
             self._objects[place+1].pop(target)
 
-            # and re-index as needed
+
+            # We now re-index as needed
             matrixAtPlace = matrix(len(self.objects(place))+1, len(self.objects(place+1))+1, self.maps(place))
             newMatrixAtPlace = matrixAtPlace.delete_rows([source]).delete_columns([target])
             self._maps[place] = newMatrixAtPlace.dict()
@@ -405,12 +413,14 @@ def hom(P, Q, degree=0):
         for (a,b) in doubleComplexObjects.get((i,j),[]):
             for (c,d) in doubleComplexObjects.get((i,j+1),[]):
                 if a == c:
-                    doubleComplexMaps[((i,j,a,b),(i,j+1,c,d))] = inducedMap2(P.objects(i)[a], Q.objects(j)[b], Q.objects(j+1)[d], Q.maps(j).get((b,d), 0))
+                    im2 = inducedMap2(P.objects(i)[a], Q.objects(j)[b], Q.objects(j+1)[d], Q.maps(j).get((b,d), 0))
+                    doubleComplexMaps[((i,j,a,b),(i,j+1,c,d))] = im2
 
             for (c,d) in doubleComplexObjects.get((i-1,j),[]):
                 if b == d:
-                    doubleComplexMaps[((i,j,a,b),(i-1,j,c,d))] = inducedMap1(P.objects(i-1)[c], P.objects(i)[a], Q.objects(j)[b], P.maps(i-1).get((c,a),0), sign = -1 * (-1)**(i-j))
-
+                    im1 = inducedMap1(P.objects(i-1)[c], P.objects(i)[a], Q.objects(j)[b], P.maps(i-1).get((c,a),0), sign = -1 * (-1)**(i-j))
+                    doubleComplexMaps[((i,j,a,b),(i-1,j,c,d))] = im1
+                    
     # Collapsing the double complex to a single complex
     Z = P.basering()
     k = Z.base_ring()
@@ -423,7 +433,12 @@ def hom(P, Q, degree=0):
             homs = Source.hom(Target)
             for hom_index in range(0, len(homs)):
                 # Add a copy of the base field for each hom in the correct degree.
-                homComplex.addObject(j-i, GradedProjectiveModuleOverField(k,1,- Z.deg(homs[hom_index]) + Target.twist() - Source.twist(), name="k"))
+                # Store the hom as a basis, along with source and target indices.
+                homComplex.addObject(j-i, GradedProjectiveModuleOverField(k,
+                                                                          1,
+                                                                          - Z.deg(homs[hom_index]) + Target.twist() - Source.twist(),
+                                                                          name="k",
+                                                                          basis={((i,a), (j,b)): homs[hom_index]}))
                 # Remember where the object is stored.
                 renumberingDictionary[(i,j,a,b,hom_index)] = len(homComplex.objects(j-i))-1 
     # Now add maps
@@ -509,17 +524,23 @@ class GradedProjectiveModuleOverField(object):
     ''''
     The class of projective modules over a field (also known as graded vector spaces).
     '''
-    def __init__(self, basefield, dimension, grade = 0, name=None):
+    # What is a basis?
+    # Basis is supposed to be a dictionary {x:v} where the keys x could be anything, but the values v should be elements of a k-module.
+    # The dictionary {x:v} is supposed to represent the element formal sum v*x.
+    def __init__(self, basefield, dimension, grade = 0, name=None, basis=None):
         if not basefield.is_field():
             raise TypeError("Basefield not a field.")
         if not dimension.is_integral() or dimension < 0:
             raise TypeError("Invalid dimension.")
         self._vsp = VectorSpace(basefield,dimension)
         self._grade = grade
+        if dimension > 1 and basis != None:
+            raise NotImplementedError("Basis only implemented for one dimensional spaces")
+        self._basis = basis
         if name:
             self._name = name
         else:
-            self._name = self._vsp__str__()
+            self._name = self._vsp.__str__()
 
     def __str__(self):
         return self._name + "<" + str(self._grade) +">"
@@ -534,6 +555,10 @@ class GradedProjectiveModuleOverField(object):
     @cached_method
     def grade(self):
         return self._grade
+
+    @cached_method
+    def basis(self):
+        return self._basis
 
     @cached_method    
     def is_invertible(self, r):
@@ -553,3 +578,4 @@ class GradedProjectiveModuleOverField(object):
             return 1/r
         else:
             raise TypeError("Not invertible.")
+

@@ -13,7 +13,7 @@ class ZigZagModule(Module):
 
     Element = ZigZagModuleElement
     
-    def __init__(self, R, i, twist = 0, name="P"):
+    def __init__(self, R, i, twist = 0, name="P", basis=None):
         '''
         The projective module P = R*e, where e is the i-th idempotent in R.idempotents()
         '''
@@ -22,6 +22,7 @@ class ZigZagModule(Module):
         self._idempotent = R.idempotents()[i-1]  # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
         self._twist = twist
         self._name = name
+        self._basis = basis
         Module.__init__(self, R, category=LeftModules(R))
 
     def copy(self):
@@ -62,6 +63,10 @@ class ZigZagModule(Module):
         '''
         return (self._idempotent * r == 0)
 
+    @cached_method
+    def basis(self):
+        return self._basis
+    
     @cached_method
     def is_invertible(self, r):
         '''
