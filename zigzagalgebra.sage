@@ -52,7 +52,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         The coefficient of monomial in the expansion of r in the basis. 
         Monomial must be a basis element.
         '''
-        i = self.basis().index(monomial)
+        i = list(self.basis()).index(monomial)
         return r.monomial_coefficients().get(i, 0)
 
     @cached_method
