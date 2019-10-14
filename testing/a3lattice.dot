@@ -1,0 +1,77 @@
+strict digraph a3 {
+	rankdir="BT";
+
+	s1s2s3s1;
+
+	s1s2s3;
+	s2sysz; // Gamma-orbit
+	sys1sx;
+
+	s1s2s1; 
+	s2sys2; // Gamma-orbit
+	sys1sy;
+
+	s1s2;
+	s2sy; // Gamma-orbit
+	sys1;
+
+	s1sy_sysz_szs1;
+	s2s1_s1sx_sxs2; // Gamma-orbit
+	sys2_s2s3_s3sy;
+
+	s1s3;
+	s2sz; // Gamma-orbit
+	sysx;
+
+	sys2_s2s3_s3sy;
+	s1sy_sysz_szs1; // Gamma-orbit
+	s2s1_s1sx_sxs2;
+
+	s1s1;
+	s2s2; // Gamma-orbit
+	sysy;
+	// s2s1; (Duplicate from above)
+
+	s1;
+	s2;
+	s3;
+	sx;
+	sy;
+	sz;
+
+	s1s2s1, s1s2s3 -> s1s2s3s1;
+	s2sys2, s2sysz -> s1s2s3s1;  // Gamma-orbit
+	sys1sy, sys1sx -> s1s2s3s1;
+
+	s1s2, s1sy_sysz_szs1, s1s3, sys2_s2s3_s3sy -> s1s2s3;
+	s2sy, s2s1_s1sx_sxs2, s2sz, s1sy_sysz_szs1 -> s2sysz; // Gamma-orbit
+	sys1, sys2_s2s3_s3sy, sysx, s2s1_s1sx_sxs2 -> sys1sx;
+
+	s1s2, s1s1, s2s1_s1sx_sxs2 -> s1s2s1;
+	s2sy, s2s2, sys2_s2s3_s3sy -> s2sys2; // Gamma-orbit
+	sys1, sysy, s1sy_sysz_szs1 -> sys1sy;
+
+	s1 -> s1s2;
+	s2 -> s2sy; // Gamma-orbit
+	sy -> sys1;
+
+	s1,sz,sy -> s1sy_sysz_szs1;
+	s2,sx,s1 -> s2s1_s1sx_sxs2; // Gamma-orbit
+	sy,s3,s2 -> sys2_s2s3_s3sy;
+
+	s1,s3 -> s1s3;
+	s2, sz -> s2sz; // Gamma-orbit
+	sy, sx -> sysx;
+
+	s2, s3, sy -> sys2_s2s3_s3sy;
+	sy, sz, s1 -> s1sy_sysz_szs1; // Gamma-orbit
+	s1, sx, s2 -> s2s1_s1sx_sxs2;
+
+	s1 -> s1s1;
+	s2 -> s2s2; // Gamma-orbit
+	sy -> sysy;
+
+	s1, s2, sx -> s2s1_s1sx_sxs2;
+	s2, sy, s3 -> sys2_s2s3_s3sy; // Gamma-orbit
+	sy, s1, sz -> s1sy_sysz_szs1;
+}

@@ -62,13 +62,13 @@ def t3(C):
 # * HN Filtrations (convex square stability condition):
 # Let us go through the charts
 
-HN(P2, stab)
-HN(s3(P2), stab)
-HN(sz(s3(P2)), stab)
-HN(s1(sz(s3(P2))), stab)
-HN(s2(s1(sz(s3(P2)))), stab)    
-HN(t3(s2(s1(sz(s3(P2))))),stab)
-HN(s2(t3(s2(s1(sz(s3(P2)))))),stab)
+# HN(P2, stab)
+# HN(s3(P2), stab)
+# HN(sz(s3(P2)), stab)
+# HN(s1(sz(s3(P2))), stab)
+# HN(s2(s1(sz(s3(P2)))), stab)    
+# HN(t3(s2(s1(sz(s3(P2))))),stab)
+# HN(s2(t3(s2(s1(sz(s3(P2)))))),stab)
 
 # *
 
@@ -90,8 +90,11 @@ X = s2(P1)
 Y = s2(P3)
 Z = s1(s2(P3))
 sx = composeAll([s2,s1,t2])
+tx = composeAll([s2,t1,t2])
 sy = composeAll([s2,s3,t2])
+ty = composeAll([s2,t3,t2])
 sz = composeAll([s1,s2,s3,t2,t1])
+tz = composeAll([s1,s2,t3,t2,t1])
 
 # ** Stability condition:
 stab = [P3, Y, Z, P1, X, P2]
@@ -133,7 +136,77 @@ stab = [P3, Y, Z, P1, X, P2]
 #  [[0]: P1<0> :[0]],
 #  [[-1]: P2<-1> → P1<0> :[0], [-2]: P3<-2> :[-2]],
 #  [[0]: P2<0> :[0], [-1]: P3<-1> :[-1]]]
+[HN(t3(o),stab) for o in stab]
+# [[[1]: P3<2> :[1]],
+#  [[1]: P3<2> :[1], [-1]: P2<-1> → P3<0> :[0]],
+#  [[1]: P3<2> :[1], [-2]: P1<-2> → P2<-1> → P3<0> :[0]],
+#  [[0]: P1<0> :[0]],
+#  [[0]: P1<0> :[0], [-1]: P2<-1> → P3<0> :[0]],
+#  [[0]: P2<0> → P3<1> :[1]]]
+[HN(sx(o),stab) for o in stab]
+# [[[0]: P1<0> :[0], [-1]: P2<-1> → P3<0> :[0]],
+#  [[-1]: P2<-1> → P3<0> :[0]],
+#  [[-2]: P1<-2> → P2<-1> → P3<0> :[0], [-4]: P2<-5> → P1<-4> :[-3]],
+#  [[0]: P1<0> :[0], [-2]: P2<-3> → P1<-2> :[-1]],
+#  [[-2]: P2<-3> → P1<-2> :[-1]],
+#  [[0]: P1<1> :[0]]]
+[HN(tx(o),stab) for o in stab]
+# [[[1]: P2<1> → P1<2> :[2], [0]: P3<0> :[0]],
+#  [[-1]: P2<-1> → P3<0> :[0]],
+#  [[-1]: P2<-1> → P3<0> :[0], [-2]: P2<-3> :[-2]],
+#  [[0]: P2<-1> :[0]],
+#  [[0]: P2<1> → P1<2> :[1]],
+#  [[1]: P2<2> → P1<3> :[2], [0]: P2<0> :[0]]]
+[HN(sy(o),stab) for o in stab]
+# [[[0]: P3<0> :[0], [-2]: P2<-3> → P3<-2> :[-1]],
+#  [[-2]: P2<-3> → P3<-2> :[-1]],
+#  [[-2]: P1<-2> :[-2]],
+#  [[0]: P1<0> :[0], [-1]: P2<-1> → P3<0> :[0]],
+#  [[-1]: P2<-1> → P1<0> :[0]],
+#  [[0]: P3<1> :[0]]]
+[HN(ty(o),stab) for o in stab]
+# [[[0]: P2<-1> :[0]],
+#  [[0]: P2<1> → P3<2> :[1]],
+#  [[0]: P2<1> → P3<2> :[1], [-2]: P1<-2> → P2<-1> → P3<0> :[0]],
+#  [[0]: P1<0> → P2<1> → P3<2> :[2]],
+#  [[-1]: P2<-1> → P1<0> :[0]],
+#  [[1]: P2<2> → P3<3> :[2], [0]: P2<0> :[0]]]
+[HN(sz(o),stab) for o in stab]
+# [[[0]: P3<0> :[0], [-3]: P1<-4> → P2<-3> → P3<-2> :[-1]],
+#  [[-1]: P2<-1> → P3<0> :[0], [-3]: P1<-4> → P2<-3> → P3<-2> :[-1]],
+#  [[-3]: P1<-4> → P2<-3> → P3<-2> :[-1]],
+#  [[0]: P2<1> → P3<2> :[1]],
+#  [[0]: P2<1> → P3<2> :[1], [-1]: P2<-1> :[-1]],
+#  [[0]: P2<0> :[0]]]
+[HN(tz(o),stab) for o in stab]
+# [[[0]: P2<-1> :[0], [-1]: P1<-2> :[-1]],
+#  [[-1]: P1<-2> :[-1]],
+#  [[-1]: P1<0> → P2<1> → P3<2> :[1]],
+#  [[1]: P1<2> → P2<3> → P3<4> :[3], [0]: P1<0> :[0]],
+#  [[1]: P1<2> → P2<3> → P3<4> :[3], [-1]: P2<-1> → P1<0> :[0]],
+#  [[0]: P2<0> :[0]]]
 
 # These seem to give all the charts
+# ** Transitions:
+# *** Good maps for P1 -> P2 extension:
+[[HN(twist(P1), stab), HN(twist(P2), stab), HN(twist(s1(P2)), stab)] for twist in [s1,t1,s2,t2,s3,t3,sx,tx, sy, ty, sz, tz]]
+# Good: s1, t2, s3, sx, tx, sy, ty, tz
+#  Bad: t1, s2, t3, sz
+# *** Good maps for P3 -> P2 extension:
+[[HN(twist(P2), stab), HN(twist(P3), stab), HN(twist(s3(P2)), stab)] for twist in [s1,t1,s2,t2,s3,t3,sx,tx, sy, ty, sz, tz]]
+# Good: s1, t1, t2, s3, sx, tx, sy, ty, sz, tz
+#  Bad: s2, t3
+# *** Good maps for P1 -> P2 -> P3 -> P3 extension:
+[[HN(twist(z), stab), HN(twist(P3), stab), HN(twist(t3(z)), stab)] for twist in [s1,t1,s2,t2,s3,t3,sx,tx, sy, ty, sz, tz]]
+# Bad: s3, sy, ty, tz
+# *** Good maps for P1 -> P1 -> P2 -> P3 extension:
+[[HN(twist(P1), stab), HN(twist(z), stab), HN(twist(s1(z)), stab)] for twist in [s1,t1,s2,t2,s3,t3,sx,tx, sy, ty, sz, tz]]
+# Bad: t1, sz
+# *** Guess for atoms
+def doesLower(o, twist, stab):
+    return all([phase(h) < phase(o) for h in HN(twist(o),stab)])
 
-
+#level4 = [[s1,s2,s3,s1]]
+#level3 = [[s1,s2,s3]; [s1, s2, s1] ]
+#level2 = [[s1,s2], [s1,sy], [s1, s3], [s2, s3]; [s1, s2], [s1, s1], [s2, s1]; ...]
+#level1 = [s1, s2, s3, sx, sy, sz]
