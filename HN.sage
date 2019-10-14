@@ -1,12 +1,4 @@
-# * Calculate the Harder Narasimhan Filtration
-
-def HN(ob, stab):
-    '''
-    Compute the HN filtration of ob with respect to the given stability condition.
-    stab is a list of object ordered by increasing phases.
-    The return value is the stable pieces in the HN filtration in decrease order of phase.
-    '''
-    def internalTwist(ob, deg):
+def internalTwist(ob, deg):
         newObjects = {}
         newMaps = {}
         for i in range(ob.minIndex(), ob.maxIndex()+1):
@@ -16,6 +8,13 @@ def HN(ob, stab):
                 newMaps[i] = ob.maps(i)
         return ProjectiveComplex(ob.basering(), newObjects, newMaps, ob.names())
 
+# * Calculate the Harder Narasimhan Filtration
+def HN(ob, stab):
+    '''
+    Compute the HN filtration of ob with respect to the given stability condition.
+    stab is a list of object ordered by increasing phases.
+    The return value is the stable pieces in the HN filtration in decrease order of phase.
+    '''
     def findTop(ob):
         highestHeartFound = -Infinity
         highestObjectFound = None
@@ -50,4 +49,16 @@ def HN(ob, stab):
         ob.minimize()
 
     return HNFiltration
-    
+
+# Assumption: standard stable objects end in homologica degree 0.
+def phase(stable):
+    it = None
+    heart = None
+    for i in range(stable.maxIndex(), stable.minIndex()-1, -1):
+        if len(stable.objects(i)) > 0:
+            it = stable.objects(i)[0].twist()
+            heart = i
+            break
+    stdStable = internalTwist(stable,-it).shift(i)
+    # Currently a hack to check up to isomorphism (checks string reps)
+    return (it-i, [str(s) for s in stab].index(str(stdStable)))
