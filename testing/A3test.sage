@@ -202,7 +202,7 @@ stab = [P3, Y, Z, P1, X, P2]
 # *** Good maps for P1 -> P1 -> P2 -> P3 extension:
 [[HN(twist(P1), stab), HN(twist(z), stab), HN(twist(s1(z)), stab)] for twist in [s1,t1,s2,t2,s3,t3,sx,tx, sy, ty, sz, tz]]
 # Bad: t1, sz
-# *** Guess for atoms
+# *** Guess for atoms:
 def doesLower(o, twist, stab):
     return all([phase(h) < phase(o) for h in HN(twist(o),stab)])
 
@@ -210,3 +210,25 @@ def doesLower(o, twist, stab):
 #level3 = [[s1,s2,s3]; [s1, s2, s1] ]
 #level2 = [[s1,s2], [s1,sy], [s1, s3], [s2, s3]; [s1, s2], [s1, s1], [s2, s1]; ...]
 #level1 = [s1, s2, s3, sx, sy, sz]
+# *** Good halfspaces:
+# < phi is a good halfspace for beta if beta preserves it.
+def isGoodHalfspace(twist, stable, stab):
+    # Here phi = phi(stable)
+    for o in stab:
+        if phase(o, stab) < phase(stable, stab) and not all([phase(piece, stab) < phase(stable, stab) for piece in HN(twist(o), stab)]):
+            return False
+        elif not all([phase(piece, stab) < phase(stable, stab) for piece in HN(twist(o.shift(-1)), stab)]):
+            return False
+    return True
+
+[isGoodHalfspace(s1, o, stab) for o in stab]
+#[True, True, False, True, True, False]
+[isGoodHalfspace(s3, o, stab) for o in stab]
+#[True, True, False, False, False, False]
+[isGoodHalfspace(sx, o, stab) for o in stab]
+#[False, False, False, False, True, True]
+[isGoodHalfspace(composeAll([s1,s1]), o, stab) for o in stab]
+#[True, True, False, True, True, False]
+[isGoodHalfspace(composeAll([s2,s1]), o, stab) for o in stab]
+#[True, False, False, True, False, False]
+[isGoodHalfspace(composeAll([s1,s2,s3,s1]), o, stab) for o in stab]
