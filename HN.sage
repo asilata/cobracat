@@ -51,7 +51,7 @@ def HN(ob, stab):
     return HNFiltration
 
 # Assumption: standard stable objects end in homologica degree 0.
-def phase(stable):
+def phase(stable, stab):
     it = None
     heart = None
     for i in range(stable.maxIndex(), stable.minIndex()-1, -1):
