@@ -82,7 +82,7 @@ sy = composeAll([s2,s3,t2])
 sx = composeAll([s1,s2,t1])
 sz = composeAll([s1,s2,s3,t2,t1])
 # ** Stability condition:
-stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2),P1]
+stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2), P1]
 
 # * HN Filtrations (concave square stability condition):
 # ** Stable objects:
@@ -204,7 +204,7 @@ stab = [P3, Y, Z, P1, X, P2]
 # Bad: t1, sz
 # *** Guess for atoms:
 def doesLower(o, twist, stab):
-    return all([phase(h) < phase(o) for h in HN(twist(o),stab)])
+    return all([phase(h, stab) < phase(o, stab) for h in HN(twist(o),stab)])
 
 #level4 = [[s1,s2,s3,s1]]
 #level3 = [[s1,s2,s3]; [s1, s2, s1] ]
@@ -232,3 +232,55 @@ def isGoodHalfspace(twist, stable, stab):
 [isGoodHalfspace(composeAll([s2,s1]), o, stab) for o in stab]
 #[True, False, False, True, False, False]
 [isGoodHalfspace(composeAll([s1,s2,s3,s1]), o, stab) for o in stab]
+
+phi = composeAll([s1,s2,s3,s1,s2,s2,s2,s1,s3])
+[doesLower(o, phi, stab) for o in stab]
+
+stablePhases = [0, 0.1, 0.2, 0.3, 0.3, 0.3]
+stableObjects = [stab[0], stab[1], stab[2], stab[3], stab[5]]
+stableTwists = [s3, sy, sz, s1, s2]
+inverseStableTwists = [t3, ty, tz, t1, t2]
+names = ["t3", "ty", "tz", "t1", "t2"]
+
+def lowerByOne(twist, name):
+    lows = []
+    for i in range(0,5):
+        o = stableObjects[i]
+        if all([phase(h, stab, stablePhases) < phase(o, stab, stablePhases) for h in HN(twist(o), stab)]):
+            lows.append((composeAll([twist, inverseStableTwists[i]]), name+"."+names[i]))
+    return lows
+
+def str_rep(twist):
+    string = ""
+    for o in stab:
+        string = string + str(o) + "->" + str(twist(o)) + ";"
+    return string
+
+G = DiGraph()
+twistNames = {}
+
+def addDescendants(twist, name):
+    l = lowerByOne(twist, name)
+    for (a,b) in l:
+        if str_rep(a) in G:
+            G.add_edge(str_rep(a), str_rep(twist))
+        else:
+            print "Added a vertex: " + b
+            G.add_vertex(str_rep(a))
+            twistNames[str_rep(a)] = b
+            G.add_edge(str_rep(a), str_rep(twist))
+        addDescendants(a, b)
+            
+    
+gamma = composeAll([s1,s2,s3,s1])
+twistNames[str_rep(gamma)] = "gamma"
+G.add_vertex(str_rep(gamma))
+
+def makeReadable(G):
+    H = DiGraph()
+    for v in G.vertices():
+        H.add_vertex(twistNames[v])
+    for (a,b,_) in G.edges():
+        H.add_edge((twistNames[a], twistNames[b]))
+    return H
+    

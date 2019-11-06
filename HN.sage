@@ -51,7 +51,7 @@ def HN(ob, stab):
     return HNFiltration
 
 # Assumption: standard stable objects end in homologica degree 0.
-def phase(stable, stab):
+def phase(stable, stab, stablePhases=None):
     it = None
     heart = None
     for i in range(stable.maxIndex(), stable.minIndex()-1, -1):
@@ -61,4 +61,9 @@ def phase(stable, stab):
             break
     stdStable = internalTwist(stable,-it).shift(i)
     # Currently a hack to check up to isomorphism (checks string reps)
-    return (it-i, [str(s) for s in stab].index(str(stdStable)))
+    index = [str(s) for s in stab].index(str(stdStable))
+    if stablePhases != None:
+            phase = stablePhases[index]
+    else:
+            phase = index
+    return (it-i, phase)
