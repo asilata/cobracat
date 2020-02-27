@@ -79,14 +79,18 @@ z = s1(y)
 # ** Stable twists:
 sx = composeAll([s1,s2,t1])
 sy = composeAll([s2,s3,t2])
-sx = composeAll([s1,s2,t1])
 sz = composeAll([s1,s2,s3,t2,t1])
+
+tx = composeAll([s1,t2,t1])
+ty = composeAll([s2,t3,t2])
+tz = composeAll([s1,s2,t3,t2,t1])
+
 # ** Stability condition:
 stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2), P1]
 
 # * HN Filtrations (concave square stability condition):
 # ** Stable objects:
-X = s2(P1)
+X = s1(P)
 Y = s2(P3)
 Z = s1(s2(P3))
 sx = composeAll([s2,s1,t2])
