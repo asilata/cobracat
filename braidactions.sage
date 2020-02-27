@@ -10,7 +10,10 @@ def sigma(Z, i, C):
 
     '''
     e = Z.idempotents()[i-1] # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
-    Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
+    if Z.isA1Hat():
+        Pi = A1HatModule(Z, i, twist = 0, name="P" + str(i))
+    else:
+        Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
 
     # We now form a complex Q whose objects are shifts of copies of Pi 
     QObjects = {}
@@ -77,7 +80,10 @@ def sigmaInverse(Z, i, C):
 
     '''
     e = Z.idempotents()[i-1] # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
-    Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
+    if Z.isA1Hat():
+        Pi = A1HatModule(Z, i, twist = 0, name="P" + str(i))
+    else:
+        Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
 
     # We now form a complex Q whose objects are shifts of copies of Pi 
     QObjects = {}

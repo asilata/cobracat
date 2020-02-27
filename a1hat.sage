@@ -1,35 +1,39 @@
 from itertools import product
 from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element import FiniteDimensionalAlgebraElement
+from sage.modules.module import Module
+from sage.structure.element import ModuleElement
 
-class ZigZagAlgebraElement(FiniteDimensionalAlgebraElement):
+class A1HatAlgebraElement(FiniteDimensionalAlgebraElement):
     def __init__(self, A, elt=None, check=True):
         FiniteDimensionalAlgebraElement.__init__(self, A = A, elt = elt, check = check)
-        
 
-class ZigZagAlgebra(FiniteDimensionalAlgebra):
+
+class A1HatAlgebra(FiniteDimensionalAlgebra):
     '''
-    The class for the ZigZag Algebra equipped with a basis.
+    The class for the A1-hat zigzag algebra equipped with a basis.
     '''
-    Element = ZigZagAlgebraElement
+    Element = A1HatAlgebraElement
     
-    def __init__(self, k, P): # k = base field, P = path semigroup of a quiver
+    def __init__(self, k): # k = base field, P = path semigroup of a quiver
         '''
         The ZigZag Algebra over base field k.
         P is the path semigroup of a quiver.
         '''
+        a1hatgraph = DiGraph({1: {2: ['x1', 'y1']}, 2:{1:['x2', 'y2']}}, multiedges=True)
+        P = a1hatgraph.path_semigroup()
         R = P.algebra(k)
         self._path_semigroup = P
         self._basis = list(R.idempotents()) + list(R.arrows()) + getLoops(R)
         table = [_getMatrix(R, self._basis, x) for x in self._basis]
         names = [str(x).replace('*','') for x in self._basis]
-        super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().Graded().WithBasis().Associative())
+        super(A1HatAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().Graded().WithBasis().Associative())
 
     def _repr_(self):
-        return "Zig-zag algebra of {0} over {1}".format(self._path_semigroup.quiver(), self._base)
+        return "A1 Hat zigzag algebra of {0} over {1}".format(self._path_semigroup.quiver(), self._base)
 
     @cached_method
     def isA1Hat(self):
-        return False
+        return True
 
     @cached_method
     def pathsFromTo(self,e,f):
@@ -100,8 +104,8 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     @cached_method
     def dualize(self, b):
         '''
-        The element a such that a*b and b*a are both loops. Note that deg(a) + deg(b) = 2.
-        More explicitly, if b is a loop at a vertex v, then a is the idempotent at v; if b is the idempotent at v then a is the loop at v; if b represents an an arrow, then a represents the reverse arrow. The element b must be in the basis.
+        An element a such that a*b and b*a are both loops. Note that deg(a) + deg(b) = 2.
+        More explicitly, if b is a loop at a vertex v, then a is the idempotent at v; if b is the idempotent at v then a is a loop at v; if b represents an an arrow, then a represents the reverse arrow. The element b must be in the basis.
         '''
         if b not in self.basis():
             raise Exception("{0} is not a basis element.".format(b))
@@ -132,39 +136,34 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
                 degs = degs + [1]
             else:
                 degs = degs + [2]
-        if len(uniq(degs)) == 1:
+        if len(sorted(set((degs)))) == 1:
             return degs[0]
         else:
             raise Exception("Element not homogeneous: " + str(a))
 
 # Helper functions to get zigzag algebra elements and relations from a path algebra.
-@cached_method
-def _getTwoSteps(R):
-    """
-    Return a dictionary with keys all pairs of idempotents of R. The value of each pair of idempotents is the list all length 2 paths beginning and ending at the corresponding vertices.
-    """
-    twosteps = {}
-    len2paths = filter(lambda x: x != 0, [R.prod(m) for m in product(R.arrows(), repeat = 2)])
-    for e in R.idempotents():
-        for f in R.idempotents():
-            twosteps[(e,f)] = filter(lambda x: x != 0, [R.prod([e,x,f]) for x in len2paths])
-    return twosteps
-
-@cached_method
-def zigZagReduce(R,x):
+#@cached_method
+def a1HatReduce(R,x):
     """
     Reduce an element x of R modulo the zigzag relations.
     """
+    x1,x2,y1,y2 = R.arrows()[0], R.arrows()[1], R.arrows()[2], R.arrows()[3]
     monomials = x.sort_by_vertices()
     reduction = 0
-    twosteps = _getTwoSteps(R)
     for m in monomials:
         z,v1,v2 =m[0],m[1],m[2]
-        reduction = reduction + add([c*R(m) for m,c in z if len(m) < 2]) # Keep everything of length less than 2.
-        if v1 == v2: # If we're looking at loops,
-            e = _getIdempotent(R, v1) # get the corresponding idempotent, and
-            l = twosteps[(e,e)][0] # select the first 2-loop in the previously chosen order.
-            reduction = reduction + add([c*l for m,c in z if len(m) == 2]) # Then add up copies of this chosen loop.
+        reduction = reduction + add([c*R(t) for t,c in z if len(t) < 2]) # Keep everything of length less than 2.
+        if v1 == v2:
+            for t,c in z:
+                if len(t) != 2:
+                    continue
+                if t in [x1*y2, x2*y1, y1*x2, y2*x1]:
+                    continue
+                if t == y1*y2:
+                    t = x1*x2
+                if t == y2*y1:
+                    t = x2*x1
+                reduction = reduction + c*R(t)
     return reduction
 
 @cached_method
@@ -172,13 +171,8 @@ def getLoops(R):
     """
     Return self-loops (of length two) in the path algebra R.
     """
-    loops = []
-    twosteps = _getTwoSteps(R)
-    for e in R.idempotents():
-        eloops = twosteps[(e,e)]
-        if eloops != []:
-                loops.append(zigZagReduce(R,eloops[0]))
-    return loops
+    x1,x2,y1,y2 = R.arrows()[0], R.arrows()[1], R.arrows()[2], R.arrows()[3]
+    return [R(x1*x2), R(x2*x1)]
 
 @cached_method
 def _getIdempotent(R,v):
@@ -197,7 +191,7 @@ def _getCoefficients(R, basis, x):
     '''
     Return the coefficients of x wrt the given basis, after a zigzag reduction.
     '''
-    reduction = R(zigZagReduce(R,x))
+    reduction = R(a1HatReduce(R,x))
     coeffDict = {R(k):v for k,v in reduction.monomial_coefficients().items()}
     return [coeffDict.get(b,0) for b in basis]
 
@@ -211,18 +205,123 @@ def _getMatrix(R, basis, x):
         xMatrix.append(coeffs)
     return matrix(xMatrix)
 
-# Tests
-# Test constructor
-def make_test(graph, k=QQ):
-    test = {}
-    test['A'] = graph.path_semigroup().algebra(k)
-    test['Z'] = ZigZagAlgebra(k,graph.path_semigroup())
-    return test
+class A1HatModuleElement(ModuleElement):
+    def __init__(self, parent, x):
+        self.x = x
+        ModuleElement.__init__(self, parent = parent)
 
-# Some standard graphs
-a2graph = DiGraph({1: {2: 'a'}, 2:{1:'b'}})
-a3graph = DiGraph({1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}})
-d4graph = DiGraph({1:{2:'a', 3:'b', 4:'c'}, 2:{1:'d'}, 3:{1:'e'}, 4:{1:'f'}})
+class A1HatModule(Module):
+    '''
+    Projective (left) modules over the A1-hat zigzag algebra
+    '''
+
+    Element = A1HatModuleElement
+    
+    def __init__(self, R, i, twist = 0, name="P", basis=None):
+        '''
+        The projective module P = R*e, where e is the i-th idempotent in R.idempotents()
+        '''
+        self._ring = R
+        self._i = i
+        self._idempotent = R.idempotents()[i-1]  # Vertices are conventionally 1,2,3,... but list elements are zero-indexed :(
+        self._twist = twist
+        self._name = name
+        self._basis = basis
+        Module.__init__(self, R, category=LeftModules(R))
+
+    def copy(self):
+        return A1HatModule(self._ring, self._i, self._twist, self._name)
+        
+    def twistBy(self, n = 1):
+        '''
+        Degree twist by n.
+        '''
+        return A1HatModule(self._ring, self._i, self._twist + n, self._name)
+
+    def __repr__(self):
+        return self._name + "<" + str(self._twist) + ">"
+
+    def __str__(self):
+        return self.__repr__()
+
+    def idempotent(self):
+        return self._idempotent
+
+    def twist(self):
+        return self._twist
+
+    def name(self):
+        return self._name
+
+    @cached_method
+    def hom(self, Q):
+        e = self.idempotent()
+        f = Q.idempotent()
+        return filter(lambda x: x != 0, [e*x*f for x in self._ring.basis()] )
+
+    # Here the module is supposed to be the left R-module Re, but the map is right multiplication by r.
+    @cached_method
+    def is_zero(self, r):
+        '''
+        Is right multiplication by r the zero map on self?
+        '''
+        return (self._idempotent * r == 0)
+
+    @cached_method
+    def basis(self):
+        return self._basis
+    
+    @cached_method
+    def is_invertible(self, r):
+        '''
+        Is right multiplication by r an invertible map on self?
+        '''
+        ir = self._idempotent * r
+        if ir == 0:
+            return False
+
+        nonZeroCoeffs = [(x,y) for (x,y) in self._idempotent.monomial_coefficients().items() if y != 0]
+        m,d = nonZeroCoeffs[0]
+        c = ir.monomial_coefficients().get(m, 0)
+        multiple = c/d
+
+        return (ir == multiple*self._idempotent)
+
+    @cached_method
+    def invert(self, r):
+        '''
+        An element s in basering such that right multiplication by s is the inverse of right multiplication by r.
+        Assumes that right multiplication by r is invertible.
+        '''
+        if not self.is_invertible(r):
+            raise TypeError("Not invertible")
+        else:
+            ir = self._idempotent * r
+            nonZeroCoeffs = [(x,y) for (x,y) in self._idempotent.monomial_coefficients().items() if y != 0]
+            m,d = nonZeroCoeffs[0]
+            c = ir.monomial_coefficients().get(m, 0)
+            multiple = c/d
+            return d/c * self._idempotent
 
 
+def s(i, C):
+    D = sigma(R, i, C)
+    D.minimize()
+    return D
 
+def t(i, C):
+    D = sigmaInverse(R, i, C)
+    D.minimize()
+    return D
+        
+def s1(C):
+    return s(1,C)
+
+def s2(C):
+    return s(2,C)
+
+def t1(C):
+    return t(1,C)
+
+def t2(C):
+    return t(2,C)
