@@ -303,6 +303,16 @@ class A1HatModule(Module):
             multiple = c/d
             return d/c * self._idempotent
 
+R = A1HatAlgebra(QQ)        
+
+F1 = A1HatModule(R, 1, name="P1")
+F2 = A1HatModule(R, 2, name="P2")
+
+P1 = ProjectiveComplex(R)
+P1.addObject(0, F1)
+
+P2 = ProjectiveComplex(R)
+P2.addObject(0, F2)
 
 def s(i, C):
     D = sigma(R, i, C)
