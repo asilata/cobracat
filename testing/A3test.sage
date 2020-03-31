@@ -1,3 +1,4 @@
+
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -69,9 +70,6 @@ def t3(C):
 # HN(s2(s1(sz(s3(P2)))), stab)    
 # HN(t3(s2(s1(sz(s3(P2))))),stab)
 # HN(s2(t3(s2(s1(sz(s3(P2)))))),stab)
-
-# *
-
 # ** Stable objects:
 x = s1(P2)
 y = s2(P3)
@@ -83,6 +81,26 @@ sx = composeAll([s1,s2,t1])
 sz = composeAll([s1,s2,s3,t2,t1])
 # ** Stability condition:
 stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2),P1]
+# ** Unimodality
+def HNMultiplicities(ob, stab):
+    hnfiltration = HN(ob,stab)
+    mults = {s:0 for s in stab}
+    for h in hnfiltration:
+        for s in stab:
+            qPoly = hom(h,s).qPolynomial()
+            if qPoly.substitute(q=1) == 2 and qPoly.substitute(q=-1).abs() == 2:
+                mults[s] = mults[s]+1
+    return mults
+
+## ** Local minimum
+beta = composeAll([s1,sx,sy])
+def HNMultiplicitiesP(beta, stab):
+    mults = {s: 0 for s in stab}
+    for s in stab:
+        hns = HNMultiplicities(beta(s), stab)
+        for m in mults.keys():
+            mults[m] = mults[m] + hns[m]
+    return mults
 
 # * HN Filtrations (concave square stability condition):
 # ** Stable objects:
@@ -210,25 +228,29 @@ def doesLower(o, twist, stab):
 #level3 = [[s1,s2,s3]; [s1, s2, s1] ]
 #level2 = [[s1,s2], [s1,sy], [s1, s3], [s2, s3]; [s1, s2], [s1, s1], [s2, s1]; ...]
 #level1 = [s1, s2, s3, sx, sy, sz]
-# *** Good halfspaces:
-# < phi is a good halfspace for beta if beta preserves it.
-def isGoodHalfspace(twist, stable, stab):
+# *** Good aisles:
+# <= phi is a good aisle for beta if beta preserves it.
+def isGoodAisle(twist, stable, stab):
     # Here phi = phi(stable)
     for o in stab:
-        if phase(o, stab) < phase(stable, stab) and not all([phase(piece, stab) < phase(stable, stab) for piece in HN(twist(o), stab)]):
+        if phase(o, stab) <= phase(stable, stab) and not all([phase(piece, stab) <= phase(stable, stab) for piece in HN(twist(o), stab)]):
+            return False
+        elif not all([phase(piece, stab) <= phase(stable, stab) for piece in HN(twist(o.shift(-1)), stab)]):
+            return False
+    return True
+
+# <= phi is a better aisle for beta if beta strictly lowers it.
+def isBetterAisle(twist, stable, stab):
+    # Here phi = phi(stable)
+    for o in stab:
+        if phase(o, stab) <= phase(stable, stab) and not all([phase(piece, stab) < phase(stable, stab) for piece in HN(twist(o), stab)]):
             return False
         elif not all([phase(piece, stab) < phase(stable, stab) for piece in HN(twist(o.shift(-1)), stab)]):
             return False
     return True
 
-[isGoodHalfspace(s1, o, stab) for o in stab]
-#[True, True, False, True, True, False]
-[isGoodHalfspace(s3, o, stab) for o in stab]
-#[True, True, False, False, False, False]
-[isGoodHalfspace(sx, o, stab) for o in stab]
-#[False, False, False, False, True, True]
-[isGoodHalfspace(composeAll([s1,s1]), o, stab) for o in stab]
-#[True, True, False, True, True, False]
-[isGoodHalfspace(composeAll([s2,s1]), o, stab) for o in stab]
-#[True, False, False, True, False, False]
-[isGoodHalfspace(composeAll([s1,s2,s3,s1]), o, stab) for o in stab]
+twists = [s3,sy,sz,s1,sx,s2]
+names = ['p3', 'y', 'z', 'p1', 'x', 'p2']
+
+doubleSignatures = {(i,j):[isBetterAisle(composeAll([twists[i], twists[j]]), o, stab) for o in stab] for i in range(0,6) for j in range(0,6)}
+tripleSignatures = {(i,j,k):[isBetterAisle(composeAll([twists[i], twists[j], twists[k]]), o, stab) for o in stab] for i in range(0,6) for j in range(0,6) for k in range(0,6)}
