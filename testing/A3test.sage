@@ -90,7 +90,7 @@ stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2), P1]
 
 # * HN Filtrations (concave square stability condition):
 # ** Stable objects:
-X = s1(P)
+X = s1(P2)
 Y = s2(P3)
 Z = s1(s2(P3))
 sx = composeAll([s2,s1,t2])
