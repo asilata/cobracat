@@ -333,7 +333,7 @@ class ProjectiveComplex(object):
                         if iBasis != None:
                             change = self.maps(place).get((i,target), 0) * alphaInverse
                             for elt in sourceBasis:
-                                iBasis[elt] = iBasis.get(elt,0) - change
+                                iBasis[elt] = iBasis.get(elt,0) + change * sourceBasis[elt]
 
             # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
             # Now we update the maps
