@@ -287,4 +287,8 @@ def makeReadable(G):
     for (a,b,_) in G.edges():
         H.add_edge((twistNames[a], twistNames[b]))
     return H
-    
+
+
+# Possible HN filtrations
+stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2), P1]
+ 
