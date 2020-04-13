@@ -50,8 +50,9 @@ def HN(ob, stab):
 
     return HNFiltration
 
-# Assumption: standard stable objects end in homologica degree 0.
-def phase(stable, stab, stablePhases=None):
+# Return the internal twist and the heart degree of a standard stable object, given a stable object up to twist.
+# Assumption: standard stable objects end in homological degree 0.
+def twistShift(stable, stab):
     it = None
     heart = None
     for i in range(stable.maxIndex(), stable.minIndex()-1, -1):
@@ -59,6 +60,12 @@ def phase(stable, stab, stablePhases=None):
             it = stable.objects(i)[0].twist()
             heart = i
             break
+    return (it, i)
+#return internalTwist(stable,-it).shift(i)
+
+# Return the phase of the given stable object. Returns the position if there are is no list of phases given.
+def phase(stable, stab, stablePhases=None):
+    (it,i) = twistShift(stable, stab)
     stdStable = internalTwist(stable,-it).shift(i)
     # Currently a hack to check up to isomorphism (checks string reps)
     index = [str(s) for s in stab].index(str(stdStable))
@@ -67,3 +74,15 @@ def phase(stable, stab, stablePhases=None):
     else:
             phase = index
     return (it-i, phase)
+
+# Return the mass of the given stable object, given a list of masses. Returns the q-mass if a q-parameter is specified.
+def mass(ob, stab, stableMasses, q=1):
+    hn = HN(ob, stab)
+    m = 0
+    for o in hn:
+        (it,i) = twistShift(o, stab)
+        level = i - it
+        stdStable = internalTwist(o,-it).shift(i)
+        index = [str(s) for s in stab].index(str(stdStable))
+        m = m + stableMasses[index]*(q**level)
+    return m
