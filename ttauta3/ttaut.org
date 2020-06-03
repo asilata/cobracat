@@ -1,0 +1,211 @@
+* Generation of supports and states
+
+  #+begin_src python
+    vertices = [1,2,3,4]
+    edges = {"a":(1,2), "b":(2,3), "c":(3,4), "d":(4,1), "x": (1,3), "y": (2,4)}
+
+    supports = [tuple(s) for s in Subsets(edges.keys(),4) if not ("x" in s and "y" in s) and ("x"in s or "y" in s)]
+
+    def states(support):
+	incidences = {v:[e for e in support if v in edges[e]] for v in vertices}
+	unpruned =  [(support, (l1,l2,l3,l4)) for l1 in incidences[1] for l2 in incidences[2] for l3 in incidences[3] for l4 in incidences[4]]
+	pruned = [(x,y) for (x,y) in unpruned if len(uniq(sorted(y))) < 4] # must have a dumb-bell 
+	return pruned
+
+    def stateToString(state):
+	return ''.join(state[0]) + "-" + ''.join(state[1])
+
+    out = [[stateToString(state) for state in states(support)] for support in supports]
+
+  #+end_src
+
+* The graph  
+  #+begin_src dot
+    digraph ttauta3 {
+	    'aycb-aacy'[img='aycb-aacy.png', label=''];
+	    'aycb-aacc'[img='aycb-aacc.png', label=''];
+	    'aycb-aaby'[img='aycb-aaby.png', label=''];
+	    'aycb-aabc'[img='aycb-aabc.png', label=''];
+	    'aycb-aycy'[img='aycb-aycy.png', label=''];
+	    'aycb-aycc'[img='aycb-aycc.png', label=''];
+	    'aycb-ayby'[img='aycb-ayby.png', label=''];
+	    'aycb-abcc'[img='aycb-abcc.png', label=''];
+	    'aycb-abby'[img='aycb-abby.png', label=''];
+	    'aycb-abbc'[img='aycb-abbc.png', label=''];
+
+	    'axcb-aaxc'[img='axcb-aaxc.png', label=''];
+	    'axcb-aacc'[img='axcb-aacc.png', label=''];
+	    'axcb-aabc'[img='axcb-aabc.png', label=''];
+	    'axcb-abcc'[img='axcb-abcc.png', label=''];
+	    'axcb-abbc'[img='axcb-abbc.png', label=''];
+	    'axcb-xaxc'[img='axcb-xaxc.png', label=''];
+	    'axcb-xacc'[img='axcb-xacc.png', label=''];
+	    'axcb-xbxc'[img='axcb-xbxc.png', label=''];
+	    'axcb-xbcc'[img='axcb-xbcc.png', label=''];
+	    'axcb-xbbc'[img='axcb-xbbc.png', label=''];
+
+	    'aycd-aacy'[img='aycd-aacy.png', label=''];
+	    'aycd-aacc'[img='aycd-aacc.png', label=''];
+	    'aycd-aacd'[img='aycd-aacd.png', label=''];
+	    'aycd-aycy'[img='aycd-aycy.png', label=''];
+	    'aycd-aycc'[img='aycd-aycc.png', label=''];
+	    'aycd-dacc'[img='aycd-dacc.png', label=''];
+	    'aycd-dacd'[img='aycd-dacd.png', label=''];
+	    'aycd-dycy'[img='aycd-dycy.png', label=''];
+	    'aycd-dycc'[img='aycd-dycc.png', label=''];
+	    'aycd-dycd'[img='aycd-dycd.png', label=''];
+
+	    'axcd-aaxc'[img='axcd-aaxc.png', label=''];
+	    'axcd-aaxd'[img='axcd-aaxd.png', label=''];
+	    'axcd-aacc'[img='axcd-aacc.png', label=''];
+	    'axcd-aacd'[img='axcd-aacd.png', label=''];
+	    'axcd-xaxc'[img='axcd-xaxc.png', label=''];
+	    'axcd-xaxd'[img='axcd-xaxd.png', label=''];
+	    'axcd-xacc'[img='axcd-xacc.png', label=''];
+	    'axcd-daxd'[img='axcd-daxd.png', label=''];
+	    'axcd-dacc'[img='axcd-dacc.png', label=''];
+	    'axcd-dacd'[img='axcd-dacd.png', label=''];
+
+	    'aybd-aaby'[img='aybd-aaby.png', label=''];
+	    'aybd-aabd'[img='aybd-aabd.png', label=''];
+	    'aybd-ayby'[img='aybd-ayby.png', label=''];
+	    'aybd-abby'[img='aybd-abby.png', label=''];
+	    'aybd-abbd'[img='aybd-abbd.png', label=''];
+	    'aybd-dabd'[img='aybd-dabd.png', label=''];
+	    'aybd-dyby'[img='aybd-dyby.png', label=''];
+	    'aybd-dybd'[img='aybd-dybd.png', label=''];
+	    'aybd-dbby'[img='aybd-dbby.png', label=''];
+	    'aybd-dbbd'[img='aybd-dbbd.png', label=''];
+
+	    'axbd-aaxd'[img='axbd-aaxd.png', label=''];
+	    'axbd-aabd'[img='axbd-aabd.png', label=''];
+	    'axbd-abbd'[img='axbd-abbd.png', label=''];
+	    'axbd-xaxd'[img='axbd-xaxd.png', label=''];
+	    'axbd-xbxd'[img='axbd-xbxd.png', label=''];
+	    'axbd-xbbd'[img='axbd-xbbd.png', label=''];
+	    'axbd-daxd'[img='axbd-daxd.png', label=''];
+	    'axbd-dabd'[img='axbd-dabd.png', label=''];
+	    'axbd-dbxd'[img='axbd-dbxd.png', label=''];
+	    'axbd-dbbd'[img='axbd-dbbd.png', label=''];
+
+	    'ycbd-dycy'[img='ycbd-dycy.png', label=''];
+	    'ycbd-dycc'[img='ycbd-dycc.png', label=''];
+	    'ycbd-dycd'[img='ycbd-dycd.png', label=''];
+	    'ycbd-dyby'[img='ycbd-dyby.png', label=''];
+	    'ycbd-dybd'[img='ycbd-dybd.png', label=''];
+	    'ycbd-dbcc'[img='ycbd-dbcc.png', label=''];
+	    'ycbd-dbcd'[img='ycbd-dbcd.png', label=''];
+	    'ycbd-dbby'[img='ycbd-dbby.png', label=''];
+	    'ycbd-dbbc'[img='ycbd-dbbc.png', label=''];
+	    'ycbd-dbbd'[img='ycbd-dbbd.png', label=''];
+
+	    'xcbd-xbxc'[img='xcbd-xbxc.png', label=''];
+	    'xcbd-xbxd'[img='xcbd-xbxd.png', label=''];
+	    'xcbd-xbcc'[img='xcbd-xbcc.png', label=''];
+	    'xcbd-xbbc'[img='xcbd-xbbc.png', label=''];
+	    'xcbd-xbbd'[img='xcbd-xbbd.png', label=''];
+	    'xcbd-dbxd'[img='xcbd-dbxd.png', label=''];
+	    'xcbd-dbcc'[img='xcbd-dbcc.png', label=''];
+	    'xcbd-dbcd'[img='xcbd-dbcd.png', label=''];
+	    'xcbd-dbbc'[img='xcbd-dbbc.png', label=''];
+	    'xcbd-dbbd'[img='xcbd-dbbd.png', label=''];
+    }
+
+  #+end_src
+
+* Helper functions  
+
+  #+begin_src elisp
+    (defun rotate-edge (x)
+	(cond ((equal x 'a) 'b)
+	      ((equal x 'b) 'c)
+	      ((equal x 'c) 'd)
+	      ((equal x 'd) 'a)
+	      ((equal x 'x) 'y)
+	      ((equal x 'y) 'x)
+	      (t x)))
+
+      (defun flip-edge (x)
+	(cond ((equal x 'a) 'c)
+	      ((equal x 'b) 'd)
+	      ((equal x 'c) 'a)
+	      ((equal x 'd) 'b)
+	      ((equal x 'x) 'y)
+	      ((equal x 'y) 'x)
+	      (t x)))
+
+    (defun apply-to-line (line transformation)
+      (apply 'concat
+	     (mapcar
+	      (lambda (char) (symbol-name (apply transformation (intern (char-to-string x)))))
+	      line)))
+
+    (apply-to-line "abc" 'flip-edge)
+
+
+    )
+
+    (defun edgep (x) (symbolp x))
+      (defun statep (x) (and x (listp x) (equal (car x) 'state)))
+
+      (defun create-state (support loops)
+	(list 'state support loops))
+
+      (defun support (state)
+	(nth 1 state))
+
+      (defun loops (state)
+	(nth 2 state))
+
+
+      (defun string-to-state (str)
+	(let*
+	    ((support-loops (split-string str "-"))
+	     (support (car support-loops))
+	     (loops (cadr support-loops)))
+	  (message support)
+	  (create-state
+	   (mapcar (lambda (x) (intern (char-to-string x))) support)
+	   (mapcar (lambda (x) (intern (char-to-string x))) loops))))
+
+      (defun state-to-string (state)
+	(concat
+	 (apply 'concat (mapcar 'symbol-name (support state)))
+	 "-"
+	 (apply 'concat (mapcar 'symbol-name (loops state)))))
+
+
+      (defun rotate-edge (x)
+	(cond ((equal x 'a) 'b)
+	      ((equal x 'b) 'c)
+	      ((equal x 'c) 'd)
+	      ((equal x 'd) 'a)
+	      ((equal x 'x) 'y)
+	      ((equal x 'y) 'x)
+	      (t x)))
+
+      (defun flip-edge (x)
+	(cond ((equal x 'a) 'c)
+	      ((equal x 'b) 'd)
+	      ((equal x 'c) 'a)
+	      ((equal x 'd) 'b)
+	      ((equal x 'x) 'y)
+	      ((equal x 'y) 'x)
+	      (t x)))
+
+      (defun apply-to-state (x transform)
+	(create-state
+	 (mapcar transform (support x))
+	 (mapcar transform (loops x))))
+
+      (defun rotate (x)
+	(cond ((edgep x) (rotate-edge x))
+	      ((statep x) (apply-to-state x 'rotate-edge))
+	      (t (error "Do not know how to rotate:" x))))
+
+      (defun flip (x)
+	(cond ((edgep x) (flip-edge x))
+	      ((statep x) (apply-to-state x 'flip-edge))
+	      (t (error "Do not know how to flip:" x))))
+
+  #+end_src
