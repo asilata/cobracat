@@ -20,192 +20,230 @@
   #+end_src
 
 * The graph  
-  #+begin_src dot
+  #+begin_src dot :file ttauta3.svg :exports results
     digraph ttauta3 {
-	    'aycb-aacy'[img='aycb-aacy.png', label=''];
-	    'aycb-aacc'[img='aycb-aacc.png', label=''];
-	    'aycb-aaby'[img='aycb-aaby.png', label=''];
-	    'aycb-aabc'[img='aycb-aabc.png', label=''];
-	    'aycb-aycy'[img='aycb-aycy.png', label=''];
-	    'aycb-aycc'[img='aycb-aycc.png', label=''];
-	    'aycb-ayby'[img='aycb-ayby.png', label=''];
-	    'aycb-abcc'[img='aycb-abcc.png', label=''];
-	    'aycb-abby'[img='aycb-abby.png', label=''];
-	    'aycb-abbc'[img='aycb-abbc.png', label=''];
+    # Vertices
+	    "abcy-aacy"[img="aycb-aacy.png", label=""];
+	    "abcy-aacc"[img="aycb-aacc.png", label=""];
+	    "abcy-aaby"[img="aycb-aaby.png", label=""];
+	    "abcy-aabc"[img="aycb-aabc.png", label=""];
+	    "abcy-aycy"[img="aycb-aycy.png", label=""];
+	    "abcy-aycc"[img="aycb-aycc.png", label=""];
+	    "abcy-ayby"[img="aycb-ayby.png", label=""];
+	    "abcy-abcc"[img="aycb-abcc.png", label=""];
+	    "abcy-abby"[img="aycb-abby.png", label=""];
+	    "abcy-abbc"[img="aycb-abbc.png", label=""];
 
-	    'axcb-aaxc'[img='axcb-aaxc.png', label=''];
-	    'axcb-aacc'[img='axcb-aacc.png', label=''];
-	    'axcb-aabc'[img='axcb-aabc.png', label=''];
-	    'axcb-abcc'[img='axcb-abcc.png', label=''];
-	    'axcb-abbc'[img='axcb-abbc.png', label=''];
-	    'axcb-xaxc'[img='axcb-xaxc.png', label=''];
-	    'axcb-xacc'[img='axcb-xacc.png', label=''];
-	    'axcb-xbxc'[img='axcb-xbxc.png', label=''];
-	    'axcb-xbcc'[img='axcb-xbcc.png', label=''];
-	    'axcb-xbbc'[img='axcb-xbbc.png', label=''];
+	    "abcx-aaxc"[img="axcb-aaxc.png", label=""];
+	    "abcx-aacc"[img="axcb-aacc.png", label=""];
+	    "abcx-aabc"[img="axcb-aabc.png", label=""];
+	    "abcx-abcc"[img="axcb-abcc.png", label=""];
+	    "abcx-abbc"[img="axcb-abbc.png", label=""];
+	    "abcx-xaxc"[img="axcb-xaxc.png", label=""];
+	    "abcx-xacc"[img="axcb-xacc.png", label=""];
+	    "abcx-xbxc"[img="axcb-xbxc.png", label=""];
+	    "abcx-xbcc"[img="axcb-xbcc.png", label=""];
+	    "abcx-xbbc"[img="axcb-xbbc.png", label=""];
 
-	    'aycd-aacy'[img='aycd-aacy.png', label=''];
-	    'aycd-aacc'[img='aycd-aacc.png', label=''];
-	    'aycd-aacd'[img='aycd-aacd.png', label=''];
-	    'aycd-aycy'[img='aycd-aycy.png', label=''];
-	    'aycd-aycc'[img='aycd-aycc.png', label=''];
-	    'aycd-dacc'[img='aycd-dacc.png', label=''];
-	    'aycd-dacd'[img='aycd-dacd.png', label=''];
-	    'aycd-dycy'[img='aycd-dycy.png', label=''];
-	    'aycd-dycc'[img='aycd-dycc.png', label=''];
-	    'aycd-dycd'[img='aycd-dycd.png', label=''];
+	    "acdy-aacy"[img="aycd-aacy.png", label=""];
+	    "acdy-aacc"[img="aycd-aacc.png", label=""];
+	    "acdy-aacd"[img="aycd-aacd.png", label=""];
+	    "acdy-aycy"[img="aycd-aycy.png", label=""];
+	    "acdy-aycc"[img="aycd-aycc.png", label=""];
+	    "acdy-dacc"[img="aycd-dacc.png", label=""];
+	    "acdy-dacd"[img="aycd-dacd.png", label=""];
+	    "acdy-dycy"[img="aycd-dycy.png", label=""];
+	    "acdy-dycc"[img="aycd-dycc.png", label=""];
+	    "acdy-dycd"[img="aycd-dycd.png", label=""];
 
-	    'axcd-aaxc'[img='axcd-aaxc.png', label=''];
-	    'axcd-aaxd'[img='axcd-aaxd.png', label=''];
-	    'axcd-aacc'[img='axcd-aacc.png', label=''];
-	    'axcd-aacd'[img='axcd-aacd.png', label=''];
-	    'axcd-xaxc'[img='axcd-xaxc.png', label=''];
-	    'axcd-xaxd'[img='axcd-xaxd.png', label=''];
-	    'axcd-xacc'[img='axcd-xacc.png', label=''];
-	    'axcd-daxd'[img='axcd-daxd.png', label=''];
-	    'axcd-dacc'[img='axcd-dacc.png', label=''];
-	    'axcd-dacd'[img='axcd-dacd.png', label=''];
+	    "acdx-aaxc"[img="axcd-aaxc.png", label=""];
+	    "acdx-aaxd"[img="axcd-aaxd.png", label=""];
+	    "acdx-aacc"[img="axcd-aacc.png", label=""];
+	    "acdx-aacd"[img="axcd-aacd.png", label=""];
+	    "acdx-xaxc"[img="axcd-xaxc.png", label=""];
+	    "acdx-xaxd"[img="axcd-xaxd.png", label=""];
+	    "acdx-xacc"[img="axcd-xacc.png", label=""];
+	    "acdx-daxd"[img="axcd-daxd.png", label=""];
+	    "acdx-dacc"[img="axcd-dacc.png", label=""];
+	    "acdx-dacd"[img="axcd-dacd.png", label=""];
 
-	    'aybd-aaby'[img='aybd-aaby.png', label=''];
-	    'aybd-aabd'[img='aybd-aabd.png', label=''];
-	    'aybd-ayby'[img='aybd-ayby.png', label=''];
-	    'aybd-abby'[img='aybd-abby.png', label=''];
-	    'aybd-abbd'[img='aybd-abbd.png', label=''];
-	    'aybd-dabd'[img='aybd-dabd.png', label=''];
-	    'aybd-dyby'[img='aybd-dyby.png', label=''];
-	    'aybd-dybd'[img='aybd-dybd.png', label=''];
-	    'aybd-dbby'[img='aybd-dbby.png', label=''];
-	    'aybd-dbbd'[img='aybd-dbbd.png', label=''];
+	    "abdy-aaby"[img="aybd-aaby.png", label=""];
+	    "abdy-aabd"[img="aybd-aabd.png", label=""];
+	    "abdy-ayby"[img="aybd-ayby.png", label=""];
+	    "abdy-abby"[img="aybd-abby.png", label=""];
+	    "abdy-abbd"[img="aybd-abbd.png", label=""];
+	    "abdy-dabd"[img="aybd-dabd.png", label=""];
+	    "abdy-dyby"[img="aybd-dyby.png", label=""];
+	    "abdy-dybd"[img="aybd-dybd.png", label=""];
+	    "abdy-dbby"[img="aybd-dbby.png", label=""];
+	    "abdy-dbbd"[img="aybd-dbbd.png", label=""];
 
-	    'axbd-aaxd'[img='axbd-aaxd.png', label=''];
-	    'axbd-aabd'[img='axbd-aabd.png', label=''];
-	    'axbd-abbd'[img='axbd-abbd.png', label=''];
-	    'axbd-xaxd'[img='axbd-xaxd.png', label=''];
-	    'axbd-xbxd'[img='axbd-xbxd.png', label=''];
-	    'axbd-xbbd'[img='axbd-xbbd.png', label=''];
-	    'axbd-daxd'[img='axbd-daxd.png', label=''];
-	    'axbd-dabd'[img='axbd-dabd.png', label=''];
-	    'axbd-dbxd'[img='axbd-dbxd.png', label=''];
-	    'axbd-dbbd'[img='axbd-dbbd.png', label=''];
+	    "abdx-aaxd"[img="axbd-aaxd.png", label=""];
+	    "abdx-aabd"[img="axbd-aabd.png", label=""];
+	    "abdx-abbd"[img="axbd-abbd.png", label=""];
+	    "abdx-xaxd"[img="axbd-xaxd.png", label=""];
+	    "abdx-xbxd"[img="axbd-xbxd.png", label=""];
+	    "abdx-xbbd"[img="axbd-xbbd.png", label=""];
+	    "abdx-daxd"[img="axbd-daxd.png", label=""];
+	    "abdx-dabd"[img="axbd-dabd.png", label=""];
+	    "abdx-dbxd"[img="axbd-dbxd.png", label=""];
+	    "abdx-dbbd"[img="axbd-dbbd.png", label=""];
 
-	    'ycbd-dycy'[img='ycbd-dycy.png', label=''];
-	    'ycbd-dycc'[img='ycbd-dycc.png', label=''];
-	    'ycbd-dycd'[img='ycbd-dycd.png', label=''];
-	    'ycbd-dyby'[img='ycbd-dyby.png', label=''];
-	    'ycbd-dybd'[img='ycbd-dybd.png', label=''];
-	    'ycbd-dbcc'[img='ycbd-dbcc.png', label=''];
-	    'ycbd-dbcd'[img='ycbd-dbcd.png', label=''];
-	    'ycbd-dbby'[img='ycbd-dbby.png', label=''];
-	    'ycbd-dbbc'[img='ycbd-dbbc.png', label=''];
-	    'ycbd-dbbd'[img='ycbd-dbbd.png', label=''];
+	    "bcdy-dycy"[img="ycbd-dycy.png", label=""];
+	    "bcdy-dycc"[img="ycbd-dycc.png", label=""];
+	    "bcdy-dycd"[img="ycbd-dycd.png", label=""];
+	    "bcdy-dyby"[img="ycbd-dyby.png", label=""];
+	    "bcdy-dybd"[img="ycbd-dybd.png", label=""];
+	    "bcdy-dbcc"[img="ycbd-dbcc.png", label=""];
+	    "bcdy-dbcd"[img="ycbd-dbcd.png", label=""];
+	    "bcdy-dbby"[img="ycbd-dbby.png", label=""];
+	    "bcdy-dbbc"[img="ycbd-dbbc.png", label=""];
+	    "bcdy-dbbd"[img="ycbd-dbbd.png", label=""];
 
-	    'xcbd-xbxc'[img='xcbd-xbxc.png', label=''];
-	    'xcbd-xbxd'[img='xcbd-xbxd.png', label=''];
-	    'xcbd-xbcc'[img='xcbd-xbcc.png', label=''];
-	    'xcbd-xbbc'[img='xcbd-xbbc.png', label=''];
-	    'xcbd-xbbd'[img='xcbd-xbbd.png', label=''];
-	    'xcbd-dbxd'[img='xcbd-dbxd.png', label=''];
-	    'xcbd-dbcc'[img='xcbd-dbcc.png', label=''];
-	    'xcbd-dbcd'[img='xcbd-dbcd.png', label=''];
-	    'xcbd-dbbc'[img='xcbd-dbbc.png', label=''];
-	    'xcbd-dbbd'[img='xcbd-dbbd.png', label=''];
+	    "bcdx-xbxc"[img="xcbd-xbxc.png", label=""];
+	    "bcdx-xbxd"[img="xcbd-xbxd.png", label=""];
+	    "bcdx-xbcc"[img="xcbd-xbcc.png", label=""];
+	    "bcdx-xbbc"[img="xcbd-xbbc.png", label=""];
+	    "bcdx-xbbd"[img="xcbd-xbbd.png", label=""];
+	    "bcdx-dbxd"[img="xcbd-dbxd.png", label=""];
+	    "bcdx-dbcc"[img="xcbd-dbcc.png", label=""];
+	    "bcdx-dbcd"[img="xcbd-dbcd.png", label=""];
+	    "bcdx-dbbc"[img="xcbd-dbbc.png", label=""];
+	    "bcdx-dbbd"[img="xcbd-dbbd.png", label=""];
+
+    # Edges
+    # ----------------------------------------------------------------------------------------------------
+    "abcx-aaxc" -> "abcx-aabc" [taillabel="sa", label="b>c", labeltooltip="a:a+x-b-c; b:a; c:c; x:b-c",url=""];
+
+    # Its rotations 
+    "bcdy-dbby" -> "bcdy-dbbc" [taillabel="sb", label="c>d", labeltooltip="b:b+y-c-d; c:b; d:d; y:c-d",url=""];
+    "acdx-xacc" -> "acdx-dacc" [taillabel="sc", label="d>a", labeltooltip="c:c+x-d-a; d:c; a:a; x:d-a",url=""];
+    "abdy-dybd" -> "abdy-dabd" [taillabel="sd", label="a>b", labeltooltip="d:d+y-a-b; a:d; b:b; y:a-b",url=""];
+
+    # and flips
+    # ----------------------------------------------------------------------------------------------------
+    "abcx-aaxc" -> "abcy-aabc" [taillabel="sa", label="c>b; b>c-b", labeltooltip="a:a+x; b:a; c:b; y:c-b",url=""];
+    "bcdy-dbby" -> "bcdx-dbbc" [taillabel="sb", label="d>c; c>d-c", labeltooltip="b:b+y; c:b; d:c; x:d-c",url=""];
+    "acdx-xacc" -> "acdy-dacc" [taillabel="sc", label="a>d; d>a-d", labeltooltip="c:c+x; d:c; a:d; y:a-d",url=""];
+    "abdy-dybd" -> "abdx-dabd" [taillabel="sd", label="b>a; a>b-a", labeltooltip="d:d+y; a:d; b:a; x:b-a",url=""];
+    "abcy-aycc" -> "abcx-abcc" [taillabel="tc", label="a>b; b>a-b", labeltooltip="c:c+y; b:c; a:b; x:a-b",url=""];
+    "abdx-xbbd" -> "abdy-abbd" [taillabel="tb", label="d>a; a>d-a", labeltooltip="b:b+x; a:b; d:a; y:d-a",url=""];
+    "acdy-aacy" -> "acdx-aacd" [taillabel="ta", label="c>d; d>c-d", labeltooltip="a:a+y; d:a; c:d; x:c-d",url=""];
+    "bcdx-dbxd" -> "bcdy-dbcd" [taillabel="td", label="b>c; c>b-c", labeltooltip="d:d+x; c:d; b:c; y:b-c",url=""];
+    #----------------------------------------------------------------------------------------------------
+    "abcx-aaxc" -> "abcy-aaby" [taillabel="sa", label="c>b; c-b>b", labeltooltip="a:a+x; b:a; c:b; y:c-b",url=""];
+    "bcdy-dbby" -> "bcdx-xbbc" [taillabel="sb", label="d>c; d-c>c", labeltooltip="b:b+y; c:b; d:c; x:d-c",url=""];
+    "acdx-xacc" -> "acdy-dycc" [taillabel="sc", label="a>d; a-d>d", labeltooltip="c:c+x; d:c; a:d; y:a-d",url=""];
+    "abdy-dybd" -> "abdx-daxd" [taillabel="sd", label="b>a; b-a>a", labeltooltip="d:d+y; a:d; b:a; x:b-a",url=""];
+    "abcy-aycc" -> "abcx-xbcc" [taillabel="tc", label="a>b; a-b>b", labeltooltip="c:c+y; b:c; a:b; x:a-b",url=""];
+    "abdx-xbbd" -> "abdy-abby" [taillabel="tb", label="d>a; d-a>a", labeltooltip="b:b+x; a:b; d:a; y:d-a",url=""];
+    "acdy-aacy" -> "acdx-aaxd" [taillabel="ta", label="c>d; c-d>d", labeltooltip="a:a+y; d:a; c:d; x:c-d",url=""];
+    "bcdx-dbxd" -> "bcdy-dycd" [taillabel="td", label="b>c; b-c>c", labeltooltip="d:d+x; c:d; b:c; y:b-c",url=""];
+    #----------------------------------------------------------------------------------------------------
+    "abcx-aaxc" -> "abcx-abxd" [taillabel="ta", label="b>a-b+x", labeltooltip="a:b; b:x+c; c:c; x:a-b+x",url=""];
+    "bcdy-dbby" -> "bcdy-abcy" [taillabel="tb", label="c>b-c+y", labeltooltip="b:c; c:y+d; d:d; y:b-c+y",url=""];
+    "acdx-xacc" -> "acdx-xbcd" [taillabel="tc", label="d>c-d+x", labeltooltip="c:d; d:x+a; a:a; x:c-d+x",url=""];
+    "abdy-dybd" -> "abdy-aycd" [taillabel="td", label="a>d-a+y", labeltooltip="d:a; a:y+b; b:b; y:d-a+y",url=""];
+    "abcy-aycc" -> "abcy-dybc" [taillabel="sc", label="b>c-b+y", labeltooltip="c:b; b:y+a; a:a; y:c-b+y",url=""];
+    "abdx-xbbd" -> "abdx-xabc" [taillabel="sb", label="a>b-a+x", labeltooltip="b:a; a:x+d; d:d; x:b-a+x",url=""];
+    "acdy-aacy" -> "acdy-daby" [taillabel="sa", label="d>a-d+y", labeltooltip="a:d; d:y+c; c:c; y:a-d+y",url=""];
+    "bcdx-dbxd" -> "bcdx-daxc" [taillabel="sd", label="c>d-c+x", labeltooltip="d:c; c:x+b; b:b; x:d-c+x",url=""];
+    #----------------------------------------------------------------------------------------------------
+    "abcx-aaxc" -> "abcx-xbxd" [taillabel="ta", label="b>a-b+x", labeltooltip="a:b; b:x+c; c:c; x:a-b+x",url=""];
+    "bcdy-dbby" -> "bcdy-aycy" [taillabel="tb", label="c>b-c+y", labeltooltip="b:c; c:y+d; d:d; y:b-c+y",url=""];
+    "acdx-xacc" -> "acdx-xbxd" [taillabel="tc", label="d>c-d+x", labeltooltip="c:d; d:x+a; a:a; x:c-d+x",url=""];
+    "abdy-dybd" -> "abdy-aycy" [taillabel="td", label="a>d-a+y", labeltooltip="d:a; a:y+b; b:b; y:d-a+y",url=""];
+    "abcy-aycc" -> "abcy-dyby" [taillabel="sc", label="b>c-b+y", labeltooltip="c:b; b:y+a; a:a; y:c-b+y",url=""];
+    "abdx-xbbd" -> "abdx-xaxc" [taillabel="sb", label="a>b-a+x", labeltooltip="b:a; a:x+d; d:d; x:b-a+x",url=""];
+    "acdy-aacy" -> "acdy-dyby" [taillabel="sa", label="d>a-d+y", labeltooltip="a:d; d:y+c; c:c; y:a-d+y",url=""];
+    "bcdx-dbxd" -> "bcdx-xaxc" [taillabel="sd", label="c>d-c+x", labeltooltip="d:c; c:x+b; b:b; x:d-c+x",url=""];
+    #----------------------------------------------------------------------------------------------------
+    "abcx-aaxc" -> "abcx-aacc" [taillabel="sc", label=" ", labeltooltip="a:a; b:b; x:x; c:a+b+c+x",url=""];
+    "bcdy-dbby" -> "bcdy-dbbd" [taillabel="sd", label=" ", labeltooltip="b:b; c:c; y:y; d:b+c+d+y",url=""];
+    "acdx-xacc" -> "acdx-aacc" [taillabel="sa", label=" ", labeltooltip="c:c; d:d; x:x; a:c+d+a+x",url=""];
+    "abdy-dybd" -> "abdy-dbbd" [taillabel="sb", label=" ", labeltooltip="d:d; a:a; y:y; b:d+a+b+y",url=""];
+    "abcy-aycc" -> "abcy-aacc" [taillabel="ta", label=" ", labeltooltip="c:c; b:b; y:y; a:c+b+a+y",url=""];
+    "abdx-xbbd" -> "abdx-dbbd" [taillabel="td", label=" ", labeltooltip="b:b; a:a; x:x; d:b+a+d+x",url=""];
+    "acdy-aacy" -> "acdy-aacc" [taillabel="tc", label=" ", labeltooltip="a:a; d:d; y:y; c:a+d+c+y",url=""];
+    "bcdx-dbxd" -> "bcdx-dbbd" [taillabel="tb", label=" ", labeltooltip="d:d; c:c; x:x; b:d+c+b+x",url=""];
+    #----------------------------------------------------------------------------------------------------
+    "abcx-aaxc" -> "abdy-aabd" [taillabel="tc", label="b>c", labeltooltip="a:a; b:c; d: x; y:b-c", url=""];
+    "bcdy-dbby" -> "abcx-abbc" [taillabel="td", label="c>d", labeltooltip="b:b; c:d; a: y; x:c-d", url=""];
+    "acdx-xacc" -> "bcdy-dbcc" [taillabel="ta", label="d>a", labeltooltip="c:c; d:a; b: x; y:d-a", url=""];
+    "abdy-dybd" -> "acdx-dacd" [taillabel="tb", label="a>b", labeltooltip="d:d; a:b; c: y; x:a-b", url=""];
+    "abcy-aycc" -> "bcdx-dbcc" [taillabel="sa", label="b>a", labeltooltip="c:c; b:a; d: y; x:b-a", url=""];
+    "abdx-xbbd" -> "abcy-abbc" [taillabel="sd", label="a>d", labeltooltip="b:b; a:d; c: x; y:a-d", url=""];
+    "acdy-aacy" -> "abdx-aabd" [taillabel="sc", label="d>c", labeltooltip="a:a; d:c; b: y; x:d-c", url=""];
+    "bcdx-dbxd" -> "acdy-dacd" [taillabel="sb", label="c>b", labeltooltip="d:d; c:b; a: x; y:c-b", url=""];
+    #----------------------------------------------------------------------------------------------------
+
     }
 
   #+end_src
 
+  #+RESULTS:
+  [[file:ttauta3.svg]]
+
 * Helper functions  
 
   #+begin_src elisp
-    (defun rotate-edge (x)
-	(cond ((equal x 'a) 'b)
-	      ((equal x 'b) 'c)
-	      ((equal x 'c) 'd)
-	      ((equal x 'd) 'a)
-	      ((equal x 'x) 'y)
-	      ((equal x 'y) 'x)
-	      (t x)))
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((dot . t))) ; this line activates dot
 
-      (defun flip-edge (x)
-	(cond ((equal x 'a) 'c)
-	      ((equal x 'b) 'd)
-	      ((equal x 'c) 'a)
-	      ((equal x 'd) 'b)
-	      ((equal x 'x) 'y)
-	      ((equal x 'y) 'x)
-	      (t x)))
+    (defun rotate (x)
+      (cond
+       ((equal x ?a) ?b)
+       ((equal x ?b) ?c)
+       ((equal x ?c) ?d)
+       ((equal x ?d) ?a)
+       ((equal x ?x) ?y)
+       ((equal x ?y) ?x)
+       (t x)))
 
-    (defun apply-to-line (line transformation)
-      (apply 'concat
-	     (mapcar
-	      (lambda (char) (symbol-name (apply transformation (intern (char-to-string x)))))
-	      line)))
+    (defun flip (x)
+      (cond
+       ((equal x ?a) ?c)
+       ((equal x ?b) ?b)
+       ((equal x ?c) ?a)
+       ((equal x ?d) ?d)
+       ((equal x ?x) ?y)
+       ((equal x ?y) ?x)
+       ((equal x ?s) ?t)
+       ((equal x ?t) ?s)
+       (t x)))
 
-    (apply-to-line "abc" 'flip-edge)
+    (defun rotate-state (s)
+      (let* ((support-loops (split-string s "-"))
+	     (support (nth 0 support-loops))
+	     (loops (nth 1 support-loops))
+	     (new-support (sort (mapcar 'rotate support) '<))
+	     (new-loops-pre (mapcar 'rotate loops))
+	     (new-loops (mapcar (lambda (n) (nth n new-loops-pre)) '(3 0 1 2))))
+	(concat (concat new-support)
+		"-"
+		(concat new-loops))))
 
+    (defun flip-state (s)
+      (let* ((support-loops (split-string s "-"))
+	     (support (nth 0 support-loops))
+	     (loops (nth 1 support-loops))
+	     (new-support (sort (mapcar 'flip support) '<))
+	     (new-loops-pre (mapcar 'flip loops))
+	     (new-loops (mapcar (lambda (n) (nth n new-loops-pre)) '(3 2 1 0))))
+	(concat (concat new-support)
+		"-"
+		(concat new-loops))))
 
-    )
+    (defun mapcar-string (transformation string)
+      (concat (mapcar transformation string)))
 
-    (defun edgep (x) (symbolp x))
-      (defun statep (x) (and x (listp x) (equal (car x) 'state)))
+(fset 'rotate-line
+   [?\C-  ?\C-e ?\M-w ?\C-n ?\C-y ?\C-a ?\C-s ?\" ?\C-b ?\C-  ?\C-f ?\C-s ?\" ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?r ?o ?t ?a ?t ?e ?- ?s ?t ?a ?t ?e ?  ?\C-y ?\) return ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-s ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?r ?o ?t ?a ?t ?e ?- ?s ?t ?a ?t ?e ?  ?\C-y ?\) return ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-f ?\C-f ?\C-b ?\C-b ?\C-s ?\" ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?  ?\' ?r ?o ?t ?a ?t ?e ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?- ?s ?t ?r ?i ?n ?g ?\C-e ?  ?\C-y ?\) return ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-f ?\C-s ?\C-s ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?r ?o ?t ?a ?t ?e ?  ?\C-y ?\) return ?\C-s ?\" ?\C-b ?\C-s ?\" ?\C-s ?\C-  ?\C-b ?\C-b ?\C-b ?\C-r ?\" ?\C-b ?\C-f ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?r ?o ?t ?a ?t ?e ?  ?\C-y ?\) return ?\C-e ?\C-a])
 
-      (defun create-state (support loops)
-	(list 'state support loops))
+(fset 'flip-line
+   [?\C-  ?\C-e ?\M-w ?\C-n ?\C-y ?\C-a ?\C-s ?\" ?\C-b ?\C-  ?\C-f ?\C-s ?\" ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?f ?l ?i ?p ?- ?s ?t ?a ?t ?e ?  ?\C-y ?\) ?\C-m ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-s ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?f ?l ?i ?p ?- ?s ?t ?a ?t ?e ?  ?\C-y ?\) ?\C-m ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-f ?\C-f ?\C-b ?\C-b ?\C-s ?\" ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?f ?l ?i ?p ?  ?\C-y ?\) ?\C-m ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-f ?\C-s ?\C-s ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?f ?l ?i ?p ?  ?\C-y ?\) ?\C-m ?\C-s ?\" ?\C-b ?\C-s ?\" ?\C-s ?\C-  ?\C-b ?\C-b ?\C-b ?\C-r ?\" ?\C-b ?\C-f ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?f ?l ?i ?p ?  ?\C-y ?\) ?\C-m ?\C-e ?\C-a])
+   #+end_src
 
-      (defun support (state)
-	(nth 1 state))
-
-      (defun loops (state)
-	(nth 2 state))
-
-
-      (defun string-to-state (str)
-	(let*
-	    ((support-loops (split-string str "-"))
-	     (support (car support-loops))
-	     (loops (cadr support-loops)))
-	  (message support)
-	  (create-state
-	   (mapcar (lambda (x) (intern (char-to-string x))) support)
-	   (mapcar (lambda (x) (intern (char-to-string x))) loops))))
-
-      (defun state-to-string (state)
-	(concat
-	 (apply 'concat (mapcar 'symbol-name (support state)))
-	 "-"
-	 (apply 'concat (mapcar 'symbol-name (loops state)))))
-
-
-      (defun rotate-edge (x)
-	(cond ((equal x 'a) 'b)
-	      ((equal x 'b) 'c)
-	      ((equal x 'c) 'd)
-	      ((equal x 'd) 'a)
-	      ((equal x 'x) 'y)
-	      ((equal x 'y) 'x)
-	      (t x)))
-
-      (defun flip-edge (x)
-	(cond ((equal x 'a) 'c)
-	      ((equal x 'b) 'd)
-	      ((equal x 'c) 'a)
-	      ((equal x 'd) 'b)
-	      ((equal x 'x) 'y)
-	      ((equal x 'y) 'x)
-	      (t x)))
-
-      (defun apply-to-state (x transform)
-	(create-state
-	 (mapcar transform (support x))
-	 (mapcar transform (loops x))))
-
-      (defun rotate (x)
-	(cond ((edgep x) (rotate-edge x))
-	      ((statep x) (apply-to-state x 'rotate-edge))
-	      (t (error "Do not know how to rotate:" x))))
-
-      (defun flip (x)
-	(cond ((edgep x) (flip-edge x))
-	      ((statep x) (apply-to-state x 'flip-edge))
-	      (t (error "Do not know how to flip:" x))))
-
-  #+end_src
+   #+RESULTS:
+   : mapcar-string
