@@ -23,18 +23,18 @@
 
 
 * The graph  
-  #+begin_src dot :file ttauta3.svg :exports results :cmd neato
+  #+begin_src dot :file ttauta3.svg :exports results 
     digraph ttauta3 {
 	graph[overlap=false];
 	# Vertices
-	"abcx" [image="abcx.png", label=""];
-	"abcy" [image="abcy.png", label=""];
-	"acdy" [image="acdy.png", label=""];
-	"acdx" [image="acdx.png", label=""];
-	"abdy" [image="abdy.png", label=""];
-	"abdx" [image="abdx.png", label=""];
-	"bcdy" [image="bcdy.png", label=""];
-	"bcdx" [image="bcdx.png", label=""];
+	"abcx" [image="abcx.png", label="", shape=none];
+	"abcy" [image="abcy.png", label="", shape=none];
+	"acdy" [image="acdy.png", label="", shape=none];
+	"acdx" [image="acdx.png", label="", shape=none];
+	"abdy" [image="abdy.png", label="", shape=none];
+	"abdx" [image="abdx.png", label="", shape=none];
+	"bcdy" [image="bcdy.png", label="", shape=none];
+	"bcdx" [image="bcdx.png", label="", shape=none];
 
 	"abcx" -> "abcy" [taillabel="sb", label="c>b       ", labeltooltip="a:a+x;b:a;c:b;y:c-b     ", url=""];
 	"abcx" -> "abcx" [taillabel="sb", label="b>c;x>b-c ", labeltooltip="a:a+x-b+c;b:a;c:c;x:b-c ", url=""];
@@ -144,6 +144,9 @@
 
 
   #+end_src
+
+  #+RESULTS:
+  [[file:ttauta3.svg]]
 
 ** Edges
   | abcx | abcy | sb | c>b       | a:a+x;b:a;c:b;y:c-b     |
