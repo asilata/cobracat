@@ -21,171 +21,244 @@
   #+end_src
 
 * The graph  
-  #+begin_src dot :file ttauta3.svg :exports results
-	digraph ttauta3 {
-		# Vertices
-		"abcy-aacy" [image="abcy-aacy.png", label=""];
-		"abcy-aacc" [image="abcy-aacc.png", label=""];
-		"abcy-aaby" [image="abcy-aaby.png", label=""];
-		"abcy-aabc" [image="abcy-aabc.png", label=""];
-		"abcy-aycy" [image="abcy-aycy.png", label=""];
-		"abcy-aycc" [image="abcy-aycc.png", label=""];
-		"abcy-ayby" [image="abcy-ayby.png", label=""];
-		"abcy-aybc" [image="abcy-aybc.png", label=""];
-		"abcy-abcy" [image="abcy-abcy.png", label=""];
-		"abcy-abcc" [image="abcy-abcc.png", label=""];
-		"abcy-abby" [image="abcy-abby.png", label=""];
-		"abcy-abbc" [image="abcy-abbc.png", label=""];
-		"abcx-aaxc" [image="abcx-aaxc.png", label=""];
-		"abcx-aacc" [image="abcx-aacc.png", label=""];
-		"abcx-aabc" [image="abcx-aabc.png", label=""];
-		"abcx-abxc" [image="abcx-abxc.png", label=""];
-		"abcx-abcc" [image="abcx-abcc.png", label=""];
-		"abcx-abbc" [image="abcx-abbc.png", label=""];
-		"abcx-xaxc" [image="abcx-xaxc.png", label=""];
-		"abcx-xacc" [image="abcx-xacc.png", label=""];
-		"abcx-xabc" [image="abcx-xabc.png", label=""];
-		"abcx-xbxc" [image="abcx-xbxc.png", label=""];
-		"abcx-xbcc" [image="abcx-xbcc.png", label=""];
-		"abcx-xbbc" [image="abcx-xbbc.png", label=""];
-		"acdy-aacy" [image="acdy-aacy.png", label=""];
-		"acdy-aacc" [image="acdy-aacc.png", label=""];
-		"acdy-aacd" [image="acdy-aacd.png", label=""];
-		"acdy-aycy" [image="acdy-aycy.png", label=""];
-		"acdy-aycc" [image="acdy-aycc.png", label=""];
-		"acdy-aycd" [image="acdy-aycd.png", label=""];
-		"acdy-dacy" [image="acdy-dacy.png", label=""];
-		"acdy-dacc" [image="acdy-dacc.png", label=""];
-		"acdy-dacd" [image="acdy-dacd.png", label=""];
-		"acdy-dycy" [image="acdy-dycy.png", label=""];
-		"acdy-dycc" [image="acdy-dycc.png", label=""];
-		"acdy-dycd" [image="acdy-dycd.png", label=""];
-		"acdx-aaxc" [image="acdx-aaxc.png", label=""];
-		"acdx-aaxd" [image="acdx-aaxd.png", label=""];
-		"acdx-aacc" [image="acdx-aacc.png", label=""];
-		"acdx-aacd" [image="acdx-aacd.png", label=""];
-		"acdx-xaxc" [image="acdx-xaxc.png", label=""];
-		"acdx-xaxd" [image="acdx-xaxd.png", label=""];
-		"acdx-xacc" [image="acdx-xacc.png", label=""];
-		"acdx-xacd" [image="acdx-xacd.png", label=""];
-		"acdx-daxc" [image="acdx-daxc.png", label=""];
-		"acdx-daxd" [image="acdx-daxd.png", label=""];
-		"acdx-dacc" [image="acdx-dacc.png", label=""];
-		"acdx-dacd" [image="acdx-dacd.png", label=""];
-		"abdy-aaby" [image="abdy-aaby.png", label=""];
-		"abdy-aabd" [image="abdy-aabd.png", label=""];
-		"abdy-ayby" [image="abdy-ayby.png", label=""];
-		"abdy-aybd" [image="abdy-aybd.png", label=""];
-		"abdy-abby" [image="abdy-abby.png", label=""];
-		"abdy-abbd" [image="abdy-abbd.png", label=""];
-		"abdy-daby" [image="abdy-daby.png", label=""];
-		"abdy-dabd" [image="abdy-dabd.png", label=""];
-		"abdy-dyby" [image="abdy-dyby.png", label=""];
-		"abdy-dybd" [image="abdy-dybd.png", label=""];
-		"abdy-dbby" [image="abdy-dbby.png", label=""];
-		"abdy-dbbd" [image="abdy-dbbd.png", label=""];
-		"abdx-aaxd" [image="abdx-aaxd.png", label=""];
-		"abdx-aabd" [image="abdx-aabd.png", label=""];
-		"abdx-abxd" [image="abdx-abxd.png", label=""];
-		"abdx-abbd" [image="abdx-abbd.png", label=""];
-		"abdx-xaxd" [image="abdx-xaxd.png", label=""];
-		"abdx-xabd" [image="abdx-xabd.png", label=""];
-		"abdx-xbxd" [image="abdx-xbxd.png", label=""];
-		"abdx-xbbd" [image="abdx-xbbd.png", label=""];
-		"abdx-daxd" [image="abdx-daxd.png", label=""];
-		"abdx-dabd" [image="abdx-dabd.png", label=""];
-		"abdx-dbxd" [image="abdx-dbxd.png", label=""];
-		"abdx-dbbd" [image="abdx-dbbd.png", label=""];
-		"bcdy-dycy" [image="bcdy-dycy.png", label=""];
-		"bcdy-dycc" [image="bcdy-dycc.png", label=""];
-		"bcdy-dycd" [image="bcdy-dycd.png", label=""];
-		"bcdy-dyby" [image="bcdy-dyby.png", label=""];
-		"bcdy-dybc" [image="bcdy-dybc.png", label=""];
-		"bcdy-dybd" [image="bcdy-dybd.png", label=""];
-		"bcdy-dbcy" [image="bcdy-dbcy.png", label=""];
-		"bcdy-dbcc" [image="bcdy-dbcc.png", label=""];
-		"bcdy-dbcd" [image="bcdy-dbcd.png", label=""];
-		"bcdy-dbby" [image="bcdy-dbby.png", label=""];
-		"bcdy-dbbc" [image="bcdy-dbbc.png", label=""];
-		"bcdy-dbbd" [image="bcdy-dbbd.png", label=""];
-		"bcdx-xbxc" [image="bcdx-xbxc.png", label=""];
-		"bcdx-xbxd" [image="bcdx-xbxd.png", label=""];
-		"bcdx-xbcc" [image="bcdx-xbcc.png", label=""];
-		"bcdx-xbcd" [image="bcdx-xbcd.png", label=""];
-		"bcdx-xbbc" [image="bcdx-xbbc.png", label=""];
-		"bcdx-xbbd" [image="bcdx-xbbd.png", label=""];
-		"bcdx-dbxc" [image="bcdx-dbxc.png", label=""];
-		"bcdx-dbxd" [image="bcdx-dbxd.png", label=""];
-		"bcdx-dbcc" [image="bcdx-dbcc.png", label=""];
-		"bcdx-dbcd" [image="bcdx-dbcd.png", label=""];
-		"bcdx-dbbc" [image="bcdx-dbbc.png", label=""];
-		# Edges
-		# ----------------------------------------------------------------------------------------------------
-		"abcx-aaxc" -> "abcx-aabc" [taillabel="sa", label="b>c", labeltooltip="a:a+x-b-c; b:a; c:c; x:b-c",url=""];
-
-		# Its rotations 
-		"bcdy-dbby" -> "bcdy-dbbc" [taillabel="sb", label="c>d", labeltooltip="b:b+y-c-d; c:b; d:d; y:c-d",url=""];
-		"acdx-xacc" -> "acdx-dacc" [taillabel="sc", label="d>a", labeltooltip="c:c+x-d-a; d:c; a:a; x:d-a",url=""];
-		"abdy-dybd" -> "abdy-dabd" [taillabel="sd", label="a>b", labeltooltip="d:d+y-a-b; a:d; b:b; y:a-b",url=""];
-
-		# and flips
-		# ----------------------------------------------------------------------------------------------------
-		"abcx-aaxc" -> "abcy-aabc" [taillabel="sa", label="c>b; b>c-b", labeltooltip="a:a+x; b:a; c:b; y:c-b",url=""];
-		"bcdy-dbby" -> "bcdx-dbbc" [taillabel="sb", label="d>c; c>d-c", labeltooltip="b:b+y; c:b; d:c; x:d-c",url=""];
-		"acdx-xacc" -> "acdy-dacc" [taillabel="sc", label="a>d; d>a-d", labeltooltip="c:c+x; d:c; a:d; y:a-d",url=""];
-		"abdy-dybd" -> "abdx-dabd" [taillabel="sd", label="b>a; a>b-a", labeltooltip="d:d+y; a:d; b:a; x:b-a",url=""];
-		"abcy-aycc" -> "abcx-abcc" [taillabel="tc", label="a>b; b>a-b", labeltooltip="c:c+y; b:c; a:b; x:a-b",url=""];
-		"abdx-xbbd" -> "abdy-abbd" [taillabel="tb", label="d>a; a>d-a", labeltooltip="b:b+x; a:b; d:a; y:d-a",url=""];
-		"acdy-aacy" -> "acdx-aacd" [taillabel="ta", label="c>d; d>c-d", labeltooltip="a:a+y; d:a; c:d; x:c-d",url=""];
-		"bcdx-dbxd" -> "bcdy-dbcd" [taillabel="td", label="b>c; c>b-c", labeltooltip="d:d+x; c:d; b:c; y:b-c",url=""];
-		#----------------------------------------------------------------------------------------------------
-		"abcx-aaxc" -> "abcy-aaby" [taillabel="sa", label="c>b; c-b>b", labeltooltip="a:a+x; b:a; c:b; y:c-b",url=""];
-		"bcdy-dbby" -> "bcdx-xbbc" [taillabel="sb", label="d>c; d-c>c", labeltooltip="b:b+y; c:b; d:c; x:d-c",url=""];
-		"acdx-xacc" -> "acdy-dycc" [taillabel="sc", label="a>d; a-d>d", labeltooltip="c:c+x; d:c; a:d; y:a-d",url=""];
-		"abdy-dybd" -> "abdx-daxd" [taillabel="sd", label="b>a; b-a>a", labeltooltip="d:d+y; a:d; b:a; x:b-a",url=""];
-		"abcy-aycc" -> "abcx-xbcc" [taillabel="tc", label="a>b; a-b>b", labeltooltip="c:c+y; b:c; a:b; x:a-b",url=""];
-		"abdx-xbbd" -> "abdy-abby" [taillabel="tb", label="d>a; d-a>a", labeltooltip="b:b+x; a:b; d:a; y:d-a",url=""];
-		"acdy-aacy" -> "acdx-aaxd" [taillabel="ta", label="c>d; c-d>d", labeltooltip="a:a+y; d:a; c:d; x:c-d",url=""];
-		"bcdx-dbxd" -> "bcdy-dycd" [taillabel="td", label="b>c; b-c>c", labeltooltip="d:d+x; c:d; b:c; y:b-c",url=""];
-		#----------------------------------------------------------------------------------------------------
-		"abcx-aaxc" -> "abcx-abxc" [taillabel="ta", label="b>a-b+x", labeltooltip="a:b; b:x+c; c:c; x:a-b+x",url=""];
-		"bcdy-dbby" -> "bcdy-dbcy" [taillabel="tb", label="c>b-c+y", labeltooltip="b:c; c:y+d; d:d; y:b-c+y",url=""];
-		"acdx-xacc" -> "acdx-xacd" [taillabel="tc", label="d>c-d+x", labeltooltip="c:d; d:x+a; a:a; x:c-d+x",url=""];
-		"abdy-dybd" -> "abdy-aybd" [taillabel="td", label="a>d-a+y", labeltooltip="d:a; a:y+b; b:b; y:d-a+y",url=""];
-		"abcy-aycc" -> "abcy-aybc" [taillabel="sc", label="b>c-b+y", labeltooltip="c:b; b:y+a; a:a; y:c-b+y",url=""];
-		"abdx-xbbd" -> "abdx-xabd" [taillabel="sb", label="a>b-a+x", labeltooltip="b:a; a:x+d; d:d; x:b-a+x",url=""];
-		"acdy-aacy" -> "acdy-dacy" [taillabel="sa", label="d>a-d+y", labeltooltip="a:d; d:y+c; c:c; y:a-d+y",url=""];
-		"bcdx-dbxd" -> "bcdx-dbxc" [taillabel="sd", label="c>d-c+x", labeltooltip="d:c; c:x+b; b:b; x:d-c+x",url=""];
-		#----------------------------------------------------------------------------------------------------
-		"abcx-aaxc" -> "abcx-xbxc" [taillabel="ta", label="b>a-b+x", labeltooltip="a:b; b:x+c; c:c; x:a-b+x",url=""];
-		"bcdy-dbby" -> "bcdy-dycy" [taillabel="tb", label="c>b-c+y", labeltooltip="b:c; c:y+d; d:d; y:b-c+y",url=""];
-		"acdx-xacc" -> "acdx-xaxd" [taillabel="tc", label="d>c-d+x", labeltooltip="c:d; d:x+a; a:a; x:c-d+x",url=""];
-		"abdy-dybd" -> "abdy-ayby" [taillabel="td", label="a>d-a+y", labeltooltip="d:a; a:y+b; b:b; y:d-a+y",url=""];
-		"abcy-aycc" -> "abcy-ayby" [taillabel="sc", label="b>c-b+y", labeltooltip="c:b; b:y+a; a:a; y:c-b+y",url=""];
-		"abdx-xbbd" -> "abdx-xaxd" [taillabel="sb", label="a>b-a+x", labeltooltip="b:a; a:x+d; d:d; x:b-a+x",url=""];
-		"acdy-aacy" -> "acdy-dycy" [taillabel="sa", label="d>a-d+y", labeltooltip="a:d; d:y+c; c:c; y:a-d+y",url=""];
-		"bcdx-dbxd" -> "bcdx-xbxc" [taillabel="sd", label="c>d-c+x", labeltooltip="d:c; c:x+b; b:b; x:d-c+x",url=""];
-		#----------------------------------------------------------------------------------------------------
-		"abcx-aaxc" -> "abcx-aacc" [taillabel="sc", label=" ", labeltooltip="a:a; b:b; x:x; c:a+b+c+x",url=""];
-		"bcdy-dbby" -> "bcdy-dbbd" [taillabel="sd", label=" ", labeltooltip="b:b; c:c; y:y; d:b+c+d+y",url=""];
-		"acdx-xacc" -> "acdx-aacc" [taillabel="sa", label=" ", labeltooltip="c:c; d:d; x:x; a:c+d+a+x",url=""];
-		"abdy-dybd" -> "abdy-dbbd" [taillabel="sb", label=" ", labeltooltip="d:d; a:a; y:y; b:d+a+b+y",url=""];
-		"abcy-aycc" -> "abcy-aacc" [taillabel="ta", label=" ", labeltooltip="c:c; b:b; y:y; a:c+b+a+y",url=""];
-		"abdx-xbbd" -> "abdx-dbbd" [taillabel="td", label=" ", labeltooltip="b:b; a:a; x:x; d:b+a+d+x",url=""];
-		"acdy-aacy" -> "acdy-aacc" [taillabel="tc", label=" ", labeltooltip="a:a; d:d; y:y; c:a+d+c+y",url=""];
-		"bcdx-dbxd" -> "bcdx-dbbd" [taillabel="tb", label=" ", labeltooltip="d:d; c:c; x:x; b:d+c+b+x",url=""];
-		#----------------------------------------------------------------------------------------------------
-		"abcx-aaxc" -> "abdy-aabd" [taillabel="tc", label="b>c", labeltooltip="a:a; b:c; d: x; y:b-c", url=""];
-		"bcdy-dbby" -> "abcx-abbc" [taillabel="td", label="c>d", labeltooltip="b:b; c:d; a: y; x:c-d", url=""];
-		"acdx-xacc" -> "bcdy-dbcc" [taillabel="ta", label="d>a", labeltooltip="c:c; d:a; b: x; y:d-a", url=""];
-		"abdy-dybd" -> "acdx-dacd" [taillabel="tb", label="a>b", labeltooltip="d:d; a:b; c: y; x:a-b", url=""];
-		"abcy-aycc" -> "bcdx-dbcc" [taillabel="sa", label="b>a", labeltooltip="c:c; b:a; d: y; x:b-a", url=""];
-		"abdx-xbbd" -> "abcy-abbc" [taillabel="sd", label="a>d", labeltooltip="b:b; a:d; c: x; y:a-d", url=""];
-		"acdy-aacy" -> "abdx-aabd" [taillabel="sc", label="d>c", labeltooltip="a:a; d:c; b: y; x:d-c", url=""];
-		"bcdx-dbxd" -> "acdy-dacd" [taillabel="sb", label="c>b", labeltooltip="d:d; c:b; a: x; y:c-b", url=""];
-		#----------------------------------------------------------------------------------------------------
-
+  #+begin_src dot :file ttauta3.svg :exports results :cmd neato
+    digraph ttauta3 {
+	    graph[overlap=false];
+	    # Vertices
+	    "abcy-aacy" [image="abcy-aacy.png", label=""];
+	    "abcy-aacc" [image="abcy-aacc.png", label=""];
+	    "abcy-aaby" [image="abcy-aaby.png", label=""];
+	    "abcy-aabc" [image="abcy-aabc.png", label=""];
+	    "abcy-aycy" [image="abcy-aycy.png", label=""];
+	    "abcy-aycc" [image="abcy-aycc.png", label=""];
+	    "abcy-ayby" [image="abcy-ayby.png", label=""];
+	    "abcy-aybc" [image="abcy-aybc.png", label=""];
+	    "abcy-abcy" [image="abcy-abcy.png", label=""];
+	    "abcy-abcc" [image="abcy-abcc.png", label=""];
+	    "abcy-abby" [image="abcy-abby.png", label=""];
+	    "abcy-abbc" [image="abcy-abbc.png", label=""];
+	    "abcx-aaxc" [image="abcx-aaxc.png", label=""];
+	    "abcx-aacc" [image="abcx-aacc.png", label=""];
+	    "abcx-aabc" [image="abcx-aabc.png", label=""];
+	    "abcx-abxc" [image="abcx-abxc.png", label=""];
+	    "abcx-abcc" [image="abcx-abcc.png", label=""];
+	    "abcx-abbc" [image="abcx-abbc.png", label=""];
+	    "abcx-xaxc" [image="abcx-xaxc.png", label=""];
+	    "abcx-xacc" [image="abcx-xacc.png", label=""];
+	    "abcx-xabc" [image="abcx-xabc.png", label=""];
+	    "abcx-xbxc" [image="abcx-xbxc.png", label=""];
+	    "abcx-xbcc" [image="abcx-xbcc.png", label=""];
+	    "abcx-xbbc" [image="abcx-xbbc.png", label=""];
+	    "acdy-aacy" [image="acdy-aacy.png", label=""];
+	    "acdy-aacc" [image="acdy-aacc.png", label=""];
+	    "acdy-aacd" [image="acdy-aacd.png", label=""];
+	    "acdy-aycy" [image="acdy-aycy.png", label=""];
+	    "acdy-aycc" [image="acdy-aycc.png", label=""];
+	    "acdy-aycd" [image="acdy-aycd.png", label=""];
+	    "acdy-dacy" [image="acdy-dacy.png", label=""];
+	    "acdy-dacc" [image="acdy-dacc.png", label=""];
+	    "acdy-dacd" [image="acdy-dacd.png", label=""];
+	    "acdy-dycy" [image="acdy-dycy.png", label=""];
+	    "acdy-dycc" [image="acdy-dycc.png", label=""];
+	    "acdy-dycd" [image="acdy-dycd.png", label=""];
+	    "acdx-aaxc" [image="acdx-aaxc.png", label=""];
+	    "acdx-aaxd" [image="acdx-aaxd.png", label=""];
+	    "acdx-aacc" [image="acdx-aacc.png", label=""];
+	    "acdx-aacd" [image="acdx-aacd.png", label=""];
+	    "acdx-xaxc" [image="acdx-xaxc.png", label=""];
+	    "acdx-xaxd" [image="acdx-xaxd.png", label=""];
+	    "acdx-xacc" [image="acdx-xacc.png", label=""];
+	    "acdx-xacd" [image="acdx-xacd.png", label=""];
+	    "acdx-daxc" [image="acdx-daxc.png", label=""];
+	    "acdx-daxd" [image="acdx-daxd.png", label=""];
+	    "acdx-dacc" [image="acdx-dacc.png", label=""];
+	    "acdx-dacd" [image="acdx-dacd.png", label=""];
+	    "abdy-aaby" [image="abdy-aaby.png", label=""];
+	    "abdy-aabd" [image="abdy-aabd.png", label=""];
+	    "abdy-ayby" [image="abdy-ayby.png", label=""];
+	    "abdy-aybd" [image="abdy-aybd.png", label=""];
+	    "abdy-abby" [image="abdy-abby.png", label=""];
+	    "abdy-abbd" [image="abdy-abbd.png", label=""];
+	    "abdy-daby" [image="abdy-daby.png", label=""];
+	    "abdy-dabd" [image="abdy-dabd.png", label=""];
+	    "abdy-dyby" [image="abdy-dyby.png", label=""];
+	    "abdy-dybd" [image="abdy-dybd.png", label=""];
+	    "abdy-dbby" [image="abdy-dbby.png", label=""];
+	    "abdy-dbbd" [image="abdy-dbbd.png", label=""];
+	    "abdx-aaxd" [image="abdx-aaxd.png", label=""];
+	    "abdx-aabd" [image="abdx-aabd.png", label=""];
+	    "abdx-abxd" [image="abdx-abxd.png", label=""];
+	    "abdx-abbd" [image="abdx-abbd.png", label=""];
+	    "abdx-xaxd" [image="abdx-xaxd.png", label=""];
+	    "abdx-xabd" [image="abdx-xabd.png", label=""];
+	    "abdx-xbxd" [image="abdx-xbxd.png", label=""];
+	    "abdx-xbbd" [image="abdx-xbbd.png", label=""];
+	    "abdx-daxd" [image="abdx-daxd.png", label=""];
+	    "abdx-dabd" [image="abdx-dabd.png", label=""];
+	    "abdx-dbxd" [image="abdx-dbxd.png", label=""];
+	    "abdx-dbbd" [image="abdx-dbbd.png", label=""];
+	    "bcdy-dycy" [image="bcdy-dycy.png", label=""];
+	    "bcdy-dycc" [image="bcdy-dycc.png", label=""];
+	    "bcdy-dycd" [image="bcdy-dycd.png", label=""];
+	    "bcdy-dyby" [image="bcdy-dyby.png", label=""];
+	    "bcdy-dybc" [image="bcdy-dybc.png", label=""];
+	    "bcdy-dybd" [image="bcdy-dybd.png", label=""];
+	    "bcdy-dbcy" [image="bcdy-dbcy.png", label=""];
+	    "bcdy-dbcc" [image="bcdy-dbcc.png", label=""];
+	    "bcdy-dbcd" [image="bcdy-dbcd.png", label=""];
+	    "bcdy-dbby" [image="bcdy-dbby.png", label=""];
+	    "bcdy-dbbc" [image="bcdy-dbbc.png", label=""];
+	    "bcdy-dbbd" [image="bcdy-dbbd.png", label=""];
+	    "bcdx-xbxc" [image="bcdx-xbxc.png", label=""];
+	    "bcdx-xbxd" [image="bcdx-xbxd.png", label=""];
+	    "bcdx-xbcc" [image="bcdx-xbcc.png", label=""];
+	    "bcdx-xbcd" [image="bcdx-xbcd.png", label=""];
+	    "bcdx-xbbc" [image="bcdx-xbbc.png", label=""];
+	    "bcdx-xbbd" [image="bcdx-xbbd.png", label=""];
+	    "bcdx-dbxc" [image="bcdx-dbxc.png", label=""];
+	    "bcdx-dbxd" [image="bcdx-dbxd.png", label=""];
+	    "bcdx-dbcc" [image="bcdx-dbcc.png", label=""];
+	    "bcdx-dbcd" [image="bcdx-dbcd.png", label=""];
+	    "bcdx-dbbc" [image="bcdx-dbbc.png", label=""];
+	    "bcdx-dbbd" [image="bcdx-dbbd.png", label=""];
+	    # Edges
+	    # ----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcx-aabc" [taillabel="sb", label="b>c", labeltooltip="a:a+x-b+c; b:a; c:c; x:b-c",url=""];
+	    "bcdy-dbby" -> "bcdy-dbbc" [taillabel="sc", label="c>d", labeltooltip="b:b+y-c+d; c:b; d:d; y:c-d",url=""];
+	    "acdx-xacc" -> "acdx-dacc" [taillabel="sd", label="d>a", labeltooltip="c:c+x-d+a; d:c; a:a; x:d-a",url=""];
+	    "abdy-dybd" -> "abdy-dabd" [taillabel="sa", label="a>b", labeltooltip="d:d+y-a+b; a:d; b:b; y:a-b",url=""];
+	    "abcy-aycc" -> "abcy-abcc" [taillabel="tb", label="b>a", labeltooltip="c:c+y-b+a; b:c; a:a; y:b-a",url=""];
+	    "abdx-xbbd" -> "abdx-abbd" [taillabel="ta", label="a>d", labeltooltip="b:b+x-a+d; a:b; d:d; x:a-d",url=""];
+	    "acdy-aacy" -> "acdy-aacd" [taillabel="td", label="d>c", labeltooltip="a:a+y-d+c; d:a; c:c; y:d-c",url=""];
+	    "bcdx-dbxd" -> "bcdx-dbcd" [taillabel="tc", label="c>b", labeltooltip="d:d+x-c+b; c:d; b:b; x:c-b",url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcy-aabc" [taillabel="sb", label="c>b; b>c-b", labeltooltip="a:a+x; b:a; c:b; y:c-b",url=""];
+	    "bcdy-dbby" -> "bcdx-dbbc" [taillabel="sc", label="d>c; c>d-c", labeltooltip="b:b+y; c:b; d:c; x:d-c",url=""];
+	    "acdx-xacc" -> "acdy-dacc" [taillabel="sd", label="a>d; d>a-d", labeltooltip="c:c+x; d:c; a:d; y:a-d",url=""];
+	    "abdy-dybd" -> "abdx-dabd" [taillabel="sa", label="b>a; a>b-a", labeltooltip="d:d+y; a:d; b:a; x:b-a",url=""];
+	    "abcy-aycc" -> "abcx-abcc" [taillabel="tb", label="a>b; b>a-b", labeltooltip="c:c+y; b:c; a:b; x:a-b",url=""];
+	    "abdx-xbbd" -> "abdy-abbd" [taillabel="ta", label="d>a; a>d-a", labeltooltip="b:b+x; a:b; d:a; y:d-a",url=""];
+	    "acdy-aacy" -> "acdx-aacd" [taillabel="td", label="c>d; d>c-d", labeltooltip="a:a+y; d:a; c:d; x:c-d",url=""];
+	    "bcdx-dbxd" -> "bcdy-dbcd" [taillabel="tc", label="b>c; c>b-c", labeltooltip="d:d+x; c:d; b:c; y:b-c",url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcy-aaby" [taillabel="sb", label="c>b; c-b>b", labeltooltip="a:a+x; b:a; c:b; y:c-b",url=""];
+	    "bcdy-dbby" -> "bcdx-xbbc" [taillabel="sc", label="d>c; d-c>c", labeltooltip="b:b+y; c:b; d:c; x:d-c",url=""];
+	    "acdx-xacc" -> "acdy-dycc" [taillabel="sd", label="a>d; a-d>d", labeltooltip="c:c+x; d:c; a:d; y:a-d",url=""];
+	    "abdy-dybd" -> "abdx-daxd" [taillabel="sa", label="b>a; b-a>a", labeltooltip="d:d+y; a:d; b:a; x:b-a",url=""];
+	    "abcy-aycc" -> "abcx-xbcc" [taillabel="tb", label="a>b; a-b>b", labeltooltip="c:c+y; b:c; a:b; x:a-b",url=""];
+	    "abdx-xbbd" -> "abdy-abby" [taillabel="ta", label="d>a; d-a>a", labeltooltip="b:b+x; a:b; d:a; y:d-a",url=""];
+	    "acdy-aacy" -> "acdx-aaxd" [taillabel="td", label="c>d; c-d>d", labeltooltip="a:a+y; d:a; c:d; x:c-d",url=""];
+	    "bcdx-dbxd" -> "bcdy-dycd" [taillabel="tc", label="b>c; b-c>c", labeltooltip="d:d+x; c:d; b:c; y:b-c",url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcx-abxc" [taillabel="tb", label="b>a-b+x", labeltooltip="a:b; b:x+c; c:c; x:a-b+x",url=""];
+	    "bcdy-dbby" -> "bcdy-dbcy" [taillabel="tc", label="c>b-c+y", labeltooltip="b:c; c:y+d; d:d; y:b-c+y",url=""];
+	    "acdx-xacc" -> "acdx-xacd" [taillabel="td", label="d>c-d+x", labeltooltip="c:d; d:x+a; a:a; x:c-d+x",url=""];
+	    "abdy-dybd" -> "abdy-aybd" [taillabel="ta", label="a>d-a+y", labeltooltip="d:a; a:y+b; b:b; y:d-a+y",url=""];
+	    "abcy-aycc" -> "abcy-aybc" [taillabel="sb", label="b>c-b+y", labeltooltip="c:b; b:y+a; a:a; y:c-b+y",url=""];
+	    "abdx-xbbd" -> "abdx-xabd" [taillabel="sa", label="a>b-a+x", labeltooltip="b:a; a:x+d; d:d; x:b-a+x",url=""];
+	    "acdy-aacy" -> "acdy-dacy" [taillabel="sd", label="d>a-d+y", labeltooltip="a:d; d:y+c; c:c; y:a-d+y",url=""];
+	    "bcdx-dbxd" -> "bcdx-dbxc" [taillabel="sc", label="c>d-c+x", labeltooltip="d:c; c:x+b; b:b; x:d-c+x",url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcx-xbxc" [taillabel="tb", label="a-b+x>b", labeltooltip="a:b; b:x+c; c:c; x:a-b+x",url=""];
+	    "bcdy-dbby" -> "bcdy-dycy" [taillabel="tc", label="b-c+y>c", labeltooltip="b:c; c:y+d; d:d; y:b-c+y",url=""];
+	    "acdx-xacc" -> "acdx-xaxd" [taillabel="td", label="c-d+x>d", labeltooltip="c:d; d:x+a; a:a; x:c-d+x",url=""];
+	    "abdy-dybd" -> "abdy-ayby" [taillabel="ta", label="d-a+y>a", labeltooltip="d:a; a:y+b; b:b; y:d-a+y",url=""];
+	    "abcy-aycc" -> "abcy-ayby" [taillabel="sb", label="c-b+y>b", labeltooltip="c:b; b:y+a; a:a; y:c-b+y",url=""];
+	    "abdx-xbbd" -> "abdx-xaxd" [taillabel="sa", label="b-a+x>a", labeltooltip="b:a; a:x+d; d:d; x:b-a+x",url=""];
+	    "acdy-aacy" -> "acdy-dycy" [taillabel="sd", label="a-d+y>d", labeltooltip="a:d; d:y+c; c:c; y:a-d+y",url=""];
+	    "bcdx-dbxd" -> "bcdx-xbxc" [taillabel="sc", label="d-c+x>c", labeltooltip="d:c; c:x+b; b:b; x:d-c+x",url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcx-aacc" [taillabel="sc", label="--", labeltooltip="a:a; b:b; x:x; c:a+b+c+x",url=""];
+	    "bcdy-dbby" -> "bcdy-dbbd" [taillabel="sd", label="--", labeltooltip="b:b; c:c; y:y; d:b+c+d+y",url=""];
+	    "acdx-xacc" -> "acdx-aacc" [taillabel="sa", label="--", labeltooltip="c:c; d:d; x:x; a:c+d+a+x",url=""];
+	    "abdy-dybd" -> "abdy-dbbd" [taillabel="sb", label="--", labeltooltip="d:d; a:a; y:y; b:d+a+b+y",url=""];
+	    "abcy-aycc" -> "abcy-aacc" [taillabel="ta", label="--", labeltooltip="c:c; b:b; y:y; a:c+b+a+y",url=""];
+	    "abdx-xbbd" -> "abdx-dbbd" [taillabel="td", label="--", labeltooltip="b:b; a:a; x:x; d:b+a+d+x",url=""];
+	    "acdy-aacy" -> "acdy-aacc" [taillabel="tc", label="--", labeltooltip="a:a; d:d; y:y; c:a+d+c+y",url=""];
+	    "bcdx-dbxd" -> "bcdx-dbbd" [taillabel="tb", label="--", labeltooltip="d:d; c:c; x:x; b:d+c+b+x",url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abdy-aabd" [taillabel="tc", label="b>c", labeltooltip="a:a; b:c; d: x; y:b-c", url=""];
+	    "bcdy-dbby" -> "abcx-abbc" [taillabel="td", label="c>d", labeltooltip="b:b; c:d; a: y; x:c-d", url=""];
+	    "acdx-xacc" -> "bcdy-dbcc" [taillabel="ta", label="d>a", labeltooltip="c:c; d:a; b: x; y:d-a", url=""];
+	    "abdy-dybd" -> "acdx-dacd" [taillabel="tb", label="a>b", labeltooltip="d:d; a:b; c: y; x:a-b", url=""];
+	    "abcy-aycc" -> "bcdx-dbcc" [taillabel="sa", label="b>a", labeltooltip="c:c; b:a; d: y; x:b-a", url=""];
+	    "abdx-xbbd" -> "abcy-abbc" [taillabel="sd", label="a>d", labeltooltip="b:b; a:d; c: x; y:a-d", url=""];
+	    "acdy-aacy" -> "abdx-aabd" [taillabel="sc", label="d>c", labeltooltip="a:a; d:c; b: y; x:d-c", url=""];
+	    "bcdx-dbxd" -> "acdy-dacd" [taillabel="sb", label="c>b", labeltooltip="d:d; c:b; a: x; y:c-b", url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abdx-aabd" [taillabel="tc", label="c>b; b>c-b", labeltooltip="a:a; b:b; d: x-c+b; y:c-b", url=""];
+	    "bcdy-dbby" -> "abcy-abbc" [taillabel="td", label="d>c; c>d-c", labeltooltip="b:b; c:c; a: y-d+c; x:d-c", url=""];
+	    "acdx-xacc" -> "bcdx-dbcc" [taillabel="ta", label="a>d; d>a-d", labeltooltip="c:c; d:d; b: x-a+d; y:a-d", url=""];
+	    "abdy-dybd" -> "acdy-dacd" [taillabel="tb", label="b>a; a>b-a", labeltooltip="d:d; a:a; c: y-b+a; x:b-a", url=""];
+	    "abcy-aycc" -> "bcdy-dbcc" [taillabel="sa", label="a>b; b>a-b", labeltooltip="c:c; b:b; d: y-a+b; x:a-b", url=""];
+	    "abdx-xbbd" -> "abcx-abbc" [taillabel="sd", label="d>a; a>d-a", labeltooltip="b:b; a:a; c: x-d+a; y:d-a", url=""];
+	    "acdy-aacy" -> "abdy-aabd" [taillabel="sc", label="c>d; d>c-d", labeltooltip="a:a; d:d; b: y-c+d; x:c-d", url=""];
+	    "bcdx-dbxd" -> "acdx-dacd" [taillabel="sb", label="b>c; c>b-c", labeltooltip="d:d; c:c; a: x-b+c; y:b-c", url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abdx-aaxd" [taillabel="tc", label="c>b; c-b>b", labeltooltip="a:a; b:b; d: x-c+b; y:c-b", url=""];
+	    "bcdy-dbby" -> "abcy-abby" [taillabel="td", label="d>c; d-c>c", labeltooltip="b:b; c:c; a: y-d+c; x:d-c", url=""];
+	    "acdx-xacc" -> "bcdx-xbcc" [taillabel="ta", label="a>d; a-d>d", labeltooltip="c:c; d:d; b: x-a+d; y:a-d", url=""];
+	    "abdy-dybd" -> "acdy-dycd" [taillabel="tb", label="b>a; b-a>a", labeltooltip="d:d; a:a; c: y-b+a; x:b-a", url=""];
+	    "abcy-aycc" -> "bcdy-dycc" [taillabel="sa", label="a>b; a-b>b", labeltooltip="c:c; b:b; d: y-a+b; x:a-b", url=""];
+	    "abdx-xbbd" -> "abcx-xbbc" [taillabel="sd", label="d>a; d-a>a", labeltooltip="b:b; a:a; c: x-d+a; y:d-a", url=""];
+	    "acdy-aacy" -> "abdy-aaby" [taillabel="sc", label="c>d; c-d>d", labeltooltip="a:a; d:d; b: y-c+d; x:c-d", url=""];
+	    "bcdx-dbxd" -> "acdx-daxd" [taillabel="sb", label="b>c; b-c>c", labeltooltip="d:d; c:c; a: x-b+c; y:b-c", url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "bcdy-dycy" [taillabel="sd", label="--", labeltooltip="b:b; c:x+c; d:c; x:a", url=""];
+	    "bcdy-dbby" -> "acdx-xaxd" [taillabel="sa", label="--", labeltooltip="c:c; d:y+d; a:d; y:b", url=""];
+	    "acdx-xacc" -> "abdy-ayby" [taillabel="sb", label="--", labeltooltip="d:d; a:x+a; b:a; x:c", url=""];
+	    "abdy-dybd" -> "abcx-xbxc" [taillabel="sc", label="--", labeltooltip="a:a; b:y+b; c:b; y:d", url=""];
+	    "abcy-aycc" -> "abdx-xaxd" [taillabel="td", label="--", labeltooltip="b:b; a:y+a; d:a; y:c", url=""];
+	    "abdx-xbbd" -> "acdy-dycy" [taillabel="tc", label="--", labeltooltip="a:a; d:x+d; c:d; x:b", url=""];
+	    "acdy-aacy" -> "bcdx-xbxc" [taillabel="tb", label="--", labeltooltip="d:d; c:y+c; b:c; y:a", url=""];
+	    "bcdx-dbxd" -> "abcy-ayby" [taillabel="ta", label="--", labeltooltip="c:c; b:x+b; a:b; x:d", url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abdx-xaxd" [taillabel="td", label="--", labeltooltip="a:a; b:b; d:a+x; x:x+c", url=""];
+	    "bcdy-dbby" -> "abcy-ayby" [taillabel="ta", label="--", labeltooltip="b:b; c:c; a:b+y; y:y+d", url=""];
+	    "acdx-xacc" -> "bcdx-xbxc" [taillabel="tb", label="--", labeltooltip="c:c; d:d; b:c+x; x:x+a", url=""];
+	    "abdy-dybd" -> "acdy-dycy" [taillabel="tc", label="--", labeltooltip="d:d; a:a; c:d+y; y:y+b", url=""];
+	    "abcy-aycc" -> "bcdy-dycy" [taillabel="sd", label="--", labeltooltip="c:c; b:b; d:c+y; y:y+a", url=""];
+	    "abdx-xbbd" -> "abcx-xbxc" [taillabel="sc", label="--", labeltooltip="b:b; a:a; c:b+x; x:x+d", url=""];
+	    "acdy-aacy" -> "abdy-ayby" [taillabel="sb", label="--", labeltooltip="a:a; d:d; b:a+y; y:y+c", url=""];
+	    "bcdx-dbxd" -> "acdx-xaxd" [taillabel="sa", label="--", labeltooltip="d:d; c:c; a:d+x; x:x+b", url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcx-aaxc" [taillabel="sa", label="a-b+x>b", labeltooltip="a:a-b+x; b:b; c:c; x:x", url=""];
+	    "bcdy-dbby" -> "bcdy-dbby" [taillabel="sb", label="b-c+y>c", labeltooltip="b:b-c+y; c:c; d:d; y:y", url=""];
+	    "acdx-xacc" -> "acdx-xacc" [taillabel="sc", label="c-d+x>d", labeltooltip="c:c-d+x; d:d; a:a; x:x", url=""];
+	    "abdy-dybd" -> "abdy-dybd" [taillabel="sd", label="d-a+y>a", labeltooltip="d:d-a+y; a:a; b:b; y:y", url=""];
+	    "abcy-aycc" -> "abcy-aycc" [taillabel="tc", label="c-b+y>b", labeltooltip="c:c-b+y; b:b; a:a; y:y", url=""];
+	    "abdx-xbbd" -> "abdx-xbbd" [taillabel="tb", label="b-a+x>a", labeltooltip="b:b-a+x; a:a; d:d; x:x", url=""];
+	    "acdy-aacy" -> "acdy-aacy" [taillabel="ta", label="a-d+y>d", labeltooltip="a:a-d+y; d:d; c:c; y:y", url=""];
+	    "bcdx-dbxd" -> "bcdx-dbxd" [taillabel="td", label="d-c+x>c", labeltooltip="d:d-c+x; c:c; b:b; x:x", url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcx-abxc" [taillabel="sa", label="b>a-b+x", labeltooltip="a:a-b+x; b:b; c:c; x:x", url=""];
+	    "bcdy-dbby" -> "bcdy-dbcy" [taillabel="sb", label="c>b-c+y", labeltooltip="b:b-c+y; c:c; d:d; y:y", url=""];
+	    "acdx-xacc" -> "acdx-xacd" [taillabel="sc", label="d>c-d+x", labeltooltip="c:c-d+x; d:d; a:a; x:x", url=""];
+	    "abdy-dybd" -> "abdy-aybd" [taillabel="sd", label="a>d-a+y", labeltooltip="d:d-a+y; a:a; b:b; y:y", url=""];
+	    "abcy-aycc" -> "abcy-aybc" [taillabel="tc", label="b>c-b+y", labeltooltip="c:c-b+y; b:b; a:a; y:y", url=""];
+	    "abdx-xbbd" -> "abdx-xabd" [taillabel="tb", label="a>b-a+x", labeltooltip="b:b-a+x; a:a; d:d; x:x", url=""];
+	    "acdy-aacy" -> "acdy-dacy" [taillabel="ta", label="d>a-d+y", labeltooltip="a:a-d+y; d:d; c:c; y:y", url=""];
+	    "bcdx-dbxd" -> "bcdx-dbxc" [taillabel="td", label="c>d-c+x", labeltooltip="d:d-c+x; c:c; b:b; x:x", url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcx-aaxc" [taillabel="ta", label="a+b-x>x", labeltooltip="a:a+b-x; b:b; c:c; x:x", url=""];
+	    "bcdy-dbby" -> "bcdy-dbby" [taillabel="tb", label="b+c-y>y", labeltooltip="b:b+c-y; c:c; d:d; y:y", url=""];
+	    "acdx-xacc" -> "acdx-xacc" [taillabel="tc", label="c+d-x>x", labeltooltip="c:c+d-x; d:d; a:a; x:x", url=""];
+	    "abdy-dybd" -> "abdy-dybd" [taillabel="td", label="d+a-y>y", labeltooltip="d:d+a-y; a:a; b:b; y:y", url=""];
+	    "abcy-aycc" -> "abcy-aycc" [taillabel="sc", label="c+b-y>y", labeltooltip="c:c+b-y; b:b; a:a; y:y", url=""];
+	    "abdx-xbbd" -> "abdx-xbbd" [taillabel="sb", label="b+a-x>x", labeltooltip="b:b+a-x; a:a; d:d; x:x", url=""];
+	    "acdy-aacy" -> "acdy-aacy" [taillabel="sa", label="a+d-y>y", labeltooltip="a:a+d-y; d:d; c:c; y:y", url=""];
+	    "bcdx-dbxd" -> "bcdx-dbxd" [taillabel="sd", label="d+c-x>x", labeltooltip="d:d+c-x; c:c; b:b; x:x", url=""];
+	    #----------------------------------------------------------------------------------------------------
+	    "abcx-aaxc" -> "abcx-xaxc" [taillabel="ta", label="x>a+b-x", labeltooltip="a:a+b-x; b:b; c:c; x:x", url=""];
+	    "bcdy-dbby" -> "bcdy-dyby" [taillabel="tb", label="y>b+c-y", labeltooltip="b:b+c-y; c:c; d:d; y:y", url=""];
+	    "acdx-xacc" -> "acdx-xaxc" [taillabel="tc", label="x>c+d-x", labeltooltip="c:c+d-x; d:d; a:a; x:x", url=""];
+	    "abdy-dybd" -> "abdy-dyby" [taillabel="td", label="y>d+a-y", labeltooltip="d:d+a-y; a:a; b:b; y:y", url=""];
+	    "abcy-aycc" -> "abcy-aycy" [taillabel="sc", label="y>c+b-y", labeltooltip="c:c+b-y; b:b; a:a; y:y", url=""];
+	    "abdx-xbbd" -> "abdx-xbxd" [taillabel="sb", label="x>b+a-x", labeltooltip="b:b+a-x; a:a; d:d; x:x", url=""];
+	    "acdy-aacy" -> "acdy-aycy" [taillabel="sa", label="y>a+d-y", labeltooltip="a:a+d-y; d:d; c:c; y:y", url=""];
+	    "bcdx-dbxd" -> "bcdx-xbxd" [taillabel="sd", label="x>d+c-x", labeltooltip="d:d+c-x; c:c; b:b; x:x", url=""];
     }
+
 
   #+end_src
 
