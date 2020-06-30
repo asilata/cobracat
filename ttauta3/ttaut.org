@@ -25,10 +25,10 @@
 * The graph  
   #+begin_src dot :file ttauta3.svg :exports results 
     digraph ttauta3 {
-	overlap=false;
+	overlap=scale;
 	overlap_shrink=true;
 	forcelabels=true;
-	splines=polyline;
+	splines=true;
 	nodesep=1;
 	edge[labelangle=0]
 	# Vertices
