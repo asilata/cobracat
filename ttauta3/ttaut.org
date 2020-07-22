@@ -1,269 +1,292 @@
-* Generation of supports and states
+#+PROPERTY: header-args:javascript :tangle artifacts/ttauta3.js :mkdirp yes
+#+PROPERTY: header-args:html :tangle artifacts/ttauta3.html :mkdirp yes
+#+PROPERTY: header-args:dot :tangle artifacts/ttauta3.dot :mkdirp yes
 
-  #+begin_src python
-	vertices = [1,2,3,4]
-	edges = {"a":(1,2), "b":(2,3), "c":(3,4), "d":(4,1), "x": (1,3), "y": (2,4)}
+* Generation of supports 
 
-	supports = [tuple(s) for s in Subsets(edges.keys(),4) if not ("x" in s and "y" in s) and ("x"in s or "y" in s)]
+  #+begin_src python :results output 
+    import itertools
+    vertices = [1,2,3,4]
+    edges = {"a":(1,2), "b":(2,3), "c":(3,4), "d":(4,1), "x": (1,3), "y": (2,4)}
 
-	def states(support):
-	    incidences = {v:[e for e in support if v in edges[e]] for v in vertices}
-	    unpruned =  [(support, (l1,l2,l3,l4)) for l1 in incidences[1] for l2 in incidences[2] for l3 in incidences[3] for l4 in incidences[4]]
-    #	pruned = [(x,y) for (x,y) in unpruned if len(uniq(sorted(y))) < 4] # must have a dumb-bell
-	    pruned = unpruned
-	    return pruned
-
-	def stateToString(state):
-	    return ''.join(sorted(state[0])) + "-" + ''.join(state[1])
-
-	out = [[stateToString(state) for state in states(support)] for support in supports]
-
-  #+end_src
-
-* The graph  
-  #+begin_src dot :file ttauta3.svg :exports results :cmd neato
-    digraph ttauta3 {
-	    graph[overlap=false];
-	    # Vertices
-	    "abcy-aacy" [image="abcy-aacy.png", label=""];
-	    "abcy-aacc" [image="abcy-aacc.png", label=""];
-	    "abcy-aaby" [image="abcy-aaby.png", label=""];
-	    "abcy-aabc" [image="abcy-aabc.png", label=""];
-	    "abcy-aycy" [image="abcy-aycy.png", label=""];
-	    "abcy-aycc" [image="abcy-aycc.png", label=""];
-	    "abcy-ayby" [image="abcy-ayby.png", label=""];
-	    "abcy-aybc" [image="abcy-aybc.png", label=""];
-	    "abcy-abcy" [image="abcy-abcy.png", label=""];
-	    "abcy-abcc" [image="abcy-abcc.png", label=""];
-	    "abcy-abby" [image="abcy-abby.png", label=""];
-	    "abcy-abbc" [image="abcy-abbc.png", label=""];
-	    "abcx-aaxc" [image="abcx-aaxc.png", label=""];
-	    "abcx-aacc" [image="abcx-aacc.png", label=""];
-	    "abcx-aabc" [image="abcx-aabc.png", label=""];
-	    "abcx-abxc" [image="abcx-abxc.png", label=""];
-	    "abcx-abcc" [image="abcx-abcc.png", label=""];
-	    "abcx-abbc" [image="abcx-abbc.png", label=""];
-	    "abcx-xaxc" [image="abcx-xaxc.png", label=""];
-	    "abcx-xacc" [image="abcx-xacc.png", label=""];
-	    "abcx-xabc" [image="abcx-xabc.png", label=""];
-	    "abcx-xbxc" [image="abcx-xbxc.png", label=""];
-	    "abcx-xbcc" [image="abcx-xbcc.png", label=""];
-	    "abcx-xbbc" [image="abcx-xbbc.png", label=""];
-	    "acdy-aacy" [image="acdy-aacy.png", label=""];
-	    "acdy-aacc" [image="acdy-aacc.png", label=""];
-	    "acdy-aacd" [image="acdy-aacd.png", label=""];
-	    "acdy-aycy" [image="acdy-aycy.png", label=""];
-	    "acdy-aycc" [image="acdy-aycc.png", label=""];
-	    "acdy-aycd" [image="acdy-aycd.png", label=""];
-	    "acdy-dacy" [image="acdy-dacy.png", label=""];
-	    "acdy-dacc" [image="acdy-dacc.png", label=""];
-	    "acdy-dacd" [image="acdy-dacd.png", label=""];
-	    "acdy-dycy" [image="acdy-dycy.png", label=""];
-	    "acdy-dycc" [image="acdy-dycc.png", label=""];
-	    "acdy-dycd" [image="acdy-dycd.png", label=""];
-	    "acdx-aaxc" [image="acdx-aaxc.png", label=""];
-	    "acdx-aaxd" [image="acdx-aaxd.png", label=""];
-	    "acdx-aacc" [image="acdx-aacc.png", label=""];
-	    "acdx-aacd" [image="acdx-aacd.png", label=""];
-	    "acdx-xaxc" [image="acdx-xaxc.png", label=""];
-	    "acdx-xaxd" [image="acdx-xaxd.png", label=""];
-	    "acdx-xacc" [image="acdx-xacc.png", label=""];
-	    "acdx-xacd" [image="acdx-xacd.png", label=""];
-	    "acdx-daxc" [image="acdx-daxc.png", label=""];
-	    "acdx-daxd" [image="acdx-daxd.png", label=""];
-	    "acdx-dacc" [image="acdx-dacc.png", label=""];
-	    "acdx-dacd" [image="acdx-dacd.png", label=""];
-	    "abdy-aaby" [image="abdy-aaby.png", label=""];
-	    "abdy-aabd" [image="abdy-aabd.png", label=""];
-	    "abdy-ayby" [image="abdy-ayby.png", label=""];
-	    "abdy-aybd" [image="abdy-aybd.png", label=""];
-	    "abdy-abby" [image="abdy-abby.png", label=""];
-	    "abdy-abbd" [image="abdy-abbd.png", label=""];
-	    "abdy-daby" [image="abdy-daby.png", label=""];
-	    "abdy-dabd" [image="abdy-dabd.png", label=""];
-	    "abdy-dyby" [image="abdy-dyby.png", label=""];
-	    "abdy-dybd" [image="abdy-dybd.png", label=""];
-	    "abdy-dbby" [image="abdy-dbby.png", label=""];
-	    "abdy-dbbd" [image="abdy-dbbd.png", label=""];
-	    "abdx-aaxd" [image="abdx-aaxd.png", label=""];
-	    "abdx-aabd" [image="abdx-aabd.png", label=""];
-	    "abdx-abxd" [image="abdx-abxd.png", label=""];
-	    "abdx-abbd" [image="abdx-abbd.png", label=""];
-	    "abdx-xaxd" [image="abdx-xaxd.png", label=""];
-	    "abdx-xabd" [image="abdx-xabd.png", label=""];
-	    "abdx-xbxd" [image="abdx-xbxd.png", label=""];
-	    "abdx-xbbd" [image="abdx-xbbd.png", label=""];
-	    "abdx-daxd" [image="abdx-daxd.png", label=""];
-	    "abdx-dabd" [image="abdx-dabd.png", label=""];
-	    "abdx-dbxd" [image="abdx-dbxd.png", label=""];
-	    "abdx-dbbd" [image="abdx-dbbd.png", label=""];
-	    "bcdy-dycy" [image="bcdy-dycy.png", label=""];
-	    "bcdy-dycc" [image="bcdy-dycc.png", label=""];
-	    "bcdy-dycd" [image="bcdy-dycd.png", label=""];
-	    "bcdy-dyby" [image="bcdy-dyby.png", label=""];
-	    "bcdy-dybc" [image="bcdy-dybc.png", label=""];
-	    "bcdy-dybd" [image="bcdy-dybd.png", label=""];
-	    "bcdy-dbcy" [image="bcdy-dbcy.png", label=""];
-	    "bcdy-dbcc" [image="bcdy-dbcc.png", label=""];
-	    "bcdy-dbcd" [image="bcdy-dbcd.png", label=""];
-	    "bcdy-dbby" [image="bcdy-dbby.png", label=""];
-	    "bcdy-dbbc" [image="bcdy-dbbc.png", label=""];
-	    "bcdy-dbbd" [image="bcdy-dbbd.png", label=""];
-	    "bcdx-xbxc" [image="bcdx-xbxc.png", label=""];
-	    "bcdx-xbxd" [image="bcdx-xbxd.png", label=""];
-	    "bcdx-xbcc" [image="bcdx-xbcc.png", label=""];
-	    "bcdx-xbcd" [image="bcdx-xbcd.png", label=""];
-	    "bcdx-xbbc" [image="bcdx-xbbc.png", label=""];
-	    "bcdx-xbbd" [image="bcdx-xbbd.png", label=""];
-	    "bcdx-dbxc" [image="bcdx-dbxc.png", label=""];
-	    "bcdx-dbxd" [image="bcdx-dbxd.png", label=""];
-	    "bcdx-dbcc" [image="bcdx-dbcc.png", label=""];
-	    "bcdx-dbcd" [image="bcdx-dbcd.png", label=""];
-	    "bcdx-dbbc" [image="bcdx-dbbc.png", label=""];
-	    "bcdx-dbbd" [image="bcdx-dbbd.png", label=""];
-	    # Edges
-	    # ----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcx-aabc" [taillabel="sb", label="b>c", labeltooltip="a:a+x-b+c; b:a; c:c; x:b-c",url=""];
-	    "bcdy-dbby" -> "bcdy-dbbc" [taillabel="sc", label="c>d", labeltooltip="b:b+y-c+d; c:b; d:d; y:c-d",url=""];
-	    "acdx-xacc" -> "acdx-dacc" [taillabel="sd", label="d>a", labeltooltip="c:c+x-d+a; d:c; a:a; x:d-a",url=""];
-	    "abdy-dybd" -> "abdy-dabd" [taillabel="sa", label="a>b", labeltooltip="d:d+y-a+b; a:d; b:b; y:a-b",url=""];
-	    "abcy-aycc" -> "abcy-abcc" [taillabel="tb", label="b>a", labeltooltip="c:c+y-b+a; b:c; a:a; y:b-a",url=""];
-	    "abdx-xbbd" -> "abdx-abbd" [taillabel="ta", label="a>d", labeltooltip="b:b+x-a+d; a:b; d:d; x:a-d",url=""];
-	    "acdy-aacy" -> "acdy-aacd" [taillabel="td", label="d>c", labeltooltip="a:a+y-d+c; d:a; c:c; y:d-c",url=""];
-	    "bcdx-dbxd" -> "bcdx-dbcd" [taillabel="tc", label="c>b", labeltooltip="d:d+x-c+b; c:d; b:b; x:c-b",url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcy-aabc" [taillabel="sb", label="c>b; b>c-b", labeltooltip="a:a+x; b:a; c:b; y:c-b",url=""];
-	    "bcdy-dbby" -> "bcdx-dbbc" [taillabel="sc", label="d>c; c>d-c", labeltooltip="b:b+y; c:b; d:c; x:d-c",url=""];
-	    "acdx-xacc" -> "acdy-dacc" [taillabel="sd", label="a>d; d>a-d", labeltooltip="c:c+x; d:c; a:d; y:a-d",url=""];
-	    "abdy-dybd" -> "abdx-dabd" [taillabel="sa", label="b>a; a>b-a", labeltooltip="d:d+y; a:d; b:a; x:b-a",url=""];
-	    "abcy-aycc" -> "abcx-abcc" [taillabel="tb", label="a>b; b>a-b", labeltooltip="c:c+y; b:c; a:b; x:a-b",url=""];
-	    "abdx-xbbd" -> "abdy-abbd" [taillabel="ta", label="d>a; a>d-a", labeltooltip="b:b+x; a:b; d:a; y:d-a",url=""];
-	    "acdy-aacy" -> "acdx-aacd" [taillabel="td", label="c>d; d>c-d", labeltooltip="a:a+y; d:a; c:d; x:c-d",url=""];
-	    "bcdx-dbxd" -> "bcdy-dbcd" [taillabel="tc", label="b>c; c>b-c", labeltooltip="d:d+x; c:d; b:c; y:b-c",url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcy-aaby" [taillabel="sb", label="c>b; c-b>b", labeltooltip="a:a+x; b:a; c:b; y:c-b",url=""];
-	    "bcdy-dbby" -> "bcdx-xbbc" [taillabel="sc", label="d>c; d-c>c", labeltooltip="b:b+y; c:b; d:c; x:d-c",url=""];
-	    "acdx-xacc" -> "acdy-dycc" [taillabel="sd", label="a>d; a-d>d", labeltooltip="c:c+x; d:c; a:d; y:a-d",url=""];
-	    "abdy-dybd" -> "abdx-daxd" [taillabel="sa", label="b>a; b-a>a", labeltooltip="d:d+y; a:d; b:a; x:b-a",url=""];
-	    "abcy-aycc" -> "abcx-xbcc" [taillabel="tb", label="a>b; a-b>b", labeltooltip="c:c+y; b:c; a:b; x:a-b",url=""];
-	    "abdx-xbbd" -> "abdy-abby" [taillabel="ta", label="d>a; d-a>a", labeltooltip="b:b+x; a:b; d:a; y:d-a",url=""];
-	    "acdy-aacy" -> "acdx-aaxd" [taillabel="td", label="c>d; c-d>d", labeltooltip="a:a+y; d:a; c:d; x:c-d",url=""];
-	    "bcdx-dbxd" -> "bcdy-dycd" [taillabel="tc", label="b>c; b-c>c", labeltooltip="d:d+x; c:d; b:c; y:b-c",url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcx-abxc" [taillabel="tb", label="b>a-b+x", labeltooltip="a:b; b:x+c; c:c; x:a-b+x",url=""];
-	    "bcdy-dbby" -> "bcdy-dbcy" [taillabel="tc", label="c>b-c+y", labeltooltip="b:c; c:y+d; d:d; y:b-c+y",url=""];
-	    "acdx-xacc" -> "acdx-xacd" [taillabel="td", label="d>c-d+x", labeltooltip="c:d; d:x+a; a:a; x:c-d+x",url=""];
-	    "abdy-dybd" -> "abdy-aybd" [taillabel="ta", label="a>d-a+y", labeltooltip="d:a; a:y+b; b:b; y:d-a+y",url=""];
-	    "abcy-aycc" -> "abcy-aybc" [taillabel="sb", label="b>c-b+y", labeltooltip="c:b; b:y+a; a:a; y:c-b+y",url=""];
-	    "abdx-xbbd" -> "abdx-xabd" [taillabel="sa", label="a>b-a+x", labeltooltip="b:a; a:x+d; d:d; x:b-a+x",url=""];
-	    "acdy-aacy" -> "acdy-dacy" [taillabel="sd", label="d>a-d+y", labeltooltip="a:d; d:y+c; c:c; y:a-d+y",url=""];
-	    "bcdx-dbxd" -> "bcdx-dbxc" [taillabel="sc", label="c>d-c+x", labeltooltip="d:c; c:x+b; b:b; x:d-c+x",url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcx-xbxc" [taillabel="tb", label="a-b+x>b", labeltooltip="a:b; b:x+c; c:c; x:a-b+x",url=""];
-	    "bcdy-dbby" -> "bcdy-dycy" [taillabel="tc", label="b-c+y>c", labeltooltip="b:c; c:y+d; d:d; y:b-c+y",url=""];
-	    "acdx-xacc" -> "acdx-xaxd" [taillabel="td", label="c-d+x>d", labeltooltip="c:d; d:x+a; a:a; x:c-d+x",url=""];
-	    "abdy-dybd" -> "abdy-ayby" [taillabel="ta", label="d-a+y>a", labeltooltip="d:a; a:y+b; b:b; y:d-a+y",url=""];
-	    "abcy-aycc" -> "abcy-ayby" [taillabel="sb", label="c-b+y>b", labeltooltip="c:b; b:y+a; a:a; y:c-b+y",url=""];
-	    "abdx-xbbd" -> "abdx-xaxd" [taillabel="sa", label="b-a+x>a", labeltooltip="b:a; a:x+d; d:d; x:b-a+x",url=""];
-	    "acdy-aacy" -> "acdy-dycy" [taillabel="sd", label="a-d+y>d", labeltooltip="a:d; d:y+c; c:c; y:a-d+y",url=""];
-	    "bcdx-dbxd" -> "bcdx-xbxc" [taillabel="sc", label="d-c+x>c", labeltooltip="d:c; c:x+b; b:b; x:d-c+x",url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcx-aacc" [taillabel="sc", label="--", labeltooltip="a:a; b:b; x:x; c:a+b+c+x",url=""];
-	    "bcdy-dbby" -> "bcdy-dbbd" [taillabel="sd", label="--", labeltooltip="b:b; c:c; y:y; d:b+c+d+y",url=""];
-	    "acdx-xacc" -> "acdx-aacc" [taillabel="sa", label="--", labeltooltip="c:c; d:d; x:x; a:c+d+a+x",url=""];
-	    "abdy-dybd" -> "abdy-dbbd" [taillabel="sb", label="--", labeltooltip="d:d; a:a; y:y; b:d+a+b+y",url=""];
-	    "abcy-aycc" -> "abcy-aacc" [taillabel="ta", label="--", labeltooltip="c:c; b:b; y:y; a:c+b+a+y",url=""];
-	    "abdx-xbbd" -> "abdx-dbbd" [taillabel="td", label="--", labeltooltip="b:b; a:a; x:x; d:b+a+d+x",url=""];
-	    "acdy-aacy" -> "acdy-aacc" [taillabel="tc", label="--", labeltooltip="a:a; d:d; y:y; c:a+d+c+y",url=""];
-	    "bcdx-dbxd" -> "bcdx-dbbd" [taillabel="tb", label="--", labeltooltip="d:d; c:c; x:x; b:d+c+b+x",url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abdy-aabd" [taillabel="tc", label="b>c", labeltooltip="a:a; b:c; d: x; y:b-c", url=""];
-	    "bcdy-dbby" -> "abcx-abbc" [taillabel="td", label="c>d", labeltooltip="b:b; c:d; a: y; x:c-d", url=""];
-	    "acdx-xacc" -> "bcdy-dbcc" [taillabel="ta", label="d>a", labeltooltip="c:c; d:a; b: x; y:d-a", url=""];
-	    "abdy-dybd" -> "acdx-dacd" [taillabel="tb", label="a>b", labeltooltip="d:d; a:b; c: y; x:a-b", url=""];
-	    "abcy-aycc" -> "bcdx-dbcc" [taillabel="sa", label="b>a", labeltooltip="c:c; b:a; d: y; x:b-a", url=""];
-	    "abdx-xbbd" -> "abcy-abbc" [taillabel="sd", label="a>d", labeltooltip="b:b; a:d; c: x; y:a-d", url=""];
-	    "acdy-aacy" -> "abdx-aabd" [taillabel="sc", label="d>c", labeltooltip="a:a; d:c; b: y; x:d-c", url=""];
-	    "bcdx-dbxd" -> "acdy-dacd" [taillabel="sb", label="c>b", labeltooltip="d:d; c:b; a: x; y:c-b", url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abdx-aabd" [taillabel="tc", label="c>b; b>c-b", labeltooltip="a:a; b:b; d: x-c+b; y:c-b", url=""];
-	    "bcdy-dbby" -> "abcy-abbc" [taillabel="td", label="d>c; c>d-c", labeltooltip="b:b; c:c; a: y-d+c; x:d-c", url=""];
-	    "acdx-xacc" -> "bcdx-dbcc" [taillabel="ta", label="a>d; d>a-d", labeltooltip="c:c; d:d; b: x-a+d; y:a-d", url=""];
-	    "abdy-dybd" -> "acdy-dacd" [taillabel="tb", label="b>a; a>b-a", labeltooltip="d:d; a:a; c: y-b+a; x:b-a", url=""];
-	    "abcy-aycc" -> "bcdy-dbcc" [taillabel="sa", label="a>b; b>a-b", labeltooltip="c:c; b:b; d: y-a+b; x:a-b", url=""];
-	    "abdx-xbbd" -> "abcx-abbc" [taillabel="sd", label="d>a; a>d-a", labeltooltip="b:b; a:a; c: x-d+a; y:d-a", url=""];
-	    "acdy-aacy" -> "abdy-aabd" [taillabel="sc", label="c>d; d>c-d", labeltooltip="a:a; d:d; b: y-c+d; x:c-d", url=""];
-	    "bcdx-dbxd" -> "acdx-dacd" [taillabel="sb", label="b>c; c>b-c", labeltooltip="d:d; c:c; a: x-b+c; y:b-c", url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abdx-aaxd" [taillabel="tc", label="c>b; c-b>b", labeltooltip="a:a; b:b; d: x-c+b; y:c-b", url=""];
-	    "bcdy-dbby" -> "abcy-abby" [taillabel="td", label="d>c; d-c>c", labeltooltip="b:b; c:c; a: y-d+c; x:d-c", url=""];
-	    "acdx-xacc" -> "bcdx-xbcc" [taillabel="ta", label="a>d; a-d>d", labeltooltip="c:c; d:d; b: x-a+d; y:a-d", url=""];
-	    "abdy-dybd" -> "acdy-dycd" [taillabel="tb", label="b>a; b-a>a", labeltooltip="d:d; a:a; c: y-b+a; x:b-a", url=""];
-	    "abcy-aycc" -> "bcdy-dycc" [taillabel="sa", label="a>b; a-b>b", labeltooltip="c:c; b:b; d: y-a+b; x:a-b", url=""];
-	    "abdx-xbbd" -> "abcx-xbbc" [taillabel="sd", label="d>a; d-a>a", labeltooltip="b:b; a:a; c: x-d+a; y:d-a", url=""];
-	    "acdy-aacy" -> "abdy-aaby" [taillabel="sc", label="c>d; c-d>d", labeltooltip="a:a; d:d; b: y-c+d; x:c-d", url=""];
-	    "bcdx-dbxd" -> "acdx-daxd" [taillabel="sb", label="b>c; b-c>c", labeltooltip="d:d; c:c; a: x-b+c; y:b-c", url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "bcdy-dycy" [taillabel="sd", label="--", labeltooltip="b:b; c:x+c; d:c; x:a", url=""];
-	    "bcdy-dbby" -> "acdx-xaxd" [taillabel="sa", label="--", labeltooltip="c:c; d:y+d; a:d; y:b", url=""];
-	    "acdx-xacc" -> "abdy-ayby" [taillabel="sb", label="--", labeltooltip="d:d; a:x+a; b:a; x:c", url=""];
-	    "abdy-dybd" -> "abcx-xbxc" [taillabel="sc", label="--", labeltooltip="a:a; b:y+b; c:b; y:d", url=""];
-	    "abcy-aycc" -> "abdx-xaxd" [taillabel="td", label="--", labeltooltip="b:b; a:y+a; d:a; y:c", url=""];
-	    "abdx-xbbd" -> "acdy-dycy" [taillabel="tc", label="--", labeltooltip="a:a; d:x+d; c:d; x:b", url=""];
-	    "acdy-aacy" -> "bcdx-xbxc" [taillabel="tb", label="--", labeltooltip="d:d; c:y+c; b:c; y:a", url=""];
-	    "bcdx-dbxd" -> "abcy-ayby" [taillabel="ta", label="--", labeltooltip="c:c; b:x+b; a:b; x:d", url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abdx-xaxd" [taillabel="td", label="--", labeltooltip="a:a; b:b; d:a+x; x:x+c", url=""];
-	    "bcdy-dbby" -> "abcy-ayby" [taillabel="ta", label="--", labeltooltip="b:b; c:c; a:b+y; y:y+d", url=""];
-	    "acdx-xacc" -> "bcdx-xbxc" [taillabel="tb", label="--", labeltooltip="c:c; d:d; b:c+x; x:x+a", url=""];
-	    "abdy-dybd" -> "acdy-dycy" [taillabel="tc", label="--", labeltooltip="d:d; a:a; c:d+y; y:y+b", url=""];
-	    "abcy-aycc" -> "bcdy-dycy" [taillabel="sd", label="--", labeltooltip="c:c; b:b; d:c+y; y:y+a", url=""];
-	    "abdx-xbbd" -> "abcx-xbxc" [taillabel="sc", label="--", labeltooltip="b:b; a:a; c:b+x; x:x+d", url=""];
-	    "acdy-aacy" -> "abdy-ayby" [taillabel="sb", label="--", labeltooltip="a:a; d:d; b:a+y; y:y+c", url=""];
-	    "bcdx-dbxd" -> "acdx-xaxd" [taillabel="sa", label="--", labeltooltip="d:d; c:c; a:d+x; x:x+b", url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcx-aaxc" [taillabel="sa", label="a-b+x>b", labeltooltip="a:a-b+x; b:b; c:c; x:x", url=""];
-	    "bcdy-dbby" -> "bcdy-dbby" [taillabel="sb", label="b-c+y>c", labeltooltip="b:b-c+y; c:c; d:d; y:y", url=""];
-	    "acdx-xacc" -> "acdx-xacc" [taillabel="sc", label="c-d+x>d", labeltooltip="c:c-d+x; d:d; a:a; x:x", url=""];
-	    "abdy-dybd" -> "abdy-dybd" [taillabel="sd", label="d-a+y>a", labeltooltip="d:d-a+y; a:a; b:b; y:y", url=""];
-	    "abcy-aycc" -> "abcy-aycc" [taillabel="tc", label="c-b+y>b", labeltooltip="c:c-b+y; b:b; a:a; y:y", url=""];
-	    "abdx-xbbd" -> "abdx-xbbd" [taillabel="tb", label="b-a+x>a", labeltooltip="b:b-a+x; a:a; d:d; x:x", url=""];
-	    "acdy-aacy" -> "acdy-aacy" [taillabel="ta", label="a-d+y>d", labeltooltip="a:a-d+y; d:d; c:c; y:y", url=""];
-	    "bcdx-dbxd" -> "bcdx-dbxd" [taillabel="td", label="d-c+x>c", labeltooltip="d:d-c+x; c:c; b:b; x:x", url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcx-abxc" [taillabel="sa", label="b>a-b+x", labeltooltip="a:a-b+x; b:b; c:c; x:x", url=""];
-	    "bcdy-dbby" -> "bcdy-dbcy" [taillabel="sb", label="c>b-c+y", labeltooltip="b:b-c+y; c:c; d:d; y:y", url=""];
-	    "acdx-xacc" -> "acdx-xacd" [taillabel="sc", label="d>c-d+x", labeltooltip="c:c-d+x; d:d; a:a; x:x", url=""];
-	    "abdy-dybd" -> "abdy-aybd" [taillabel="sd", label="a>d-a+y", labeltooltip="d:d-a+y; a:a; b:b; y:y", url=""];
-	    "abcy-aycc" -> "abcy-aybc" [taillabel="tc", label="b>c-b+y", labeltooltip="c:c-b+y; b:b; a:a; y:y", url=""];
-	    "abdx-xbbd" -> "abdx-xabd" [taillabel="tb", label="a>b-a+x", labeltooltip="b:b-a+x; a:a; d:d; x:x", url=""];
-	    "acdy-aacy" -> "acdy-dacy" [taillabel="ta", label="d>a-d+y", labeltooltip="a:a-d+y; d:d; c:c; y:y", url=""];
-	    "bcdx-dbxd" -> "bcdx-dbxc" [taillabel="td", label="c>d-c+x", labeltooltip="d:d-c+x; c:c; b:b; x:x", url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcx-aaxc" [taillabel="ta", label="a+b-x>x", labeltooltip="a:a+b-x; b:b; c:c; x:x", url=""];
-	    "bcdy-dbby" -> "bcdy-dbby" [taillabel="tb", label="b+c-y>y", labeltooltip="b:b+c-y; c:c; d:d; y:y", url=""];
-	    "acdx-xacc" -> "acdx-xacc" [taillabel="tc", label="c+d-x>x", labeltooltip="c:c+d-x; d:d; a:a; x:x", url=""];
-	    "abdy-dybd" -> "abdy-dybd" [taillabel="td", label="d+a-y>y", labeltooltip="d:d+a-y; a:a; b:b; y:y", url=""];
-	    "abcy-aycc" -> "abcy-aycc" [taillabel="sc", label="c+b-y>y", labeltooltip="c:c+b-y; b:b; a:a; y:y", url=""];
-	    "abdx-xbbd" -> "abdx-xbbd" [taillabel="sb", label="b+a-x>x", labeltooltip="b:b+a-x; a:a; d:d; x:x", url=""];
-	    "acdy-aacy" -> "acdy-aacy" [taillabel="sa", label="a+d-y>y", labeltooltip="a:a+d-y; d:d; c:c; y:y", url=""];
-	    "bcdx-dbxd" -> "bcdx-dbxd" [taillabel="sd", label="d+c-x>x", labeltooltip="d:d+c-x; c:c; b:b; x:x", url=""];
-	    #----------------------------------------------------------------------------------------------------
-	    "abcx-aaxc" -> "abcx-xaxc" [taillabel="ta", label="x>a+b-x", labeltooltip="a:a+b-x; b:b; c:c; x:x", url=""];
-	    "bcdy-dbby" -> "bcdy-dyby" [taillabel="tb", label="y>b+c-y", labeltooltip="b:b+c-y; c:c; d:d; y:y", url=""];
-	    "acdx-xacc" -> "acdx-xaxc" [taillabel="tc", label="x>c+d-x", labeltooltip="c:c+d-x; d:d; a:a; x:x", url=""];
-	    "abdy-dybd" -> "abdy-dyby" [taillabel="td", label="y>d+a-y", labeltooltip="d:d+a-y; a:a; b:b; y:y", url=""];
-	    "abcy-aycc" -> "abcy-aycy" [taillabel="sc", label="y>c+b-y", labeltooltip="c:c+b-y; b:b; a:a; y:y", url=""];
-	    "abdx-xbbd" -> "abdx-xbxd" [taillabel="sb", label="x>b+a-x", labeltooltip="b:b+a-x; a:a; d:d; x:x", url=""];
-	    "acdy-aacy" -> "acdy-aycy" [taillabel="sa", label="y>a+d-y", labeltooltip="a:a+d-y; d:d; c:c; y:y", url=""];
-	    "bcdx-dbxd" -> "bcdx-xbxd" [taillabel="sd", label="x>d+c-x", labeltooltip="d:d+c-x; c:c; b:b; x:x", url=""];
-    }
-
-
+    for s in itertools.combinations(edges.keys(),4):
+	 if not (("x" in s and "y" in s) and ("x"in s or "y" in s)):
+	      print ''.join(sorted(tuple(s)))
   #+end_src
 
   #+RESULTS:
-  [[file:ttauta3.svg]]
+  : abcd
+  : abcy
+  : abcx
+  : acdy
+  : acdx
+  : abdy
+  : abdx
+  : bcdy
+  : bcdx
+
+
+* The graph  
+  #+begin_src dot 
+    digraph ttauta3 {
+	"abcx" [image="abcx.png", label="", shape=none];
+	"abcy" [image="abcy.png", label="", shape=none];
+	"acdy" [image="acdy.png", label="", shape=none];
+	"acdx" [image="acdx.png", label="", shape=none];
+	"abdy" [image="abdy.png", label="", shape=none];
+	"abdx" [image="abdx.png", label="", shape=none];
+	"bcdy" [image="bcdy.png", label="", shape=none];
+	"bcdx" [image="bcdx.png", label="", shape=none];
+	"abcx" -> "abcx" [taillabel="sa", label="a>b       ", labeltooltip="a:a+x-b;b:b;c:c;x:x     ", url=""];
+	"abcx" -> "abcx" [taillabel="sa", label="b>a       ", labeltooltip="a:x;b:a;c:c;x:x+b-a     ", url=""];
+	"abcx" -> "abcx" [taillabel="sb", label="b>c;b-c>x ", labeltooltip="a:a;b:a+b-c-x;c:c;x:x   ", url=""];
+	"abcx" -> "abcx" [taillabel="sb", label="b>c;x>b-c ", labeltooltip="a:a+x-b+c;b:a;c:c;x:b-c ", url=""];
+	"abcx" -> "abcx" [taillabel="sc", label="----      ", labeltooltip="b:b,c:b+c+x;a:a;x:x     ", url=""];
+	"abcx" -> "abcx" [taillabel="ta", label="a>x       ", labeltooltip="b:b;a:b+a-x;c:c;x:x     ", url=""];
+	"abcx" -> "abcx" [taillabel="ta", label="x>a       ", labeltooltip="b:b+x-a;a:b;c:c;x:a     ", url=""];
+	"abcx" -> "abcx" [taillabel="tb", label="a>b       ", labeltooltip="c:c;b:c+x;a:b;x:x+a-b   ", url=""];
+	"abcx" -> "abcx" [taillabel="tb", label="b>a       ", labeltooltip="c:c;b:c+x+b-a;a:a;x:x   ", url=""];
+	"abcx" -> "abcx" [taillabel="tc", label="c>b;c-b>x ", labeltooltip="c:c-b-x;b:b;a:a;x:x     ", url=""];
+	"abcx" -> "abcy" [taillabel="sb", label="c>b       ", labeltooltip="a:a+x;b:a;c:b;y:c-b     ", url=""];
+	"abcx" -> "abdx" [taillabel="tc", label="c>b;x>c-b ", labeltooltip="d:x-c+b;b:b;a:a;x:c-b   ", url=""];
+	"abcx" -> "abdx" [taillabel="td", label="----      ", labeltooltip="a:a;d:a+x;b:b;x:x+c     ", url=""];
+	"abcx" -> "abdy" [taillabel="tc", label="b>c       ", labeltooltip="d:x;b:c;a:a;y:b-c       ", url=""];
+	"abcx" -> "bcdy" [taillabel="sd", label="----      ", labeltooltip="c:c+x,d:c;b:b;y:a       ", url=""];
+	"abcy" -> "abcx" [taillabel="tb", label="a>b       ", labeltooltip="c:c+y;b:c;a:b;x:a-b     ", url=""];
+	"abcy" -> "abcy" [taillabel="sa", label="a>b;a-b>y ", labeltooltip="a:a-b-y;b:b;c:c;y:y     ", url=""];
+	"abcy" -> "abcy" [taillabel="sb", label="b>c       ", labeltooltip="a:a;b:a+y+b-c;c:c;y:y   ", url=""];
+	"abcy" -> "abcy" [taillabel="sb", label="c>b       ", labeltooltip="a:a;b:a+y;c:b;y:y+c-b   ", url=""];
+	"abcy" -> "abcy" [taillabel="sc", label="c>y       ", labeltooltip="b:b;c:b+c-y;a:a;y:y     ", url=""];
+	"abcy" -> "abcy" [taillabel="sc", label="y>c       ", labeltooltip="b:b+y-c;c:b;a:a;y:c     ", url=""];
+	"abcy" -> "abcy" [taillabel="ta", label="----      ", labeltooltip="b:b,a:b+a+y;c:c;y:y     ", url=""];
+	"abcy" -> "abcy" [taillabel="tb", label="b>a;b-a>y ", labeltooltip="c:c;b:c+b-a-y;a:a;y:y   ", url=""];
+	"abcy" -> "abcy" [taillabel="tb", label="b>a;y>b-a ", labeltooltip="c:c+y-b+a;b:c;a:a;y:b-a ", url=""];
+	"abcy" -> "abcy" [taillabel="tc", label="b>c       ", labeltooltip="c:y;b:c;a:a;y:y+b-c     ", url=""];
+	"abcy" -> "abcy" [taillabel="tc", label="c>b       ", labeltooltip="c:c+y-b;b:b;a:a;y:y     ", url=""];
+	"abcy" -> "abdx" [taillabel="td", label="----      ", labeltooltip="a:a+y,d:a;b:b;x:c       ", url=""];
+	"abcy" -> "bcdx" [taillabel="sa", label="b>a       ", labeltooltip="d:y;b:a;c:c;x:b-a       ", url=""];
+	"abcy" -> "bcdy" [taillabel="sa", label="a>b;y>a-b ", labeltooltip="d:y-a+b;b:b;c:c;y:a-b   ", url=""];
+	"abcy" -> "bcdy" [taillabel="sd", label="----      ", labeltooltip="c:c;d:c+y;b:b;y:y+a     ", url=""];
+	"abdx" -> "abcx" [taillabel="sc", label="----      ", labeltooltip="b:b;c:b+x;a:a;x:x+d     ", url=""];
+	"abdx" -> "abcx" [taillabel="sd", label="d>a;x>d-a ", labeltooltip="c:x-d+a;a:a;b:b;x:d-a   ", url=""];
+	"abdx" -> "abcy" [taillabel="sd", label="a>d       ", labeltooltip="c:x;a:d;b:b;y:a-d       ", url=""];
+	"abdx" -> "abdx" [taillabel="sa", label="a>b       ", labeltooltip="d:d;a:d+x+a-b;b:b;x:x   ", url=""];
+	"abdx" -> "abdx" [taillabel="sa", label="b>a       ", labeltooltip="d:d;a:d+x;b:a;x:x+b-a   ", url=""];
+	"abdx" -> "abdx" [taillabel="sb", label="b>x       ", labeltooltip="a:a;b:a+b-x;d:d;x:x     ", url=""];
+	"abdx" -> "abdx" [taillabel="sb", label="x>b       ", labeltooltip="a:a+x-b;b:a;d:d;x:b     ", url=""];
+	"abdx" -> "abdx" [taillabel="sd", label="d>a;d-a>x ", labeltooltip="d:d-a-x;a:a;b:b;x:x     ", url=""];
+	"abdx" -> "abdx" [taillabel="ta", label="a>d;a-d>x ", labeltooltip="b:b;a:b+a-d-x;d:d;x:x   ", url=""];
+	"abdx" -> "abdx" [taillabel="ta", label="a>d;x>a-d ", labeltooltip="b:b+x-a+d;a:b;d:d;x:a-d ", url=""];
+	"abdx" -> "abdx" [taillabel="tb", label="a>b       ", labeltooltip="b:x;a:b;d:d;x:x+a-b     ", url=""];
+	"abdx" -> "abdx" [taillabel="tb", label="b>a       ", labeltooltip="b:b+x-a;a:a;d:d;x:x     ", url=""];
+	"abdx" -> "abdx" [taillabel="td", label="----      ", labeltooltip="a:a,d:a+d+x;b:b;x:x     ", url=""];
+	"abdx" -> "abdy" [taillabel="ta", label="d>a       ", labeltooltip="b:b+x;a:b;d:a;y:d-a     ", url=""];
+	"abdx" -> "acdy" [taillabel="tc", label="----      ", labeltooltip="d:d+x,c:d;a:a;y:b       ", url=""];
+	"abdy" -> "abcx" [taillabel="sc", label="----      ", labeltooltip="b:b+y,c:b;a:a;x:d       ", url=""];
+	"abdy" -> "abdx" [taillabel="sa", label="b>a       ", labeltooltip="d:d+y;a:d;b:a;x:b-a     ", url=""];
+	"abdy" -> "abdy" [taillabel="sa", label="a>b;a-b>y ", labeltooltip="d:d;a:d+a-b-y;b:b;y:y   ", url=""];
+	"abdy" -> "abdy" [taillabel="sa", label="a>b;y>a-b ", labeltooltip="d:d+y-a+b;a:d;b:b;y:a-b ", url=""];
+	"abdy" -> "abdy" [taillabel="sb", label="----", labeltooltip="a:a,b:a+b+y;d:d;y:y     ", url=""];
+	"abdy" -> "abdy" [taillabel="sd", label="a>d       ", labeltooltip="d:y;a:d;b:b;y:y+a-d     ", url=""];
+	"abdy" -> "abdy" [taillabel="sd", label="d>a       ", labeltooltip="d:d+y-a;a:a;b:b;y:y     ", url=""];
+	"abdy" -> "abdy" [taillabel="ta", label="a>d       ", labeltooltip="b:b;a:b+y+a-d;d:d;y:y   ", url=""];
+	"abdy" -> "abdy" [taillabel="ta", label="d>a       ", labeltooltip="b:b;a:b+y;d:a;y:y+d-a   ", url=""];
+	"abdy" -> "abdy" [taillabel="tb", label="b>a;b-a>y ", labeltooltip="b:b-a-y;a:a;d:d;y:y     ", url=""];
+	"abdy" -> "abdy" [taillabel="td", label="d>y       ", labeltooltip="a:a;d:a+d-y;b:b;y:y     ", url=""];
+	"abdy" -> "abdy" [taillabel="td", label="y>d       ", labeltooltip="a:a+y-d;d:a;b:b;y:d     ", url=""];
+	"abdy" -> "acdx" [taillabel="tb", label="a>b       ", labeltooltip="c:y;a:b;d:d;x:a-b       ", url=""];
+	"abdy" -> "acdy" [taillabel="tb", label="b>a;y>b-a ", labeltooltip="c:y-b+a;a:a;d:d;y:b-a   ", url=""];
+	"abdy" -> "acdy" [taillabel="tc", label="----      ", labeltooltip="d:d;c:d+y;a:a;y:y+b     ", url=""];
+	"acdx" -> "abdy" [taillabel="sb", label="----", labeltooltip="a:a+x,b:a;d:d;y:c       ", url=""];
+	"acdx" -> "acdx" [taillabel="sa", label="----      ", labeltooltip="d:d,a:d+a+x;c:c;x:x     ", url=""];
+	"acdx" -> "acdx" [taillabel="sc", label="c>d       ", labeltooltip="c:c+x-d;d:d;a:a;x:x     ", url=""];
+	"acdx" -> "acdx" [taillabel="sc", label="d>c       ", labeltooltip="c:x;d:c;a:a;x:x+d-c     ", url=""];
+	"acdx" -> "acdx" [taillabel="sd", label="d>a;d-a>x ", labeltooltip="c:c;d:c+d-a-x;a:a;x:x   ", url=""];
+	"acdx" -> "acdx" [taillabel="sd", label="d>a;x>d-a ", labeltooltip="c:c+x-d+a;d:c;a:a;x:d-a ", url=""];
+	"acdx" -> "acdx" [taillabel="ta", label="a>d;a-d>x ", labeltooltip="a:a-d-x;d:d;c:c;x:x     ", url=""];
+	"acdx" -> "acdx" [taillabel="tc", label="c>x       ", labeltooltip="d:d;c:d+c-x;a:a;x:x     ", url=""];
+	"acdx" -> "acdx" [taillabel="tc", label="x>c       ", labeltooltip="d:d+x-c;c:d;a:a;x:c     ", url=""];
+	"acdx" -> "acdx" [taillabel="td", label="c>d       ", labeltooltip="a:a;d:a+x;c:d;x:x+c-d   ", url=""];
+	"acdx" -> "acdx" [taillabel="td", label="d>c       ", labeltooltip="a:a;d:a+x+d-c;c:c;x:x   ", url=""];
+	"acdx" -> "acdy" [taillabel="sd", label="a>d       ", labeltooltip="c:c+x;d:c;a:d;y:a-d     ", url=""];
+	"acdx" -> "bcdx" [taillabel="ta", label="a>d;x>a-d ", labeltooltip="b:x-a+d;d:d;c:c;x:a-d   ", url=""];
+	"acdx" -> "bcdx" [taillabel="tb", label="----      ", labeltooltip="c:c;b:c+x;d:d;x:x+a     ", url=""];
+	"acdx" -> "bcdy" [taillabel="ta", label="d>a       ", labeltooltip="b:x;d:a;c:c;y:d-a       ", url=""];
+	"acdy" -> "abdx" [taillabel="sc", label="d>c       ", labeltooltip="b:y;d:c;a:a;x:d-c       ", url=""];
+	"acdy" -> "abdy" [taillabel="sb", label="----", labeltooltip="a:a;b:a+y;d:d;y:y+c     ", url=""];
+	"acdy" -> "abdy" [taillabel="sc", label="c>d;y>c-d ", labeltooltip="b:y-c+d;d:d;a:a;y:c-d   ", url=""];
+	"acdy" -> "acdx" [taillabel="td", label="c>d       ", labeltooltip="a:a+y;d:a;c:d;x:c-d     ", url=""];
+	"acdy" -> "acdy" [taillabel="sa", label="a>y       ", labeltooltip="d:d;a:d+a-y;c:c;y:y     ", url=""];
+	"acdy" -> "acdy" [taillabel="sa", label="y>a       ", labeltooltip="d:d+y-a;a:d;c:c;y:a     ", url=""];
+	"acdy" -> "acdy" [taillabel="sc", label="c>d;c-d>y ", labeltooltip="c:c-d-y;d:d;a:a;y:y     ", url=""];
+	"acdy" -> "acdy" [taillabel="sd", label="a>d       ", labeltooltip="c:c;d:c+y;a:d;y:y+a-d   ", url=""];
+	"acdy" -> "acdy" [taillabel="sd", label="d>a       ", labeltooltip="c:c;d:c+y+d-a;a:a;y:y   ", url=""];
+	"acdy" -> "acdy" [taillabel="ta", label="a>d       ", labeltooltip="a:a+y-d;d:d;c:c;y:y     ", url=""];
+	"acdy" -> "acdy" [taillabel="ta", label="d>a       ", labeltooltip="a:y;d:a;c:c;y:y+d-a     ", url=""];
+	"acdy" -> "acdy" [taillabel="tc", label="----      ", labeltooltip="d:d,c:d+c+y;a:a;y:y     ", url=""];
+	"acdy" -> "acdy" [taillabel="td", label="d>c;d-c>y ", labeltooltip="a:a;d:a+d-c-y;c:c;y:y   ", url=""];
+	"acdy" -> "acdy" [taillabel="td", label="d>c;y>d-c ", labeltooltip="a:a+y-d+c;d:a;c:c;y:d-c ", url=""];
+	"acdy" -> "bcdx" [taillabel="tb", label="----      ", labeltooltip="c:c+y,b:c;d:d;x:a       ", url=""];
+	"bcdx" -> "abcy" [taillabel="ta", label="----      ", labeltooltip="b:b+x,a:b;c:c;y:d       ", url=""];
+	"bcdx" -> "acdx" [taillabel="sa", label="----      ", labeltooltip="d:d;a:d+x;c:c;x:x+b     ", url=""];
+	"bcdx" -> "acdx" [taillabel="sb", label="b>c;x>b-c ", labeltooltip="a:x-b+c;c:c;d:d;x:b-c   ", url=""];
+	"bcdx" -> "acdy" [taillabel="sb", label="c>b       ", labeltooltip="a:x;c:b;d:d;y:c-b       ", url=""];
+	"bcdx" -> "bcdx" [taillabel="sb", label="b>c;b-c>x ", labeltooltip="b:b-c-x;c:c;d:d;x:x     ", url=""];
+	"bcdx" -> "bcdx" [taillabel="sc", label="c>d       ", labeltooltip="b:b;c:b+x+c-d;d:d;x:x   ", url=""];
+	"bcdx" -> "bcdx" [taillabel="sc", label="d>c       ", labeltooltip="b:b;c:b+x;d:c;x:x+d-c   ", url=""];
+	"bcdx" -> "bcdx" [taillabel="sd", label="d>x       ", labeltooltip="c:c;d:c+d-x;b:b;x:x     ", url=""];
+	"bcdx" -> "bcdx" [taillabel="sd", label="x>d       ", labeltooltip="c:c+x-d;d:c;b:b;x:d     ", url=""];
+	"bcdx" -> "bcdx" [taillabel="tb", label="----      ", labeltooltip="c:c,b:c+b+x;d:d;x:x     ", url=""];
+	"bcdx" -> "bcdx" [taillabel="tc", label="c>b;c-b>x ", labeltooltip="d:d;c:d+c-b-x;b:b;x:x   ", url=""];
+	"bcdx" -> "bcdx" [taillabel="tc", label="c>b;x>c-b ", labeltooltip="d:d+x-c+b;c:d;b:b;x:c-b ", url=""];
+	"bcdx" -> "bcdx" [taillabel="td", label="c>d       ", labeltooltip="d:x;c:d;b:b;x:x+c-d     ", url=""];
+	"bcdx" -> "bcdx" [taillabel="td", label="d>c       ", labeltooltip="d:d+x-c;c:c;b:b;x:x     ", url=""];
+	"bcdx" -> "bcdy" [taillabel="tc", label="b>c       ", labeltooltip="d:d+x;c:d;b:c;y:b-c     ", url=""];
+	"bcdy" -> "abcx" [taillabel="td", label="c>d       ", labeltooltip="a:y;c:d;b:b;x:c-d       ", url=""];
+	"bcdy" -> "abcy" [taillabel="ta", label="----      ", labeltooltip="b:b;a:b+y;c:c;y:y+d     ", url=""];
+	"bcdy" -> "abcy" [taillabel="td", label="d>c;y>d-c ", labeltooltip="a:y-d+c;c:c;b:b;y:d-c   ", url=""];
+	"bcdy" -> "acdx" [taillabel="sa", label="----      ", labeltooltip="d:d+y,a:d;c:c;x:b       ", url=""];
+	"bcdy" -> "bcdx" [taillabel="sc", label="d>c       ", labeltooltip="b:b+y;c:b;d:c;x:d-c     ", url=""];
+	"bcdy" -> "bcdy" [taillabel="sb", label="b>c       ", labeltooltip="b:b+y-c;c:c;d:d;y:y     ", url=""];
+	"bcdy" -> "bcdy" [taillabel="sb", label="c>b       ", labeltooltip="b:y;c:b;d:d;y:y+c-b     ", url=""];
+	"bcdy" -> "bcdy" [taillabel="sc", label="c>d;c-d>y ", labeltooltip="b:b;c:b+c-d-y;d:d;y:y   ", url=""];
+	"bcdy" -> "bcdy" [taillabel="sc", label="c>d;y>c-d ", labeltooltip="b:b+y-c+d;c:b;d:d;y:c-d ", url=""];
+	"bcdy" -> "bcdy" [taillabel="sd", label="----      ", labeltooltip="c:c,d:c+d+y;b:b;y:y     ", url=""];
+	"bcdy" -> "bcdy" [taillabel="tb", label="b>y       ", labeltooltip="c:c;b:c+b-y;d:d;y:y     ", url=""];
+	"bcdy" -> "bcdy" [taillabel="tb", label="y>b       ", labeltooltip="c:c+y-b;b:c;d:d;y:b     ", url=""];
+	"bcdy" -> "bcdy" [taillabel="tc", label="b>c       ", labeltooltip="d:d;c:d+y;b:c;y:y+b-c   ", url=""];
+	"bcdy" -> "bcdy" [taillabel="tc", label="c>b       ", labeltooltip="d:d;c:d+y+c-b;b:b;y:y   ", url=""];
+	"bcdy" -> "bcdy" [taillabel="td", label="d>c;d-c>y ", labeltooltip="d:d-c-y;c:c;b:b;y:y     ", url=""];
+    }		
+
+
+  #+end_src
+
+** Edges
+  | abcx | abcy | sb | c>b       | a:a+x;b:a;c:b;y:c-b     |
+  | abcx | abcx | sb | b>c;x>b-c | a:a+x-b+c;b:a;c:c;x:b-c |
+  | abcx | abcx | sb | b>c;b-c>x | a:a;b:a+b-c-x;c:c;x:x   |
+  | abdx | abdx | sb | b>x       | a:a;b:a+b-x;d:d;x:x     |
+  | abdx | abdx | sb | x>b       | a:a+x-b;b:a;d:d;x:b     |
+  | abcy | abcy | sb | b>c       | a:a;b:a+y+b-c;c:c;y:y   |
+  | abcy | abcy | sb | c>b       | a:a;b:a+y;c:b;y:y+c-b   |
+  | acdy | abdy | sb |           | a:a;b:a+y;d:d;y:y+c     |
+  | abdy | abdy | sb |           | a:a,b:a+b+y;d:d;y:y     |
+  | acdx | abdy | sb |           | a:a+x,b:a;d:d;y:c       |
+  | bcdx | acdx | sb | b>c;x>b-c | a:x-b+c;c:c;d:d;x:b-c   |
+  | bcdx | bcdx | sb | b>c;b-c>x | b:b-c-x;c:c;d:d;x:x     |
+  | bcdx | acdy | sb | c>b       | a:x;c:b;d:d;y:c-b       |
+  | bcdy | bcdx | sc | d>c       | b:b+y;c:b;d:c;x:d-c     |
+  | bcdy | bcdy | sc | c>d;y>c-d | b:b+y-c+d;c:b;d:d;y:c-d |
+  | bcdy | bcdy | sc | c>d;c-d>y | b:b;c:b+c-d-y;d:d;y:y   |
+  | abcy | abcy | sc | c>y       | b:b;c:b+c-y;a:a;y:y     |
+  | abcy | abcy | sc | y>c       | b:b+y-c;c:b;a:a;y:c     |
+  | bcdx | bcdx | sc | c>d       | b:b;c:b+x+c-d;d:d;x:x   |
+  | bcdx | bcdx | sc | d>c       | b:b;c:b+x;d:c;x:x+d-c   |
+  | abdx | abcx | sc |           | b:b;c:b+x;a:a;x:x+d     |
+  | abcx | abcx | sc |           | b:b,c:b+c+x;a:a;x:x     |
+  | abdy | abcx | sc |           | b:b+y,c:b;a:a;x:d       |
+  | acdy | abdy | sc | c>d;y>c-d | b:y-c+d;d:d;a:a;y:c-d   |
+  | acdy | acdy | sc | c>d;c-d>y | c:c-d-y;d:d;a:a;y:y     |
+  | acdy | abdx | sc | d>c       | b:y;d:c;a:a;x:d-c       |
+  | acdx | acdy | sd | a>d       | c:c+x;d:c;a:d;y:a-d     |
+  | acdx | acdx | sd | d>a;x>d-a | c:c+x-d+a;d:c;a:a;x:d-a |
+  | acdx | acdx | sd | d>a;d-a>x | c:c;d:c+d-a-x;a:a;x:x   |
+  | bcdx | bcdx | sd | d>x       | c:c;d:c+d-x;b:b;x:x     |
+  | bcdx | bcdx | sd | x>d       | c:c+x-d;d:c;b:b;x:d     |
+  | acdy | acdy | sd | d>a       | c:c;d:c+y+d-a;a:a;y:y   |
+  | acdy | acdy | sd | a>d       | c:c;d:c+y;a:d;y:y+a-d   |
+  | abcy | bcdy | sd |           | c:c;d:c+y;b:b;y:y+a     |
+  | bcdy | bcdy | sd |           | c:c,d:c+d+y;b:b;y:y     |
+  | abcx | bcdy | sd |           | c:c+x,d:c;b:b;y:a       |
+  | abdx | abcx | sd | d>a;x>d-a | c:x-d+a;a:a;b:b;x:d-a   |
+  | abdx | abdx | sd | d>a;d-a>x | d:d-a-x;a:a;b:b;x:x     |
+  | abdx | abcy | sd | a>d       | c:x;a:d;b:b;y:a-d       |
+  | abdy | abdx | sa | b>a       | d:d+y;a:d;b:a;x:b-a     |
+  | abdy | abdy | sa | a>b;y>a-b | d:d+y-a+b;a:d;b:b;y:a-b |
+  | abdy | abdy | sa | a>b;a-b>y | d:d;a:d+a-b-y;b:b;y:y   |
+  | acdy | acdy | sa | a>y       | d:d;a:d+a-y;c:c;y:y     |
+  | acdy | acdy | sa | y>a       | d:d+y-a;a:d;c:c;y:a     |
+  | abdx | abdx | sa | a>b       | d:d;a:d+x+a-b;b:b;x:x   |
+  | abdx | abdx | sa | b>a       | d:d;a:d+x;b:a;x:x+b-a   |
+  | bcdx | acdx | sa |           | d:d;a:d+x;c:c;x:x+b     |
+  | acdx | acdx | sa |           | d:d,a:d+a+x;c:c;x:x     |
+  | bcdy | acdx | sa |           | d:d+y,a:d;c:c;x:b       |
+  | abcy | bcdy | sa | a>b;y>a-b | d:y-a+b;b:b;c:c;y:a-b   |
+  | abcy | abcy | sa | a>b;a-b>y | a:a-b-y;b:b;c:c;y:y     |
+  | abcy | bcdx | sa | b>a       | d:y;b:a;c:c;x:b-a       |
+  | abcy | abcx | tb | a>b       | c:c+y;b:c;a:b;x:a-b     |
+  | abcy | abcy | tb | b>a;y>b-a | c:c+y-b+a;b:c;a:a;y:b-a |
+  | abcy | abcy | tb | b>a;b-a>y | c:c;b:c+b-a-y;a:a;y:y   |
+  | bcdy | bcdy | tb | b>y       | c:c;b:c+b-y;d:d;y:y     |
+  | bcdy | bcdy | tb | y>b       | c:c+y-b;b:c;d:d;y:b     |
+  | abcx | abcx | tb | b>a       | c:c;b:c+x+b-a;a:a;x:x   |
+  | abcx | abcx | tb | a>b       | c:c;b:c+x;a:b;x:x+a-b   |
+  | acdx | bcdx | tb |           | c:c;b:c+x;d:d;x:x+a     |
+  | bcdx | bcdx | tb |           | c:c,b:c+b+x;d:d;x:x     |
+  | acdy | bcdx | tb |           | c:c+y,b:c;d:d;x:a       |
+  | abdy | acdy | tb | b>a;y>b-a | c:y-b+a;a:a;d:d;y:b-a   |
+  | abdy | abdy | tb | b>a;b-a>y | b:b-a-y;a:a;d:d;y:y     |
+  | abdy | acdx | tb | a>b       | c:y;a:b;d:d;x:a-b       |
+  | abdx | abdy | ta | d>a       | b:b+x;a:b;d:a;y:d-a     |
+  | abdx | abdx | ta | a>d;x>a-d | b:b+x-a+d;a:b;d:d;x:a-d |
+  | abdx | abdx | ta | a>d;a-d>x | b:b;a:b+a-d-x;d:d;x:x   |
+  | abcx | abcx | ta | a>x       | b:b;a:b+a-x;c:c;x:x     |
+  | abcx | abcx | ta | x>a       | b:b+x-a;a:b;c:c;x:a     |
+  | abdy | abdy | ta | a>d       | b:b;a:b+y+a-d;d:d;y:y   |
+  | abdy | abdy | ta | d>a       | b:b;a:b+y;d:a;y:y+d-a   |
+  | bcdy | abcy | ta |           | b:b;a:b+y;c:c;y:y+d     |
+  | abcy | abcy | ta |           | b:b,a:b+a+y;c:c;y:y     |
+  | bcdx | abcy | ta |           | b:b+x,a:b;c:c;y:d       |
+  | acdx | bcdx | ta | a>d;x>a-d | b:x-a+d;d:d;c:c;x:a-d   |
+  | acdx | acdx | ta | a>d;a-d>x | a:a-d-x;d:d;c:c;x:x     |
+  | acdx | bcdy | ta | d>a       | b:x;d:a;c:c;y:d-a       |
+  | acdy | acdx | td | c>d       | a:a+y;d:a;c:d;x:c-d     |
+  | acdy | acdy | td | d>c;y>d-c | a:a+y-d+c;d:a;c:c;y:d-c |
+  | acdy | acdy | td | d>c;d-c>y | a:a;d:a+d-c-y;c:c;y:y   |
+  | abdy | abdy | td | d>y       | a:a;d:a+d-y;b:b;y:y     |
+  | abdy | abdy | td | y>d       | a:a+y-d;d:a;b:b;y:d     |
+  | acdx | acdx | td | d>c       | a:a;d:a+x+d-c;c:c;x:x   |
+  | acdx | acdx | td | c>d       | a:a;d:a+x;c:d;x:x+c-d   |
+  | abcx | abdx | td |           | a:a;d:a+x;b:b;x:x+c     |
+  | abdx | abdx | td |           | a:a,d:a+d+x;b:b;x:x     |
+  | abcy | abdx | td |           | a:a+y,d:a;b:b;x:c       |
+  | bcdy | abcy | td | d>c;y>d-c | a:y-d+c;c:c;b:b;y:d-c   |
+  | bcdy | bcdy | td | d>c;d-c>y | d:d-c-y;c:c;b:b;y:y     |
+  | bcdy | abcx | td | c>d       | a:y;c:d;b:b;x:c-d       |
+  | bcdx | bcdy | tc | b>c       | d:d+x;c:d;b:c;y:b-c     |
+  | bcdx | bcdx | tc | c>b;x>c-b | d:d+x-c+b;c:d;b:b;x:c-b |
+  | bcdx | bcdx | tc | c>b;c-b>x | d:d;c:d+c-b-x;b:b;x:x   |
+  | acdx | acdx | tc | c>x       | d:d;c:d+c-x;a:a;x:x     |
+  | acdx | acdx | tc | x>c       | d:d+x-c;c:d;a:a;x:c     |
+  | bcdy | bcdy | tc | c>b       | d:d;c:d+y+c-b;b:b;y:y   |
+  | bcdy | bcdy | tc | b>c       | d:d;c:d+y;b:c;y:y+b-c   |
+  | abdy | acdy | tc |           | d:d;c:d+y;a:a;y:y+b     |
+  | acdy | acdy | tc |           | d:d,c:d+c+y;a:a;y:y     |
+  | abdx | acdy | tc |           | d:d+x,c:d;a:a;y:b       |
+  | abcx | abdx | tc | c>b;x>c-b | d:x-c+b;b:b;a:a;x:c-b   |
+  | abcx | abcx | tc | c>b;c-b>x | c:c-b-x;b:b;a:a;x:x     |
+  | abcx | abdy | tc | b>c       | d:x;b:c;a:a;y:b-c       |
+  | bcdy | bcdy | sb | b>c       | b:b+y-c;c:c;d:d;y:y     |
+  | acdx | acdx | sc | c>d       | c:c+x-d;d:d;a:a;x:x     |
+  | abdy | abdy | sd | d>a       | d:d+y-a;a:a;b:b;y:y     |
+  | abcx | abcx | sa | a>b       | a:a+x-b;b:b;c:c;x:x     |
+  | abdx | abdx | tb | b>a       | b:b+x-a;a:a;d:d;x:x     |
+  | abcy | abcy | tc | c>b       | c:c+y-b;b:b;a:a;y:y     |
+  | bcdx | bcdx | td | d>c       | d:d+x-c;c:c;b:b;x:x     |
+  | acdy | acdy | ta | a>d       | a:a+y-d;d:d;c:c;y:y     |
+  | bcdy | bcdy | sb | c>b       | b:y;c:b;d:d;y:y+c-b     |
+  | acdx | acdx | sc | d>c       | c:x;d:c;a:a;x:x+d-c     |
+  | abdy | abdy | sd | a>d       | d:y;a:d;b:b;y:y+a-d     |
+  | abcx | abcx | sa | b>a       | a:x;b:a;c:c;x:x+b-a     |
+  | abdx | abdx | tb | a>b       | b:x;a:b;d:d;x:x+a-b     |
+  | abcy | abcy | tc | b>c       | c:y;b:c;a:a;y:y+b-c     |
+  | bcdx | bcdx | td | c>d       | d:x;c:d;b:b;x:x+c-d     |
+  | acdy | acdy | ta | d>a       | a:y;d:a;c:c;y:y+d-a     |
+
+  #+TBLFM: $1='(rotate-support @-1$1)::$2='(rotate-support @-1$2)::$3='(mapcar-string 'rotate @-1$3)::$4='(mapcar-string 'rotate @-1$4)::$5='(mapcar-string 'rotate @-1$5)
+
+
 
 * Helper functions  
 
@@ -294,37 +317,261 @@
        ((equal x ?t) ?s)
        (t x)))
 
-    (defun rotate-state (s)
-      (let* ((support-loops (split-string s "-"))
-	     (support (nth 0 support-loops))
-	     (loops (nth 1 support-loops))
-	     (new-support (sort (mapcar 'rotate support) '<))
-	     (new-loops-pre (mapcar 'rotate loops))
-	     (new-loops (mapcar (lambda (n) (nth n new-loops-pre)) '(3 0 1 2))))
-	(concat (concat new-support)
-		"-"
-		(concat new-loops))))
+    (defun rotate-support (s)
+      (concat (sort (mapcar 'rotate s) '<)))
 
-    (defun flip-state (s)
-      (let* ((support-loops (split-string s "-"))
-	     (support (nth 0 support-loops))
-	     (loops (nth 1 support-loops))
-	     (new-support (sort (mapcar 'flip support) '<))
-	     (new-loops-pre (mapcar 'flip loops))
-	     (new-loops (mapcar (lambda (n) (nth n new-loops-pre)) '(3 2 1 0))))
-	(concat (concat new-support)
-		"-"
-		(concat new-loops))))
+    (defun flip-support (s)
+      (concat (sort (mapcar 'flip s) '<)))
 
     (defun mapcar-string (transformation string)
       (concat (mapcar transformation string)))
 
-(fset 'rotate-line
-   [?\C-  ?\C-e ?\M-w ?\C-n ?\C-y ?\C-a ?\C-s ?\" ?\C-b ?\C-  ?\C-f ?\C-s ?\" ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?r ?o ?t ?a ?t ?e ?- ?s ?t ?a ?t ?e ?  ?\C-y ?\) return ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-s ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?r ?o ?t ?a ?t ?e ?- ?s ?t ?a ?t ?e ?  ?\C-y ?\) return ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-f ?\C-f ?\C-b ?\C-b ?\C-s ?\" ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?  ?\' ?r ?o ?t ?a ?t ?e ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?- ?s ?t ?r ?i ?n ?g ?\C-e ?  ?\C-y ?\) return ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-f ?\C-s ?\C-s ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?r ?o ?t ?a ?t ?e ?  ?\C-y ?\) return ?\C-s ?\" ?\C-b ?\C-s ?\" ?\C-s ?\C-  ?\C-b ?\C-b ?\C-b ?\C-r ?\" ?\C-b ?\C-f ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?r ?o ?t ?a ?t ?e ?  ?\C-y ?\) return ?\C-e ?\C-a])
 
-(fset 'flip-line
-   [?\C-  ?\C-e ?\M-w ?\C-n ?\C-y ?\C-a ?\C-s ?\" ?\C-b ?\C-  ?\C-f ?\C-s ?\" ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?f ?l ?i ?p ?- ?s ?t ?a ?t ?e ?  ?\C-y ?\) ?\C-m ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-s ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?f ?l ?i ?p ?- ?s ?t ?a ?t ?e ?  ?\C-y ?\) ?\C-m ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-f ?\C-f ?\C-b ?\C-b ?\C-s ?\" ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?f ?l ?i ?p ?  ?\C-y ?\) ?\C-m ?\C-s ?\" ?\C-b ?\C-  ?\C-s ?\" ?\C-f ?\C-s ?\C-s ?\C-f ?\C-b ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?f ?l ?i ?p ?  ?\C-y ?\) ?\C-m ?\C-s ?\" ?\C-b ?\C-s ?\" ?\C-s ?\C-  ?\C-b ?\C-b ?\C-b ?\C-r ?\" ?\C-b ?\C-f ?\C-w ?\C-u ?\M-: ?\( ?m ?a ?p ?c ?a ?r ?- ?s ?t ?r ?i ?n ?g ?  ?\' ?f ?l ?i ?p ?  ?\C-y ?\) ?\C-m ?\C-e ?\C-a])
    #+end_src
 
    #+RESULTS:
    : mapcar-string
+
+
+
+
+* Visjs
+  :PROPERTIES:
+  :END:
+
+  We use ~vis.js~ to take the ~dot~ file to create an interactive graph.
+  ~vis.js~ needs the graph in ~dot~ format as a single(!) one-line string.
+
+  The following piece of code reads our ~dot~ file (called ~file~) and converts it into such a string.
+  The result is named ~dotstring~.
+  #+name: dotstring
+  #+begin_src elisp :results silent value :var file="artifacts/ttauta3.dot" :tangle no
+    (with-temp-buffer
+      (insert-file-contents file)
+      (while (re-search-forward "\\[image=.*" nil t)
+	(replace-match ";"))
+      (string-join (split-string (buffer-string) "\n" t) " ")
+      )
+  #+end_src
+
+  We now ask ~vis~ to parse this string, and we save the nodes and the edges as a ~DataSet~.
+  #+begin_src javascript :noweb tangle
+    var data = vis.parseDOTNetwork('<<dotstring()>>');
+    var allNodes = new vis.DataSet(data.nodes);
+    var allEdges = new vis.DataSet(data.edges);
+  #+end_src
+  
+  The graph will live in an ~html~ file, whose skeleton we now create.
+  #+begin_src html 
+    <!DOCTYPE html>
+    <html>
+      <head>
+	<title>A3 automaton</title>
+	<script type="text/javascript" src="https://visjs.github.io/vis-network/standalone/umd/vis-network.min.js"></script>
+	<style type="text/css">
+	  html, body {
+	  padding: 0;
+	  margin: 10;
+	  width: 100%;
+	  height: 100%;
+	  }
+
+	  #graph {
+	  width: 100%;
+	  height: 100%;
+	  }
+
+	  mark.green {
+	  color: green;
+	  background: none;
+	  }
+	  mark.orange {
+	  color: orange;
+	  background: none;
+	  }
+	  mark.red {
+	  color: red;
+	  background: none;
+	  }
+	  mark.blue {
+	  color: blue;
+	  background: none;
+	  }
+	  mark.yellow {
+	  color: darkkhaki;
+	  background: none;
+	  }
+	</style>
+      </head>
+
+      <body>
+	<div id="graph">
+	</div>
+	<script type="text/javascript" src="ttauta3.js"></script>
+      </body>
+    </html> 
+  #+end_src
+
+  The javascript modifies the ~graph~ division of the ~html~ file.
+  #+begin_src javascript 
+    var container = document.getElementById("graph");
+  #+end_src
+  
+** Options
+  We now create the look of our graph by setting the options for nodes ...
+  #+begin_src javascript 
+    var nodeoptions = {
+	shape: 'box',
+	margin: 10,
+	font: '14px Helvetica',
+    };
+  #+end_src
+  ... and edges. We set the default font size to 0 because we don't want to clutter the graph with edge labels.
+  #+begin_src javascript 
+    var edgeoptions = {
+	font: {
+	    size: 0,
+	    align: 'top',
+	},
+	smooth: {
+	    type: 'dynamic'
+	},
+    };
+  #+end_src
+
+  We enable physics.
+  #+begin_src javascript
+    var physicsoptions = {
+	enabled: true,
+	barnesHut: {
+	    springLength: 500,
+	    avoidOverlap: 1,
+	    springConstant: 0.001
+	}
+    }
+  #+end_src
+
+  We arrange so that selecting a node does not automatically select all incident edges, which is the default.
+  The rest of the options are self-explanatory.
+  #+begin_src javascript 
+    var options = {
+	autoResize: true,
+	height: '100%',
+	width: '100%',
+	interaction: {
+	    selectConnectedEdges: false
+	},
+	nodes: nodeoptions,
+	edges: edgeoptions,
+	physics: physicsoptions
+    }
+  #+end_src
+** Main dispatcher
+  We now initialise the main network.
+  #+begin_src javascript
+    var network;
+    network = new vis.Network(container, {nodes: allNodes, edges: allEdges}, options);
+
+  #+end_src
+
+** Event handlers
+  To make our graph interactive, we create some event handling functions.
+  We create helper functions to dim/undim nodes and edges.
+  The dimming/undimming is done using a combination of opacity, font size, and font colour.
+  #+begin_src javascript
+    function undimNode(nodeid){
+	return {
+	    id: nodeid,
+	    opacity: 1.0,
+	    font:{
+		color: 'black'
+	    } 
+	}
+    }
+
+    function dimNode(nodeid){
+	return {
+	    id: nodeid,
+	    opacity: 0.01,
+	    font:{
+		color: 'rgb(225,225,225)'
+	    } 
+	}
+    }
+
+    function undimEdge(edgeid){
+	return {
+	    id: edgeid,
+	    font: {
+		size: 14,
+	    },
+	    width: 5,
+	}
+    }
+
+    function dimEdge(edgeid, width=0){
+	return {
+	    id: edgeid,
+	    font: {
+		size: 0
+	    },
+	    width: width,
+	}
+    }
+
+  #+end_src
+
+  The following function handles the dimming and undimming.
+  If a node is selected, it only keeps the selected nodes, their neighbors, and their incident edges.
+  If no node is selected, it keeps everything.
+  #+begin_src javascript
+    function dimOrUnDim(params){
+	if (params.nodes.length > 0){
+	    var updateNodeArray = [];
+	    var keepNodes = Array.from(params.nodes);
+	    for (n of params.nodes)
+		for (nodeid of network.getConnectedNodes(n))
+		    keepNodes.push(nodeid);
+
+	    //Dim all the nodes except the selected ones
+	    for (nodeid of allNodes.getIds()){
+		if (keepNodes.includes(nodeid))
+		    updateNodeArray.push(undimNode(nodeid));
+		else
+		    updateNodeArray.push(dimNode(nodeid));
+	    }
+
+	    // Dim all the edges except the selected ones and the ones emnating from the selected nodes
+	    var updateEdgeArray = [];
+	    var keepEdges = Array.from(params.edges);
+	    for (nodeid of params.nodes)
+		for (edgeid of network.getConnectedEdges(nodeid))
+		    keepEdges.push(edgeid)
+
+	    for (edgeid of allEdges.getIds()){
+		if (keepEdges.includes(edgeid))
+		    updateEdgeArray.push(undimEdge(edgeid));
+		else
+		    updateEdgeArray.push(dimEdge(edgeid));
+	    }
+
+	}else{
+	    //Undim all nodes
+	    var updateNodeArray = [];
+	    for (nodeid of allNodes.getIds())
+		updateNodeArray.push(undimNode(nodeid));
+
+	    //Dim all edges
+	    var updateEdgeArray = [];
+	    for (edgeid of allEdges.getIds())
+		updateEdgeArray.push(dimEdge(edgeid, 1));
+	}
+	allNodes.update(updateNodeArray);
+	allEdges.update(updateEdgeArray);    
+    }
+  #+end_src
+
+  We now add the function above as a handler to the hold event.
+  #+begin_src javascript
+    network.on('hold', dimOrUnDim);
+  #+end_src
