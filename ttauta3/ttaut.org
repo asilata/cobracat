@@ -329,11 +329,12 @@
 		    updateNodeArray.push(dimNode(nodeid));
 	    }
 
-	    // Dim all the edges except the selected ones and the ones emnating from the selected nodes
+	    // Dim all the edges except the ones emnating from the selected vertex
 	    var updateEdgeArray = [];
 	    var keepEdges = Array.from(params.edges);
-	    for (nodeid of params.nodes)
-		for (edgeid of network.getConnectedEdges(nodeid))
+	    nodeid = params.nodes[0];
+	    for (edgeid of network.getConnectedEdges(nodeid))
+		if (allEdges.get(edgeid).from == nodeid)
 		    keepEdges.push(edgeid)
 
 	    for (edgeid of allEdges.getIds()){
