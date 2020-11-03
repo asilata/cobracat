@@ -193,12 +193,12 @@ class ProjectiveComplex(object):
         for vertices_at_h in heights.values():
             vertices_at_h.sort(key=lambda v: walk_index[v])
             positions_at_h = [positions[v] for v in vertices_at_h]
-            positions_at_h.sort(key=lambda (x,y): x)
+            positions_at_h.sort(key=lambda x: x[0])
             for i in range(0, len(vertices_at_h)):
                 new_positions[vertices_at_h[i]] = positions_at_h[i]
 
         # Let us reverse (x,y) so that the complex shows up horizontally.
-        flip = lambda (x,y): (y,x)
+        flip = lambda x: (x[1], x[0])
         for k in new_positions.keys():
             new_positions[k] = flip(new_positions[k])
 
@@ -264,7 +264,7 @@ class ProjectiveComplex(object):
         for i in range(self.minIndex(), self.maxIndex()-1):
             for k, v in (matrices[i] * matrices[i+1]).dict().items():
                 if not self.objects(i)[k[0]].is_zero(v):
-                    print "Differential squared not zero at " + str(i) + "."
+                    print("Differential squared not zero at " + str(i) + ".")
                 return False
 
         return True

@@ -144,10 +144,10 @@ def _getTwoSteps(R):
     Return a dictionary with keys all pairs of idempotents of R. The value of each pair of idempotents is the list all length 2 paths beginning and ending at the corresponding vertices.
     """
     twosteps = {}
-    len2paths = filter(lambda x: x != 0, [R.prod(m) for m in product(R.arrows(), repeat = 2)])
+    len2paths = list(filter(lambda x: x != 0, [R.prod(m) for m in product(R.arrows(), repeat = 2)]))
     for e in R.idempotents():
         for f in R.idempotents():
-            twosteps[(e,f)] = filter(lambda x: x != 0, [R.prod([e,x,f]) for x in len2paths])
+            twosteps[(e,f)] = list(filter(lambda x: x != 0, [R.prod([e,x,f]) for x in len2paths]))
     return twosteps
 
 @cached_method
