@@ -213,12 +213,12 @@ class ProjectiveComplex(object):
         Remove spurious matrix entries (zeros) and spurious object lists (empty lists).
         '''
         # Remove maps
-        for i in self._maps.keys():
-            for k in self._maps[i].keys():
+        for i in list(self._maps.keys()):
+            for k in list(self._maps[i].keys()):
                 if self._maps[i][k] == 0:
                     self._maps[i].pop(k)
         # Remove objects
-        for i in self._objects.keys():
+        for i in list(self._objects.keys()):
             if self._objects[i] == []:
                 self._objects.pop(i)
 

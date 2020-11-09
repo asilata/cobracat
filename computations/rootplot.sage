@@ -17,8 +17,8 @@
 # will create a new plot Q containing P and the additional vector corresponding to (0,0,1).
 # Again, Q.show() will show it.
 
-e1 = 0.1
-e2 = 4
+e1 = 0.5
+e2 = 0
 
 a1 = vector([-1,0])
 a2 = vector([0,1+e2])
