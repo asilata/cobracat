@@ -222,7 +222,7 @@ def make_test(graph, k=QQ):
 # Some standard graphs
 a2graph = DiGraph({1: {2: 'a'}, 2:{1:'b'}})
 a3graph = DiGraph({1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}})
-d4graph = DiGraph({1:{2:'a', 3:'b', 4:'c'}, 2:{1:'d'}, 3:{1:'e'}, 4:{1:'f'}})
+d4graph = DiGraph({4:{1:'a', 2:'b', 3:'c'}, 1:{4:'d'}, 2:{4:'e'}, 3:{4:'f'}})
 
 
 
