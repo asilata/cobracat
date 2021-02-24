@@ -2,6 +2,7 @@ load("../complexes.sage")
 load("../zigzagalgebra.sage")
 load("../zigzagmodules.sage")
 load("../braidactions.sage")
+load("../HN.sage")
 
 d4 = make_test(d4graph)
 R = d4['Z']
@@ -60,45 +61,46 @@ def t4(C):
 
 
 heart = [P1, P2, P3, P4]
+stab = [P4, s3(P4), P3, s2(t3(P4)), s2(P4), t4(s1(s2(t3(P4)))), s1(t3(P4)), s1(s2(t3(P4))), P2, s1(t2(P4)), s1(P4), P1]
 
 # The next part is a root-theoretic calculation for computing cut functionals
-simples = [var('a'+str(i)) for i in range(1,5)]
-roots = [a1, a1+a4, a1+a2+a4, a2, a1+a2+a3+a4,a1+a3+a4, a1+a2+a3+2*a4, a2+a4, a2+a3+a4, a3, a3+a4, a4]
-cartanMatrix = matrix([[2,0,0,-1],[0,2,0,-1],[0,0,2,-1],[-1,-1,-1,2]])
+# simples = [var('a'+str(i)) for i in range(1,5)]
+# roots = [a1, a1+a4, a1+a2+a4, a2, a1+a2+a3+a4,a1+a3+a4, a1+a2+a3+2*a4, a2+a4, a2+a3+a4, a3, a3+a4, a4]
+# cartanMatrix = matrix([[2,0,0,-1],[0,2,0,-1],[0,0,2,-1],[-1,-1,-1,2]])
 
-def root_to_vec(r):
-    return vector([r.coefficient(x) for x in simples])
+# def root_to_vec(r):
+#     return vector([r.coefficient(x) for x in simples])
 
-def reflect(r1,r2):
-    """This is the reflection corresponding to the root r1, applied to the root r2."""
-    ip = root_to_vec(r1)*cartanMatrix*root_to_vec(r2)
-    return (r2 - ip*r1)
+# def reflect(r1,r2):
+#     """This is the reflection corresponding to the root r1, applied to the root r2."""
+#     ip = root_to_vec(r1)*cartanMatrix*root_to_vec(r2)
+#     return (r2 - ip*r1)
 
-simple_objects_dict = {}
-for i in range(0,12):
-    if i == 0:
-        # Start with original list of simples.
-        simple_objects_dict[0] = simples
-    else:
-        # Modify by moving the last element to the front and applying its reflection.
-        simple_system = simple_objects_dict[i-1]
-        r = simple_system[-1]
-        simple_objects_dict[i] = [-r] + [reflect(r,s) for s in simple_system[:-1]]
+# simple_objects_dict = {}
+# for i in range(0,12):
+#     if i == 0:
+#         # Start with original list of simples.
+#         simple_objects_dict[0] = simples
+#     else:
+#         # Modify by moving the last element to the front and applying its reflection.
+#         simple_system = simple_objects_dict[i-1]
+#         r = simple_system[-1]
+#         simple_objects_dict[i] = [-r] + [reflect(r,s) for s in simple_system[:-1]]
 
-# Returns the calculation of the functional on the sequence of roots (aka objects).
-def get_functional(i):
-    if i > len(roots):
-        return []
-    else:
-        eqs = [simple_objects_dict[i][k] == 1 - sgn(k) for k in range(0, len(simple_objects_dict[i]))]
-        sol = solve(eqs, simples)
-        return [abs(r.substitute(sol[0])) for r in roots]
+# # Returns the calculation of the functional on the sequence of roots (aka objects).
+# def get_functional(i):
+#     if i > len(roots):
+#         return []
+#     else:
+#         eqs = [simple_objects_dict[i][k] == 1 - sgn(k) for k in range(0, len(simple_objects_dict[i]))]
+#         sol = solve(eqs, simples)
+#         return [abs(r.substitute(sol[0])) for r in roots]
 
 # Absolute values of the functionals. This is the cut/pair matrix.        
-functionals = []
-for i in range(0,len(roots)):
-    row = get_functional(i)
-    functionals = functionals + [row]
+# functionals = []
+# for i in range(0,len(roots)):
+#     row = get_functional(i)
+#     functionals = functionals + [row]
 
 # for r0 in roots:
 #     for r1 in roots:
