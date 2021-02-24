@@ -74,46 +74,37 @@ def reflect(r1,r2):
     ip = root_to_vec(r1)*cartanMatrix*root_to_vec(r2)
     return (r2 - ip*r1)
 
-rootsDict = {}
+simple_objects_dict = {}
 for i in range(0,12):
     if i == 0:
-        rootsDict[0] = simples
+        # Start with original list of simples.
+        simple_objects_dict[0] = simples
     else:
-        ssystem = rootsDict[i-1]
-        r0 = ssystem[-1]
-        rootsDict[i] = [-r0] + [reflect(r0,s) for s in ssystem[:-1]]
+        # Modify by moving the last element to the front and applying its reflection.
+        simple_system = simple_objects_dict[i-1]
+        r = simple_system[-1]
+        simple_objects_dict[i] = [-r] + [reflect(r,s) for s in simple_system[:-1]]
 
 # Returns the calculation of the functional on the sequence of roots (aka objects).
-def getFunc(i):
-    if i == 0:
-        return [r.substitute(a1=1,a2=0,a3=0,a4=0) for r in roots]
-    if i == 1:
-        return [r.substitute(a1=0,a2=1,a3=0,a4=0) for r in roots]
-    if i == 2:
-        return [r.substitute(a1=0,a2=0,a3=1,a4=0) for r in roots]
-    if i == 3:
-        return [r.substitute(a1=0,a2=0,a3=0,a4=1) for r in roots]
+def get_functional(i):
+    if i > len(roots):
+        return []
     else:
-        j = i - 3
-        if j > 8:
-            return []
-        else:
-            eqs = [rootsDict[j][i] == 1 - sgn(i) for i in range(0, len(rootsDict[j]))]
-            print eqs
-            sol = solve(eqs, a1, a2, a3, a4)
-            print sol
-            return [r.substitute(sol[0]) for r in roots]
+        eqs = [simple_objects_dict[i][k] == 1 - sgn(k) for k in range(0, len(simple_objects_dict[i]))]
+        sol = solve(eqs, simples)
+        return [abs(r.substitute(sol[0])) for r in roots]
 
-funcs = []
-for i in range(0,12):
-    row = getFunc(i)
-    funcs = funcs + [row]
+# Absolute values of the functionals. This is the cut/pair matrix.        
+functionals = []
+for i in range(0,len(roots)):
+    row = get_functional(i)
+    functionals = functionals + [row]
 
-# Absolute values of the functionals. This is the cut/pair matrix.    
-absfuncs = []
-for i in range(0,12):
-    row = [abs(s) for s in funcs[i]]
-    absfuncs = absfuncs + [row]
+for r in roots:
+    for s in roots:
+        pairing = root_to_vec(r)*cartanMatrix*root_to_vec(s)
+        if pairing == 0:
+            print (r,s)
 
 # # The following calculation makes a list of all spherical objects in the heart (plus two extra that are not in the heart).
 # # This is in order to find maximal subcollections for which any two objects are pairwise parity.
