@@ -100,11 +100,11 @@ for i in range(0,len(roots)):
     row = get_functional(i)
     functionals = functionals + [row]
 
-for r in roots:
-    for s in roots:
-        pairing = root_to_vec(r)*cartanMatrix*root_to_vec(s)
-        if pairing == 0:
-            print (r,s)
+# for r0 in roots:
+#     for r1 in roots:
+#         pairing = root_to_vec(r0)*cartanMatrix*root_to_vec(r1)
+#         if pairing == 0:
+#             print (r0,r1)
 
 # # The following calculation makes a list of all spherical objects in the heart (plus two extra that are not in the heart).
 # # This is in order to find maximal subcollections for which any two objects are pairwise parity.
