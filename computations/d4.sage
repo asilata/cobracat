@@ -61,34 +61,88 @@ def t4(C):
 
 heart = [P1, P2, P3, P4]
 
-# The following calculation makes a list of all spherical objects in the heart (plus two extra that are not in the heart).
-# This is in order to find maximal subcollections for which any two objects are pairwise parity.
-b1 = [[x,y,z] for x in [s2,t2] for y in [s3,t3] for z in [s4,t4]]
-b2 = [[w,x,y,z] for x in [s2,t2] for y in [s3,t3] for z in [s4,t4] for w in [s1,t1]]
-b3 = [[x,y] for x in [s2,t2] for y in [s3,t3]]
-b4 = [[x,y] for x in [s2,t2] for y in [s4,t4]]
-b5 = [[x,y] for x in [s3,t3] for y in [s4,t4]]
-b6 = [[x] for x in [s2,t2,s3,t3,s4,t4]]
-braids = b1 + b2 + b3 + b4 + b5 + b6
+# The next part is a root-theoretic calculation for computing cut functionals
+simples = [var('a'+str(i)) for i in range(1,5)]
+roots = [a1, a1+a4, a1+a2+a4, a2, a1+a2+a3+a4,a1+a3+a4, a1+a2+a3+2*a4, a2+a4, a2+a3+a4, a3, a3+a4, a4]
+cartanMatrix = matrix([[2,0,0,-1],[0,2,0,-1],[0,0,2,-1],[-1,-1,-1,2]])
 
-objects = [(composeAll(x))(P1) for x in braids] + [P1, P2, P3, P4]
+def root_to_vec(r):
+    return vector([r.coefficient(x) for x in simples])
 
-def isParity(A,B):
-    h = hom(A,B).qPolynomial()
-    h1,h2 = h.substitute(q = 1), h.substitute(q = -1)
-    even,odd = h1+h2, h1-h2
-    if even == 0 or odd == 0:
-        return True
-    else: return False
+def reflect(r1,r2):
+    """This is the reflection corresponding to the root r1, applied to the root r2."""
+    ip = root_to_vec(r1)*cartanMatrix*root_to_vec(r2)
+    return (r2 - ip*r1)
 
-# Construct a graph with nodes as objects, and edges between two nodes if and only if homs between the two are parity.
-# Then find cliques within this graph.
-import networkx as nx
-parityPairs = [(objects[i],objects[j]) for i in range(0,len(objects)) for j in range(0,i) if isParity(objects[i],objects[j])]
-G = nx.Graph()
-G.add_edges_from(parityPairs)
+rootsDict = {}
+for i in range(0,12):
+    if i == 0:
+        rootsDict[0] = simples
+    else:
+        ssystem = rootsDict[i-1]
+        r0 = ssystem[-1]
+        rootsDict[i] = [-r0] + [reflect(r0,s) for s in ssystem[:-1]]
 
-# Find maximal cliques
-cliques = list(nx.find_cliques(G))
-M = max([len(x) for x in cliques]) # This ends up being 10.
-maxCliques = [x for x in cliques if len(x) == M]
+# Returns the calculation of the functional on the sequence of roots (aka objects).
+def getFunc(i):
+    if i == 0:
+        return [r.substitute(a1=1,a2=0,a3=0,a4=0) for r in roots]
+    if i == 1:
+        return [r.substitute(a1=0,a2=1,a3=0,a4=0) for r in roots]
+    if i == 2:
+        return [r.substitute(a1=0,a2=0,a3=1,a4=0) for r in roots]
+    if i == 3:
+        return [r.substitute(a1=0,a2=0,a3=0,a4=1) for r in roots]
+    else:
+        j = i - 3
+        if j > 8:
+            return []
+        else:
+            eqs = [rootsDict[j][i] == 1 - sgn(i) for i in range(0, len(rootsDict[j]))]
+            print eqs
+            sol = solve(eqs, a1, a2, a3, a4)
+            print sol
+            return [r.substitute(sol[0]) for r in roots]
+
+funcs = []
+for i in range(0,12):
+    row = getFunc(i)
+    funcs = funcs + [row]
+
+# Absolute values of the functionals. This is the cut/pair matrix.    
+absfuncs = []
+for i in range(0,12):
+    row = [abs(s) for s in funcs[i]]
+    absfuncs = absfuncs + [row]
+
+# # The following calculation makes a list of all spherical objects in the heart (plus two extra that are not in the heart).
+# # This is in order to find maximal subcollections for which any two objects are pairwise parity.
+# b1 = [[x,y,z] for x in [s2,t2] for y in [s3,t3] for z in [s4,t4]]
+# b2 = [[w,x,y,z] for x in [s2,t2] for y in [s3,t3] for z in [s4,t4] for w in [s1,t1]]
+# b3 = [[x,y] for x in [s2,t2] for y in [s3,t3]]
+# b4 = [[x,y] for x in [s2,t2] for y in [s4,t4]]
+# b5 = [[x,y] for x in [s3,t3] for y in [s4,t4]]
+# b6 = [[x] for x in [s2,t2,s3,t3,s4,t4]]
+# braids = b1 + b2 + b3 + b4 + b5 + b6
+
+# objects = [(composeAll(x))(P1) for x in braids] + [P1, P2, P3, P4]
+
+# def isParity(A,B):
+#     h = hom(A,B).qPolynomial()
+#     h1,h2 = h.substitute(q = 1), h.substitute(q = -1)
+#     even,odd = h1+h2, h1-h2
+#     if even == 0 or odd == 0:
+#         return True
+#     else: return False
+
+# # Construct a graph with nodes as objects, and edges between two nodes if and only if homs between the two are parity.
+# # Then find cliques within this graph.
+# import networkx as nx
+# parityPairs = [(objects[i],objects[j]) for i in range(0,len(objects)) for j in range(0,i) if isParity(objects[i],objects[j])]
+# G = nx.Graph()
+# G.add_edges_from(parityPairs)
+
+# # Find maximal cliques
+# cliques = list(nx.find_cliques(G))
+# M = max([len(x) for x in cliques]) # This ends up being 10.
+# maxCliques = [x for x in cliques if len(x) == M]
