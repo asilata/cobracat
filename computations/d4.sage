@@ -61,7 +61,25 @@ def t4(C):
 
 
 heart = [P1, P2, P3, P4]
-stab = [P4, s3(P4), P3, s2(t3(P4)), s2(P4), t4(s1(s2(t3(P4)))), s1(t3(P4)), s1(s2(t3(P4))), P2, s1(t2(P4)), s1(P4), P1]
+stab = [P4, s3(P4), P3, s2(t3(P4)), s2(P4), t4(s1(t2(t3(P4)))), s1(t3(P4)), s1(s2(t3(P4))), P2, s1(t2(P4)), s1(P4), P1]
+
+# Examples
+s14 = composeAll([s1,s4,t1])
+t24 = composeAll([s2,t4,t2])
+t34 = composeAll([s3,t4,t3])
+P14234 = t4(s1(t2(t3(P4))))
+Y = t24(t24(t4(s1(t34(t24(s14(P14234)))))))
+Z = s2(t4(t4(t2(t4(s1(t4(t3(t2(s1(t2(t3(P4))))))))))))
+
+# The two objects Y and Z above have HN supports in the following "state".
+state = [s2(P4), s1(t2(P4)), s3(P4), P4, s1(P4), t4(s1(t2(t3(P4))))]
+
+# Sanity check for stability condition
+for i in range(0,len(stab)):
+    for j in range(i+1,len(stab)):
+        h = hom(stab[j],stab[i])
+        qp = h.qPolynomial()
+        print(i,j,qp)
 
 # The next part is a root-theoretic calculation for computing cut functionals
 # simples = [var('a'+str(i)) for i in range(1,5)]
