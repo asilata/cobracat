@@ -158,7 +158,7 @@ for r0 in roots:
 # maxCliques = [x for x in cliques if len(x) == M]
 
 # Generating random big objects
-X = s1(t3(t1(t3(t4(s2(t3(s4(s1(P3)))))))))
+X = s4(s1(P3))
 
 # Checking that the stability condition is sane
 for i in range(0, len(stab)):
@@ -176,7 +176,20 @@ def HNsupport(ob, stab):
     for piece in hnfiltration:
         (it, i) = twistShift(piece, stab)
         standardPiece = internalTwist(piece, -it).shift(i)
-        if standardPiece not in support:
+        if str(standardPiece) not in [str(x) for x in support]:
             support.append(standardPiece)
     return support
 
+# X = P4
+# support = []
+# braid = []
+# while len(support) < 6:
+#     twist = [s1,t1,s2,t2,s3,t3,s4,t4][randint(0,7)]
+#     braid.append(twist)
+#     X = twist(X)
+#     support = HNsupport(X, stab)
+
+# This X has 6 elements in the support
+X = composeAll([s1,s1,t4,t2,t1,s3,s1,s4,t1,t3,t1])(P4)
+
+    
