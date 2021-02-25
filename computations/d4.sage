@@ -158,7 +158,7 @@ for r0 in roots:
 # maxCliques = [x for x in cliques if len(x) == M]
 
 # Generating random big objects
-s1(t33(t1(t3(t4(s2(t3(s4(s1(P3)))))))))
+X = s1(t3(t1(t3(t4(s2(t3(s4(s1(P3)))))))))
 
 # Checking that the stability condition is sane
 for i in range(0, len(stab)):
@@ -167,3 +167,16 @@ for i in range(0, len(stab)):
                 ob2 = stab[j] # higher phase
                 h = hom(ob2,ob1) # Should not be there (in degree 0)
                 print(i,j,h.qPolynomial())
+
+# Return the HN support
+def HNsupport(ob, stab):
+    hnfiltration = HN(ob,stab) 
+    support = []
+    # Twist so that everything is in the standard heart
+    for piece in hnfiltration:
+        (it, i) = twistShift(piece, stab)
+        standardPiece = internalTwist(piece, -it).shift(i)
+        if standardPiece not in support:
+            support.append(standardPiece)
+    return support
+
