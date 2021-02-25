@@ -61,15 +61,22 @@ def t4(C):
 
 
 heart = [P1, P2, P3, P4]
-stab = [P4, s3(P4), P3, s2(t3(P4)), s2(P4), t4(s1(s2(t3(P4)))), s1(t3(P4)), s1(s2(t3(P4))), P2, s1(t2(P4)), s1(P4), P1]
+stab = [P4, s3(P4), P3, s2(t3(P4)), s2(P4), s4(s1(t2(t3(P4)))), s1(t3(P4)), s1(s2(t3(P4))), P2, s1(t2(P4)), s1(P4), P1]
+
+for o1 in stab:
+    for o2 in stab:
+        h = hom(o1,o2)
+        if o1 != o2 and h.qPolynomial().substitute({q:1}) >= 2:
+            print (o1,o2,h)
+
 
 # The next part is a root-theoretic calculation for computing cut functionals
 # simples = [var('a'+str(i)) for i in range(1,5)]
-# roots = [a1, a1+a4, a1+a2+a4, a2, a1+a2+a3+a4,a1+a3+a4, a1+a2+a3+2*a4, a2+a4, a2+a3+a4, a3, a3+a4, a4]
-# cartanMatrix = matrix([[2,0,0,-1],[0,2,0,-1],[0,0,2,-1],[-1,-1,-1,2]])
+roots = [a1, a1+a4, a1+a2+a4, a2, a1+a2+a3+a4,a1+a3+a4, a1+a2+a3+2*a4, a2+a4, a2+a3+a4, a3, a3+a4, a4]
+cartanMatrix = matrix([[2,0,0,-1],[0,2,0,-1],[0,0,2,-1],[-1,-1,-1,2]])
 
-# def root_to_vec(r):
-#     return vector([r.coefficient(x) for x in simples])
+def root_to_vec(r):
+    return vector([r.coefficient(x) for x in simples])
 
 # def reflect(r1,r2):
 #     """This is the reflection corresponding to the root r1, applied to the root r2."""
@@ -102,11 +109,10 @@ stab = [P4, s3(P4), P3, s2(t3(P4)), s2(P4), t4(s1(s2(t3(P4)))), s1(t3(P4)), s1(s
 #     row = get_functional(i)
 #     functionals = functionals + [row]
 
-# for r0 in roots:
-#     for r1 in roots:
-#         pairing = root_to_vec(r0)*cartanMatrix*root_to_vec(r1)
-#         if pairing == 0:
-#             print (r0,r1)
+for r0 in roots:
+    for r1 in roots:
+        pairing = root_to_vec(r0)*cartanMatrix*root_to_vec(r1)
+        print (r0,r1, pairing)
 
 # # The following calculation makes a list of all spherical objects in the heart (plus two extra that are not in the heart).
 # # This is in order to find maximal subcollections for which any two objects are pairwise parity.
@@ -139,3 +145,14 @@ stab = [P4, s3(P4), P3, s2(t3(P4)), s2(P4), t4(s1(s2(t3(P4)))), s1(t3(P4)), s1(s
 # cliques = list(nx.find_cliques(G))
 # M = max([len(x) for x in cliques]) # This ends up being 10.
 # maxCliques = [x for x in cliques if len(x) == M]
+
+# Generating random big objects
+s1(t33(t1(t3(t4(s2(t3(s4(s1(P3)))))))))
+
+# Checking that the stability condition is sane
+for i in range(0, len(stab)):
+        for j in range(i+1, len(stab)):
+                ob1 = stab[i] # lower phase
+                ob2 = stab[j] # higher phase
+                h = hom(ob2,ob1) # Should not be there (in degree 0)
+                print(i,j,h.qPolynomial())
