@@ -192,4 +192,48 @@ def HNsupport(ob, stab):
 # This X has 6 elements in the support
 X = composeAll([s1,s1,t4,t2,t1,s3,s1,s4,t1,t3,t1])(P4)
 
-    
+def tryToGrowTheChain(chainandmap, obj):
+    chain = chainandmap[0]
+    chainmap = chainandmap[1]
+    lastLink = chain[-1]
+    hComplex = hom(lastLink, obj)
+    hComplex.minimize()
+    if hComplex.qPolynomial().substitute({q:1}) != 1: # Not pure
+        return False
+    assert hComplex.maxIndex() == hComplex.minIndex() , "hComplex too long"
+    i = hComplex.minIndex()
+    assert len(hComplex.objects(i)) == 1, "hComplex too big"
+    h = hComplex.objects(i)[0].basis()
+    j = hComplex.objects(i)[0].grade()
+    shiftedObj = internalTwist(obj, -j).shift(i)
+    M = {}
+    for ((a,b), (c,d)) in h.keys():
+        if a not in M.keys():
+            M[a] = {}
+        M[a][(b,d)] = M.get(a,{}).get((b,d), 0) + h[(a,b),(c,d)]
+        
+    newChainMap = {}
+    for i in chainmap.keys():
+        m = len(chain[0].objects(i))
+        n = len(chain[-1].objects(i))
+        l = len(shiftedObj.objects(i))
+        chainMapMatrix = matrix(m, n, chainmap[i])
+        compositeMatrix = chainMapMatrix * matrix(n, l, M.get(i,{}))
+        newChainMap[i] = {(i,j):compositeMatrix[i,j] for i in range(0,m) for j in range(0,l) if compositeMatrix[i,j] != 0}
+
+    return (chain+[shiftedObj], newChainMap)
+
+chainedTriples = []
+for o1 in stab:
+    zeroChain = ([o1], {i: {(j,j):1 for j in range(0,len(o1.objects(i)))} for i in range(o1.minIndex(), o1.maxIndex()+1)})
+    for o2 in stab:
+        oneChain = tryToGrowTheChain(zeroChain, o2)
+        if oneChain:
+            for o3 in stab:
+                twoChain = tryToGrowTheChain(oneChain, o3)
+                if twoChain:
+                    threeChain = tryToGrowTheChain(twoChain, o1)
+                    if threeChain:
+                        if threeChain[1][0] != {}:
+                            chainedTriples.append(threeChain)
+            
