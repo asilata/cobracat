@@ -40,11 +40,7 @@ def HN(ob, stab):
         assert len(homDegree) == 1
         deg = homDegree[0]
         HNFiltration.append(topOb)
-        M = {}
-        for ((a,b), (c,d)) in topHom.keys():
-            if c not in M.keys():
-                M[c] = {}
-            M[c][(b,d)] = M.get(c,{}).get((b,d), 0) + topHom[(a,b),(c,d)]
+        M = mapFromHom(topHom)
         ob = cone(topOb, ob, M).shift(1)
         ob.minimize()
 
