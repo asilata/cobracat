@@ -483,17 +483,6 @@ def checkMap(P, Q, M):
             if not P.objects(i)[k[0]].is_zero(v):
                 return False
     return True
-
-def mapFromHom(hom):
-    '''
-    Take a dictionary {((a,b), (c,d)): r} as contained in the results of hom(P,Q) and convert this to an actual hom M: P to Q.
-    '''
-    M = {}
-    for ((a,b), (c,d)) in hom.keys():
-        if c not in M.keys():
-            M[c] = {}
-            M[c][(b,d)] = M.get(c,{}).get((b,d), 0) + hom[(a,b),(c,d)]
-    return M
     
 class ProjectiveModuleOverField(object):
     ''''
