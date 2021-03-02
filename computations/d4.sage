@@ -62,6 +62,7 @@ def t4(C):
 
 heart = [P1, P2, P3, P4]
 stab = [P4, s3(P4), P3, s2(t3(P4)), s2(P4), t4(s1(t2(t3(P4)))), s1(t3(P4)), s1(s2(t3(P4))), P2, s1(t2(P4)), s1(P4), P1]
+stab = [standardize(obj) for obj in stab]
 
 # Examples
 s14 = composeAll([s1,s4,t1])
@@ -75,11 +76,11 @@ Z = s2(t4(t4(t2(t4(s1(t4(t3(t2(s1(t2(t3(P4))))))))))))
 state = [s2(P4), s1(t2(P4)), s3(P4), P4, s1(P4), t4(s1(t2(t3(P4))))]
 
 # Sanity check for stability condition
-for i in range(0,len(stab)):
-    for j in range(i+1,len(stab)):
-        h = hom(stab[j],stab[i])
-        qp = h.qPolynomial()
-        print(i,j,qp)
+# for i in range(0,len(stab)):
+#     for j in range(i+1,len(stab)):
+#         h = hom(stab[j],stab[i])
+#         qp = h.qPolynomial()
+#         print(i,j,qp)
 
 # The next part is a root-theoretic calculation for computing cut functionals
 # simples = [var('a'+str(i)) for i in range(1,5)]
@@ -120,10 +121,10 @@ def root_to_vec(r):
 #     row = get_functional(i)
 #     functionals = functionals + [row]
 
-for r0 in roots:
-    for r1 in roots:
-        pairing = root_to_vec(r0)*cartanMatrix*root_to_vec(r1)
-        print (r0,r1, pairing)
+# for r0 in roots:
+#     for r1 in roots:
+#         pairing = root_to_vec(r0)*cartanMatrix*root_to_vec(r1)
+#         print (r0,r1, pairing)
 
 # # The following calculation makes a list of all spherical objects in the heart (plus two extra that are not in the heart).
 # # This is in order to find maximal subcollections for which any two objects are pairwise parity.
@@ -161,12 +162,12 @@ for r0 in roots:
 X = s4(s1(P3))
 
 # Checking that the stability condition is sane
-for i in range(0, len(stab)):
-        for j in range(i+1, len(stab)):
-                ob1 = stab[i] # lower phase
-                ob2 = stab[j] # higher phase
-                h = hom(ob2,ob1) # Should not be there (in degree 0)
-                print(i,j,h.qPolynomial())
+# for i in range(0, len(stab)):
+#         for j in range(i+1, len(stab)):
+#                 ob1 = stab[i] # lower phase
+#                 ob2 = stab[j] # higher phase
+#                 h = hom(ob2,ob1) # Should not be there (in degree 0)
+#                 print(i,j,h.qPolynomial())
 
 # Return the HN support
 def HNsupport(ob, stab):
@@ -235,7 +236,15 @@ def chainedTriples(stab):
                     if twoChain:
                         threeChain = tryToGrowTheChain(twoChain, o1)
                         if threeChain:
-                            if threeChain[1][0] != {}:
+                            #See if the map is the loop
+                            loopMap = False
+                            for i in threeChain[1].keys():
+                                if threeChain[1][i] != {}:
+                                    entry = list(threeChain[1][i].values())[0]
+                                    if entry.parent().deg(entry) == 2:
+                                        loopMap = True
+                                break
+                            if loopMap:
                                 chainedTriples.append(threeChain)
     return chainedTriples
 
@@ -249,5 +258,59 @@ def badChainedTriples(stab):
     allChainedTriples = chainedTriples(stab)
     for triple in allChainedTriples:
         if not fitsInHalfSpaceP(triple[0][:-1], stab) and not fitsInHalfSpaceP(triple[0][1:], stab):
-            answer.append(triple[0])
+            answer.append((triple[0], triple[1]))
     return answer
+
+def doubledEdges(stab):
+    answer = []
+    for o1 in stab:
+        for o2 in stab:
+            h = hom(o1,o2)
+            if str(o1) != str(o2) and h.qPolynomial().substitute({q:1}) > 1:
+                answer.append(([o1,o2],h))
+    return answer
+
+def maximalStates(ambient, badPairIndices, badTripleIndices):
+    def breaksAPair(i, state):
+        for j in state:   
+            for pair in badPairIndices:
+                if i in pair and j in pair:
+                    return True
+        return False
+
+    def breaksATriple(i, state):
+        for j in state:
+            for k in state:
+                if j == k: continue
+                for triple in badTripleIndices:
+                    if i in triple and j in triple and k in triple:
+                        return True
+        return False
+
+    answer = []
+    toGrow = [[]]
+
+    while len(toGrow) > 0:
+        toGrow.sort(key=lambda s: len(s), reverse=True)
+        tryToGrow = toGrow[0]
+        for i in ambient:
+            if i not in tryToGrow and not breaksAPair(i, tryToGrow) and not breaksATriple(i, tryToGrow):
+                if tryToGrow in toGrow: toGrow.remove(tryToGrow)
+                grown = sorted(tryToGrow + [i])
+                if grown not in toGrow: toGrow.append(grown)
+
+        if tryToGrow in toGrow:
+            toGrow.remove(tryToGrow)
+            if tryToGrow not in answer: 
+                answer.append(tryToGrow)
+                print("Found maximal: " + str(tryToGrow))
+    return answer
+                
+def untwist(obj):
+    (it, i) = twistShift(obj)
+    return internalTwist(obj, -it).shift(i)
+
+#badPairs = [s[0] for s in doubledEdges(stab)]
+#badTriples = [s[0] for s in badChainedTriples(stab)]
+badPairIndices = [[phase(x, stab)[1] for x in pair] for pair in badPairs]
+badTripleIndices = [[phase(x, stab)[1] for x in triple] for triple in badTriples]
