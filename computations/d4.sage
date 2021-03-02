@@ -223,17 +223,31 @@ def tryToGrowTheChain(chainandmap, obj):
 
     return (chain+[shiftedObj], newChainMap)
 
-chainedTriples = []
-for o1 in stab:
-    zeroChain = ([o1], {i: {(j,j):1 for j in range(0,len(o1.objects(i)))} for i in range(o1.minIndex(), o1.maxIndex()+1)})
-    for o2 in stab:
-        oneChain = tryToGrowTheChain(zeroChain, o2)
-        if oneChain:
-            for o3 in stab:
-                twoChain = tryToGrowTheChain(oneChain, o3)
-                if twoChain:
-                    threeChain = tryToGrowTheChain(twoChain, o1)
-                    if threeChain:
-                        if threeChain[1][0] != {}:
-                            chainedTriples.append(threeChain)
-            
+def chainedTriples(stab):
+    chainedTriples = []
+    for o1 in stab:
+        zeroChain = ([o1], {i: {(j,j):1 for j in range(0,len(o1.objects(i)))} for i in range(o1.minIndex(), o1.maxIndex()+1)})
+        for o2 in stab:
+            oneChain = tryToGrowTheChain(zeroChain, o2)
+            if oneChain:
+                for o3 in stab:
+                    twoChain = tryToGrowTheChain(oneChain, o3)
+                    if twoChain:
+                        threeChain = tryToGrowTheChain(twoChain, o1)
+                        if threeChain:
+                            if threeChain[1][0] != {}:
+                                chainedTriples.append(threeChain)
+    return chainedTriples
+
+def fitsInHalfSpaceP(sequence, stab):
+    k = len(stab)
+    phases = [k*phase(ob, stab)[0] + phase(ob, stab)[1] for ob in sequence]
+    return (max(phases) -  min(phases) < k)
+
+def badChainedTriples(stab):
+    answer = []
+    allChainedTriples = chainedTriples(stab)
+    for triple in allChainedTriples:
+        if not fitsInHalfSpaceP(triple[0][:-1], stab) and not fitsInHalfSpaceP(triple[0][1:], stab):
+            answer.append(triple[0])
+    return answer
