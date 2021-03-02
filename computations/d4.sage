@@ -243,7 +243,6 @@ def chainedTriples(stab):
                                     entry = list(threeChain[1][i].values())[0]
                                     if entry.parent().deg(entry) == 2:
                                         loopMap = True
-                                break
                             if loopMap:
                                 chainedTriples.append(threeChain)
     return chainedTriples
@@ -310,7 +309,17 @@ def untwist(obj):
     (it, i) = twistShift(obj)
     return internalTwist(obj, -it).shift(i)
 
-#badPairs = [s[0] for s in doubledEdges(stab)]
-#badTriples = [s[0] for s in badChainedTriples(stab)]
+badPairs = [s[0] for s in doubledEdges(stab)]
+badTriples = [s[0] for s in badChainedTriples(stab)]
 badPairIndices = [[phase(x, stab)[1] for x in pair] for pair in badPairs]
+
 badTripleIndices = [[phase(x, stab)[1] for x in triple] for triple in badTriples]
+# Note all triples in here are really bad. To be really bad, a triple must be bad in 3 cyclic ways.
+reallyBadTripleIndices = []
+for triple in badTripleIndices:
+    if [triple[1], triple[2], triple[0], triple[1]] in badTripleIndices and [triple[2], triple[0], triple[1], triple[2]] in badTripleIndices:
+        if uniq(sorted(triple)) not in reallyBadTripleIndices:
+            reallyBadTripleIndices.append(uniq(sorted(triple)))
+            
+# maximalStates(range(0,12), badPairIndices, reallyBadTripleIndices)
+# s4(Z)'s HN filtration seems to contradict!
