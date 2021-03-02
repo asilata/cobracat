@@ -60,7 +60,7 @@ def standardize(obj):
 
 # Return the internal twist and the heart degree of a standard stable object, given a stable object up to twist.
 # Assumption: standard stable objects end in homological degree 0.
-def twistShift(stable, stab):
+def twistShift(stable, stab=None):
     it = None
     heart = None
     for i in range(stable.maxIndex(), stable.minIndex()-1, -1):
