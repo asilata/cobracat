@@ -50,6 +50,14 @@ def HN(ob, stab):
 
     return HNFiltration
 
+def standardize(obj):
+        '''
+        Twist and shift so that the object ends in homological degree 0
+        '''
+        obj.minimize()
+        maxIndex = obj.maxIndex()
+        return internalTwist(obj, -maxIndex).shift(maxIndex)
+
 # Return the internal twist and the heart degree of a standard stable object, given a stable object up to twist.
 # Assumption: standard stable objects end in homological degree 0.
 def twistShift(stable, stab):
