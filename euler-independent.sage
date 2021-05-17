@@ -42,7 +42,7 @@ def isCrossing(p1,p2):
     return not(all([p1[k] >= p2[k] for k in commonKeys]) or all([p1[k] <= p2[k] for k in commonKeys]))
 
 def isNonPointed(p1,p2):
-    k1,k2 = list(p1.keys()), list(p2.keys())
+    k1,k2 = sorted(list(p1.keys())), sorted(list(p2.keys()))
     if k1[0] == k2[-1] or k1[-1] == k2[0]:
         return True
     return False
@@ -59,27 +59,31 @@ for i in range(len(eulerianPaths)):
             compatibilityMatrix[i][j] = 1
             
 def maximalStates():
-    maxState = []
-    maxState.append(0)
-    for i in range(0,len(eulerianPaths)):
+    maxState = set([])
+    maxState.add(0)
+    N = len(eulerianPaths)
+    for i in range(0,N):
         if all(compatibilityMatrix[i][j] == 1 for j in maxState):
-            maxState.append(i)
+            maxState.add(i)
 
-    maxStates = [sorted(maxState)]
-    openEdges = [sorted(list(x)) for x in combinations(maxState, len(maxState) -1)]
+    maxStates = [maxState]
+    openEdges = [set(x) for x in combinations(maxState, len(maxState) -1)]
     closedEdges = []
 
     while len(openEdges) > 0:
         e = openEdges.pop()
+        if e in closedEdges:
+            continue
+
         closedEdges.append(e)
         print(len(openEdges), len(closedEdges))
 
-        for i in range(0,len(eulerianPaths)):
+        for i in range(0,N):
             if all(compatibilityMatrix[i][j] == 1 for j in e):
-                newMaxState = sorted(e + [i])
+                newMaxState = (e | set([i]))
                 if newMaxState not in maxStates:
                     maxStates.append(newMaxState)
-                    newEdges = [sorted(list(x) + [i]) for x in combinations(e, len(e) -1)]
+                    newEdges = [(set(x) | set([i])) for x in combinations(e, len(e) -1)]
                     for n in newEdges:
                         if n not in closedEdges:
                             openEdges.append(n)
