@@ -1,4 +1,6 @@
 from itertools import combinations
+import networkx as nx
+import numpy as np
 n = 5
 domain = range(1,n+1)
 
@@ -57,7 +59,11 @@ for i in range(len(eulerianPaths)):
             compatibilityMatrix[i][j] = 0
         else:
             compatibilityMatrix[i][j] = 1
-            
+
+def maximalStatesUsingGraph():
+    G = nx.from_numpy_matrix(np.matrix(compatibilityMatrix))
+    return list(nx.find_cliques(G))
+
 def maximalStates():
     maxState = set([])
     maxState.add(0)
