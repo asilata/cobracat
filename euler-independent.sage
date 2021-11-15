@@ -1,7 +1,7 @@
 from itertools import combinations
 import networkx as nx
 import numpy as np
-n = 5
+n = 9
 domain = range(1,n+1)
 
 def eulerianCombinations(lst):
