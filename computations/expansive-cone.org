@@ -1,0 +1,180 @@
+#+title: Expansive cone calculations
+#+author: Asilata Bapat and Anand Deopurkar and Anthony M. Licata
+
+* Preconfiguration                                                 :noexport:
+** Startup
+#+startup: noptag overview
+#+property: header-args:sage :eval no-export :session
+
+** LaTeX setup
+#+options: toc:nil ':t
+#+latex_header: \usepackage{svg}
+#+latex_header_extra: \usepackage[margin=1in]{geometry}
+
+* The \(D_{4}\) case
+Our first example is going to be the \(D_{4}\) case.
+#+begin_src dot :cmd neato :file d4.svg :results file
+  graph {
+     1 -- x;
+      2 -- x;
+      3 -- x;
+  }
+#+end_src
+
+#+attr_latex: :width 0.3\linewidth
+#+RESULTS:
+[[file:d4.svg]]
+
+Recall that \(D_{4}\) has four simple roots, one for each vertex.
+We denote these as \(r_1, r_2, r_3\) for the three outside vertices, and \(r_x\) for the central vertex.
+The other positive roots are certain positive integral linear combinations of the four simple ones.
+#+begin_src sage :results silent
+  simple_root_labels_d4 = ['1', '2', '3', 'x']
+  simple_roots_d4 = vector([var('r' + l) for l in simple_root_labels_d4])
+  root_matrix_d4 = matrix([[1,0,0,0],
+                           [0,1,0,0],
+                           [0,0,1,0],
+                           [0,0,0,1],
+                           [1,0,0,1],
+                           [0,1,0,1],
+                           [0,0,1,1],
+                           [1,1,0,1],
+                           [1,0,1,1],
+                           [0,1,1,1],
+                           [1,1,1,1],
+                           [1,1,1,2]])
+#+end_src
+
+Set certain initial values for the central charges. These are (at the moment) pretty arbitrary.
+For now we assume again that we work with \(D_{4}\), but this may change in the future.
+Also collect the "simple" central charges into a vector.
+#+begin_src sage :results silent
+  z1 = [3,2]
+  z2 = [-1,4]
+  z3 = [-2,1]
+  zx = [4,7]
+  simple_central_charges_d4 = matrix([eval('z' + l) for l in simple_root_labels_d4])
+#+end_src
+
+Create variables that represent coordinates for the velocity vectors of the simple roots.
+Collect them into a list.
+#+begin_src sage
+  simple_velocities_d4 = matrix([[var('a' + l), var('b' + l)] for l in simple_root_labels_d4])
+#+end_src
+
+#+RESULTS:
+
+
+* Initialise values corresponding to all roots
+For now we will only compute with the \(D_4\) case, so we set all variables to use the \(D_4\) versions.
+#+begin_src sage :results silent
+  simple_roots = simple_roots_d4
+  root_matrix = root_matrix_d4
+  simple_central_charges = simple_central_charges_d4
+  simple_velocities = simple_velocities_d4
+#+end_src
+
+Finally, compute everything for all of the positive roots.
+#+begin_src sage :results silent
+  positive_roots = root_matrix * simple_roots
+  positive_central_charges = root_matrix * simple_central_charges
+  positive_velocities = root_matrix * simple_velocities
+#+end_src
+
+* The expansive inequalities
+#+begin_src sage
+  dot_products = [x.dot_product(y) for (x,y) in
+                  zip(positive_velocities, positive_central_charges)]
+
+  vector_vars = simple_velocities.list()
+
+  def eq_to_ieq(expr):
+       return [0] + [expr.coefficient(x) for x in vector_vars]
+
+  ineqs = [eq_to_ieq(e) for e in dot_products]
+
+  P = Polyhedron(ieqs = ineqs, base_ring=QQ)
+  P.rays()
+#+end_src
+
+#+RESULTS:
+#+begin_example
+(A ray in the direction (0, 0, -7, 2, -7, 2, 7, -2),
+ A ray in the direction (0, 2, -6, 0, -1, -2, -7, 4),
+ A ray in the direction (0, 27, -66, -5, -11, -22, -77, 44),
+ A ray in the direction (0, 27, -52, -13, -39, -14, -91, 52),
+ A ray in the direction (0, 0, -7, 4, -7, 4, 7, -4),
+ A ray in the direction (0, 5, -8, -2, -6, -3, -14, 8),
+ A ray in the direction (0, 0, 0, 0, -1, -2, 1, 2),
+ A ray in the direction (0, 0, 0, 0, -11, 3, 11, -3),
+ A ray in the direction (0, 0, 4, 1, 1, 2, 7, -4),
+ A ray in the direction (0, 0, -4, -1, 0, 0, 4, 1),
+ A ray in the direction (0, 0, -4, 1, 0, 0, 4, -1),
+ A ray in the direction (0, 0, -14, 4, -1, -2, 1, 2),
+ A ray in the direction (0, 0, -7, 4, 1, 2, 7, -4),
+ A ray in the direction (0, 10, -16, -4, -5, -10, -35, 20),
+ A ray in the direction (0, 0, -4, -1, -14, 4, 4, 1),
+ A ray in the direction (0, 0, 4, 1, 0, 0, 0, 0),
+ A ray in the direction (0, 17, -28, -7, -7, -14, -49, 28),
+ A ray in the direction (0, 0, -13, 6, 0, 0, 0, 0),
+ A ray in the direction (0, 27, -52, -13, -11, -22, -91, 52),
+ A ray in the direction (0, 0, 0, 0, 1, 2, 0, 0),
+ A ray in the direction (0, 0, 4, 1, -7, 4, 7, -4),
+ A ray in the direction (0, 13, -28, -7, -7, -14, -63, 36),
+ A ray in the direction (0, 0, 0, 0, -2, 1, 0, 0),
+ A ray in the direction (0, 0, -4, -1, -1, -2, -9, 7))
+#+end_example
+
+** Test computation for an extremal ray
+#+begin_src sage
+  def ray_to_velocity_matrix(r):
+      v1 = [r[0],r[1]]
+      v2 = [r[2],r[3]]
+      v3 = [r[4],r[5]]
+      v4 = [r[6],r[7]]
+      return matrix([v1,v2,v3,v4])
+
+  test_simple_velocities = ray_to_velocity_matrix(P.rays()[11])
+  test_positive_velocities = root_matrix * test_simple_velocities
+  test_dot_products =  [x.dot_product(y) for (x,y) in zip(test_positive_velocities,positive_central_charges)]
+
+  central_charge_lengths = [vector(x).norm() for x in positive_central_charges]
+  test_velocity_lengths = [x.norm() for x in test_positive_velocities]
+  test_length_ratios = [x/y for (x,y) in zip(test_velocity_lengths, central_charge_lengths)]
+
+  list(zip(positive_roots, test_positive_velocities, test_length_ratios, test_dot_products))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[(r1, (0, 0), 0, 0),
+ (r2, (-14, 4), 2/17*sqrt(53)*sqrt(17), 30),
+ (r3, (-1, -2), 1, 0),
+ (rx, (1, 2), 1/65*sqrt(65)*sqrt(5), 18),
+ (r1 + rx, (1, 2), 1/130*sqrt(130)*sqrt(5), 25),
+ (r2 + rx, (-13, 6), 1/130*sqrt(205)*sqrt(130), 27),
+ (r3 + rx, (0, 0), 0, 0),
+ (r1 + r2 + rx, (-13, 6), 1, 0),
+ (r1 + r3 + rx, (0, 0), 0, 0),
+ (r2 + r3 + rx, (-14, 4), 2/145*sqrt(145)*sqrt(53), 34),
+ (r1 + r2 + r3 + rx, (-14, 4), 1, 0),
+ (r1 + r2 + r3 + 2*rx, (-13, 6), 1/505*sqrt(505)*sqrt(205), 22)]
+#+end_example
+
+
+#+begin_src sage :results file
+  alpha1 = vector(z2) + vector(zx)
+  alpha2 = vector(z1)
+  alpha3 = vector(z3) + vector(zx)
+  plot(alpha1) + plot(alpha1 + alpha2) + plot(alpha1 + alpha2 + alpha3)
+#+end_src
+
+#+RESULTS:
+[[file:/home/asilata/.sage/temp/peanut/1770/tmp_o7y8cm54.png]]
+
+
+
+
+
+
+
