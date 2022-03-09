@@ -134,6 +134,18 @@ def link(state, states):
 def boundary(state,states):
     return ([x for x in states if Set(x).issubset(Set(state))])
 
+simpleReflections = matrix([
+    [-r1, r2, r3, r1+rx], # Reflection at r1
+    [r1, -r2, r3, r2+rx], # Reflection at r2
+    [r1, r2, -r3, r3+rx], # Reflection at r3
+    [r1+rx,r2+rx,r3+rx,-rx] # Reflection at rx
+])
+
+allReflections = []
+for i in range(0,len(roots)):
+    allReflections = allReflections + [[]]
+    for j in range(0,len(roots))
+
 #for i in range(1,7):
 #    print("Dimension " + str(i) + ": " + str(len(simplicesOfDim(i,stateSets))))
 
