@@ -1,0 +1,116 @@
+# Last updated: [2022-03-28 Mon]
+
+This is a possible example of a spherical object whose support does not admit an expansive motion.
+But it's not. 
+It just means that the "resolution" of the expansive motions into 6 element states was incorrect.
+
+Basic setup for D4
+#+begin_src sage :session foo
+  load("../complexes.sage")
+  load("../zigzagalgebra.sage")
+  load("../zigzagmodules.sage")
+  load("../braidactions.sage")
+  
+  d4 = make_test(d4graph)
+  R = d4['Z']
+  R.inject_variables()
+  F = ZigZagModule(R, 1, name = "P1")
+  G = ZigZagModule(R, 2, name = "P2")
+  H = ZigZagModule(R, 3, name = "P3")
+  J = ZigZagModule(R, 4, name = "P4")
+  
+  P1 = ProjectiveComplex(R)
+  P1.addObject(0, F)
+  
+  P2 = ProjectiveComplex(R)
+  P2.addObject(0, G)
+  
+  P3 = ProjectiveComplex(R)
+  P3.addObject(0, H)
+  
+  P4 = ProjectiveComplex(R)
+  P4.addObject(0, J)
+  
+  
+  def s(i, C):
+      D = sigma(R, i, C)
+      D.minimize()
+      return D
+  
+  def t(i, C):
+      D = sigmaInverse(R, i, C)
+      D.minimize()
+      return D
+  
+  def s1(C):
+      return s(1, C)
+  
+  def s2(C):
+      return s(2, C)
+  
+  def s3(C):
+      return s(3, C)
+  
+  def s4(C):
+      return s(4, C)
+  
+  def t1(C):
+      return t(1, C)
+  
+  def t2(C):
+      return t(2, C)
+  
+  def t3(C):
+      return t(3, C)
+  
+  def t4(C):
+      return t(4, C)
+#+end_src
+
+#+RESULTS:
+: Defining e_1, e_2, e_3, e_4, a, b, c, d, e, f, fa, db, ec, af
+
+HN filtrations
+#+begin_src sage :session foo
+  load("../HN.sage")
+#+end_src
+
+#+RESULTS:
+
+A particular stability condition (P1, P2, P3) are on the left and P4 is far to the right and long.
+
+#+begin_src sage :session foo
+  stab = [P4, s1(P4), s3(P4), s2(P4), t4(t1(t2(t3(P4)))), s1(s3(P4)), s1(s2(P4)), s1(s3(P4)), s1(s2(s3(P4))), P3, P2, P1]
+  stab
+#+end_src
+
+#+RESULTS:
+#+begin_example
+<string>:136: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
+See https://trac.sagemath.org/27014 for details.
+[[0]: P4<0> :[0],
+ [-1]: P1<-1> → P4<0> :[0],
+ [-1]: P3<-1> → P4<0> :[0],
+ [-1]: P2<-1> → P4<0> :[0],
+ [1]: P3<1>+P2<1>+P1<1> → P4<2>+P4<2> :[2],
+ [-1]: P1<-1>+P3<-1> → P4<0> :[0],
+ [-1]: P1<-1>+P2<-1> → P4<0> :[0],
+ [-1]: P1<-1>+P3<-1> → P4<0> :[0],
+ [-1]: P1<-1>+P2<-1>+P3<-1> → P4<0> :[0],
+ [0]: P3<0> :[0],
+ [0]: P2<0> :[0],
+ [0]: P1<0> :[0]]
+#+end_example
+
+An object
+#+begin_src sage :session foo
+  X = s1(t4(t3(t2(t4(P1)))))
+  HN(X,stab)
+#+end_src
+
+#+RESULTS:
+: <string>:40: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
+: See https://trac.sagemath.org/27014 for details.
+: [[2]: P1<2>+P2<2>+P3<2> → P4<3> :[3],
+:  [0]: P1<0> → P4<1> :[1],
+:  [-1]: P1<-2> :[-1]]
