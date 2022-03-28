@@ -1,0 +1,244 @@
+#+title: Expansive cone calculations
+#+author: Asilata Bapat and Anand Deopurkar and Anthony M. Licata
+
+* Preconfiguration                                                 :noexport:
+** Startup
+#+startup: noptag overview inlineimages
+#+property: header-args:sage :eval no-export :session
+
+** LaTeX setup
+#+options: toc:nil ':t
+#+latex_header: \usepackage{svg}
+#+latex_header_extra: \usepackage[margin=1in]{geometry}
+
+* The \(D_{4}\) case
+Our first example is the \(D_{4}\) case.
+#+begin_src dot :cmd neato :file d4.svg :results file
+  graph {
+      1 -- x;
+      2 -- x;
+      3 -- x;
+  }
+#+end_src
+
+#+attr_latex: :width 0.3\linewidth
+#+RESULTS:
+[[file:d4.svg]]
+
+Recall that \(D_{4}\) has four simple roots, one for each vertex.
+We denote these as \(r_1, r_2, r_3\) for the three outside vertices, and \(r_x\) for the central vertex.
+The other positive roots are certain positive integral linear combinations of the four simple ones.
+#+begin_src sage :results silent
+  simple_root_labels_d4 = ['1', '2', '3', 'x']
+  simple_roots_d4 = vector([var('r' + l) for l in simple_root_labels_d4])
+  root_matrix_d4 = matrix([[1,0,0,0],
+                           [0,1,0,0],
+                           [0,0,1,0],
+                           [0,0,0,1],
+                           [1,0,0,1],
+                           [0,1,0,1],
+                           [0,0,1,1],
+                           [1,1,0,1],
+                           [1,0,1,1],
+                           [0,1,1,1],
+                           [1,1,1,1],
+                           [1,1,1,2]])
+#+end_src
+
+Set certain initial values for the central charges. These are (at the moment) pretty arbitrary.
+For now we assume again that we work with \(D_{4}\), but this may change in the future.
+Also collect the "simple" central charges into a vector.
+
+The following function constructs a random central charge vector with \(x\) coordinate a random integer somewhere between \(-15\) and \(15\), and \(y\) coordinate a random integer between \(1\) and \(15\).
+#+begin_src sage :results silent
+  def random_cc():
+    a = randint(-15,15)
+    b = randint(1,15)
+    return vector([a,b])
+#+end_src
+
+#+begin_src sage :results silent :cache yes
+  #z1 = [3,2]
+  #z2 = [-1,4]
+  #z3 = [-2,1]
+  #zx = [4,7]
+  z1, z2, z3, zx = random_cc(), random_cc(), random_cc(), random_cc()
+  simple_central_charges_d4 = matrix([eval('z' + l) for l in simple_root_labels_d4])
+#+end_src
+
+Create variables that represent coordinates for the velocity vectors of the simple roots.
+Collect them into a list.
+#+begin_src sage :results silent
+  simple_velocities_d4 = matrix([[var('a' + l), var('b' + l)] for l in simple_root_labels_d4])
+#+end_src
+
+* Initialise values corresponding to all roots
+For now we will only compute with the \(D_4\) case, so we set all variables to use the \(D_4\) versions.
+#+begin_src sage :results silent
+  simple_roots = simple_roots_d4
+  root_matrix = root_matrix_d4
+  simple_central_charges = simple_central_charges_d4
+  simple_velocities = simple_velocities_d4
+#+end_src
+
+Finally, compute everything for all of the positive roots.
+#+begin_src sage :results silent
+  positive_roots = root_matrix * simple_roots
+  positive_central_charges = root_matrix * simple_central_charges
+  positive_velocities = root_matrix * simple_velocities
+#+end_src
+
+* The expansive inequalities
+#+begin_src sage
+  dot_products = [x.dot_product(y) for (x,y) in
+                  zip(positive_velocities, positive_central_charges)]
+
+  vector_vars = simple_velocities.list()
+
+  def eq_to_ieq(expr):
+       return [0] + [expr.coefficient(x) for x in vector_vars]
+
+  ineqs = [eq_to_ieq(e) for e in dot_products]
+
+  P = Polyhedron(ieqs = ineqs, base_ring=QQ)
+#+end_src
+
+#+RESULTS:
+
+** Computations on extremal rays
+Recall that an extremal ray consists of the \(a\) and \(b\) coordinates for each of the velocity vectors.
+The following code converts an extremal ray into a matrix of velocities, by splitting the list into pieces of size \(2\) and then converting the output into a matrix.
+#+begin_src sage :results silent
+  def ray_to_velocity_matrix(r):
+      return matrix([r[i:i+2] for i in range(0,len(r),2)])
+#+end_src
+
+A matrix of velocities corresponding to an extremal ray specifies how each point moves so that we get an infinitesimally expansive motion.
+The central charge vectors that remain rigid (do not expand) are exactly the ones whose velocity vector have zero dot product with the corresponding central charge vector.
+The collection of these central charge vectors forms (the closure of) a state, namely the appropriate analogue of a pointed pseudo-triangulation without an external edge.
+Among these, some subcollections form rigid components: these are distinguished by the fact that they all have the same ratio of the length of the velocity vector to the length of the central charge vector.
+
+The following code produces a list of rigid components from an extremal ray.
+#+begin_src sage
+  def rigid_components(r):
+      velocities = root_matrix * ray_to_velocity_matrix(r)
+      rigid_roots_ratios = [(r,x.norm()/y.norm()) for (r,x,y) in zip(positive_roots,velocities, positive_central_charges) if x.dot_product(y) == 0]
+      unique_ratios = set(t[1] for t in rigid_roots_ratios)
+      components = []
+      for ratio in unique_ratios:
+          this_component = []
+          for t in rigid_roots_ratios:
+              if t[1] == ratio:
+                  this_component.append(t[0])
+          components.append(this_component)
+          
+      return components
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  for r in P.ray_generator():
+       print(sorted(rigid_components(r), key=len))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[[r1 + r3 + rx], [r1, rx, r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r1 + r2 + rx], [r1, rx, r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r1 + rx], [r2, rx, r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r2 + r3 + rx], [r2, rx, r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r1 + r2 + r3 + rx], [r3, r1 + rx, r2 + rx, r1 + r3 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r3 + rx], [r3, r1 + rx, r2 + rx, r1 + r3 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r1], [r1 + r2 + rx], [r2 + r3 + rx], [r3], [rx], [r2]]
+[[r1], [r2 + r3 + rx], [r1 + r2 + rx], [r3, rx, r3 + rx]]
+[[r1 + rx], [r1, r3, r2 + rx, r1 + r2 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx]]
+[[r1], [r3 + rx], [r3], [r1 + rx], [r1 + r2 + rx], [r2 + r3 + rx]]
+[[r1 + r2 + rx], [r3 + rx], [r2 + r3 + rx], [r1, rx, r1 + rx]]
+[[r2], [r1, r3, r2 + rx, r1 + r2 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx]]
+[[r2 + rx], [r3 + rx], [r2 + r3 + rx], [r1 + rx], [rx], [r1 + r2 + rx]]
+[[r1 + rx], [r1 + r2 + rx], [r3 + rx], [r3, r2 + rx, r2 + r3 + rx]]
+[[r2 + r3 + rx], [r1, r3, rx, r1 + rx, r3 + rx, r1 + r3 + rx]]
+[[r3], [r1 + rx], [r3 + rx], [r1, r2 + rx, r1 + r2 + rx]]
+[[r1], [r3], [r1 + rx], [r2], [r3 + rx], [r2 + rx]]
+[[r2], [r1, r3, rx, r1 + rx, r3 + rx, r1 + r3 + rx]]
+[[r2], [r1 + r2 + rx], [rx], [r1, r2 + r3 + rx, r1 + r2 + r3 + rx]]
+[[rx], [r3], [r2], [r1, r2 + r3 + rx, r1 + r2 + r3 + rx]]
+[[r1 + r2 + r3 + rx], [r1 + r2 + rx], [r2 + r3 + rx], [r2, rx, r2 + rx]]
+[[r1 + r2 + r3 + rx], [r1, r2, rx, r1 + rx, r2 + rx, r1 + r2 + rx]]
+[[r1], [r1 + rx], [r2 + rx], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
+[[r1, rx, r1 + rx], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
+[[r1], [r2], [r1 + r2 + rx], [r3, rx, r3 + rx]]
+[[r1 + r2 + rx], [r2, r3, rx, r2 + rx, r3 + rx, r2 + r3 + rx]]
+[[r1], [rx], [r3], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
+[[r3], [rx], [r1 + r3 + rx], [r1, r2 + r3 + rx, r1 + r2 + r3 + rx]]
+[[r2 + r3 + rx], [rx], [r3], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
+[[r1 + r3 + rx], [r2, r3, rx, r2 + rx, r3 + rx, r2 + r3 + rx]]
+[[r1 + rx], [r3 + rx], [r1 + r3 + rx], [r2, rx, r2 + rx]]
+[[r1, r2 + r3 + rx, r1 + r2 + r3 + rx], [r3, r1 + rx, r1 + r3 + rx]]
+[[r1], [r2 + rx], [r1 + r2 + r3 + rx], [r3, r1 + rx, r1 + r3 + rx]]
+[[r3], [r2], [r3 + rx], [r1, r2 + rx, r1 + r2 + rx]]
+[[r1], [r3], [r2 + rx], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
+[[r2, r1 + r3 + rx, r1 + r2 + r3 + rx], [r3, r2 + rx, r2 + r3 + rx]]
+[[r2 + rx], [r2], [r3 + rx], [r3, r1 + rx, r1 + r3 + rx]]
+[[r3 + rx], [r1, r2, rx, r1 + rx, r2 + rx, r1 + r2 + rx]]
+[[r1], [r2], [r2 + rx], [r3, r1 + rx, r1 + r3 + rx]]
+[[r1 + rx], [rx], [r3 + rx], [r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[rx], [r3 + rx], [r2 + r3 + rx], [r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r1 + rx], [r2 + rx], [r1 + r2 + rx], [rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r1 + r2 + r3 + rx], [r1 + r2 + rx], [r2 + rx], [r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r2 + rx], [r3 + rx], [rx], [r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r2 + rx], [rx], [r1 + r2 + rx], [r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[rx], [r1 + r3 + rx], [r3 + rx], [r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r1 + r2 + rx], [r2 + rx], [r2 + r3 + rx], [rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+#+end_example
+
+** Test computation for a single extremal ray
+#+begin_src sage
+  test_simple_velocities = ray_to_velocity_matrix(P.rays()[11])
+  test_positive_velocities = root_matrix * test_simple_velocities
+  test_dot_products =  [x.dot_product(y) for (x,y) in zip(test_positive_velocities,positive_central_charges)]
+
+  central_charge_lengths = [vector(x).norm() for x in positive_central_charges]
+  test_velocity_lengths = [x.norm() for x in test_positive_velocities]
+  test_length_ratios = [x/y for (x,y) in zip(test_velocity_lengths, central_charge_lengths)]
+#+end_src
+
+#+begin_src sage
+  list(zip(positive_roots, test_positive_velocities, test_length_ratios, test_dot_products))
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[(r1, (0, 0), 0, 0),
+ (r2, (-14, 4), 2/17*sqrt(53)*sqrt(17), 30),
+ (r3, (-1, -2), 1, 0),
+ (rx, (1, 2), 1/65*sqrt(65)*sqrt(5), 18),
+ (r1 + rx, (1, 2), 1/130*sqrt(130)*sqrt(5), 25),
+ (r2 + rx, (-13, 6), 1/130*sqrt(205)*sqrt(130), 27),
+ (r3 + rx, (0, 0), 0, 0),
+ (r1 + r2 + rx, (-13, 6), 1, 0),
+ (r1 + r3 + rx, (0, 0), 0, 0),
+ (r2 + r3 + rx, (-14, 4), 2/145*sqrt(145)*sqrt(53), 34),
+ (r1 + r2 + r3 + rx, (-14, 4), 1, 0),
+ (r1 + r2 + r3 + 2*rx, (-13, 6), 1/505*sqrt(505)*sqrt(205), 22)]
+#+end_example
+
+
+#+begin_src sage :results file
+  alpha1 = vector(z2) + vector(zx)
+  alpha2 = vector(z1)
+  alpha3 = vector(z3) + vector(zx)
+  polygon([(0,0), alpha1, alpha1 + alpha2, alpha1 + alpha2 + alpha3])
+  #plot(alpha1) + plot(alpha1 + alpha2) + plot(alpha1 + alpha2 + alpha3)
+#+end_src
+
+#+RESULTS:
+[[file:/home/asilata/.sage/temp/peanut/11734/tmp__92b9ide.png]]
+
+
+
+
+
+
+

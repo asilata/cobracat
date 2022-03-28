@@ -53,7 +53,7 @@ class ZigZagModule(Module):
     def hom(self, Q):
         e = self.idempotent()
         f = Q.idempotent()
-        return filter(lambda x: x != 0, [e*x*f for x in self._ring.basis()] )
+        return [e*x*f for x in self._ring.basis() if e*x*f != 0]
 
     # Here the module is supposed to be the left R-module Re, but the map is right multiplication by r.
     @cached_method
