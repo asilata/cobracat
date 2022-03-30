@@ -1,0 +1,34 @@
+strict digraph a3gromovcharts {
+    graph [splines="true", overlap=false, concentrate=true]
+    // Edges
+    nil -> "25" [label="s1"];
+    nil -> "3J" [label="s2"];
+    nil -> "9Q" [label="s3"];
+    nil -> "47" [label="sz"];
+    nil -> "14" [label="t1"];
+    nil -> "2T" [label="t2"];
+    nil -> "8J" [label="t3"];
+    nil -> "69" [label="tz"];
+
+    nil -> "148J" [label="sx"];
+    nil -> "269T" [label="sy"];
+    nil -> "347J" [label="tx"];
+    nil -> "259Q" [label="ty"];
+
+    "25" -> "258J" [label="t3"];
+    "25" -> "259Q" [label="s3, sy, ty, tz"];
+    "3J" -> "347J" [label="sx, sz, t1, tx"];
+    "3J" -> "369J" [label="tz"];
+    "47" -> "247T" [label="t2"];
+    "47" -> "347J" [label="s2, t3, tx"];
+    "9Q" -> "149Q" [label="t1"];
+    "9Q" -> "259Q" [label="s1, sy, t2, ty"];
+    "14" -> "148J" [label="s2, sx, t3, tx"];
+    "14" -> "149Q" [label="s3"];
+    "2T" -> "247T" [label="sz"];
+    "2T" -> "269T" [label="s3, sy, ty, tz"];
+    "8J" -> "148J" [label="sx, sz, t1, tx"];
+    "8J" -> "258J" [label="s1"];
+    "69" -> "269T" [label="s1, sy, t2, ty"];
+    "69" -> "369J" [label="s2"];
+}

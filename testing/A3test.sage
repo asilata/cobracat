@@ -73,58 +73,69 @@ def t3(C):
 # *
 
 # ** Stable objects:
-x = s1(P2)
-y = s2(P3)
-z = s1(y)
+# x = s1(P2)
+# y = s2(P3)
+# z = s1(y)
 # ** Stable twists:
-sx = composeAll([s1,s2,t1])
-sy = composeAll([s2,s3,t2])
-sz = composeAll([s1,s2,s3,t2,t1])
+# sx = composeAll([s1,s2,t1])
+# sy = composeAll([s2,s3,t2])
+# sz = composeAll([s1,s2,s3,t2,t1])
 
-tx = composeAll([s1,t2,t1])
-ty = composeAll([s2,t3,t2])
-tz = composeAll([s1,s2,t3,t2,t1])
+# tx = composeAll([s1,t2,t1])
+# ty = composeAll([s2,t3,t2])
+# tz = composeAll([s1,s2,t3,t2,t1])
 
 # ** Stability condition:
-stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2), P1]
-masses = [var(x) for x in ['m3','m23','m123','m2','m12','m1']]
+# stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2), P1]
+# masses = [var(x) for x in ['m3','m23','m123','m2','m12','m1']]
 
 # Returns a list of 12 (doubled) Gromov coordinates given a list of masses, for this stability condition.
-def gromovCoordsConvex(l):
-    gc123 = [l[5]+l[4]-l[3], l[5]+l[3]-l[4],l[3]+l[4]-l[5]]
-    gc124 = [l[5]+l[2]-l[1], l[5]+l[1]-l[2],l[1]+l[2]-l[5]]
-    gc134 = [l[4]+l[2]-l[0], l[0]+l[4]-l[2],l[0]+l[2]-l[4]]
-    gc234 = [l[3]+l[1]-l[0], l[3]+l[0]-l[1],l[0]+l[1]-l[3]]
-    return gc123 + gc124 + gc134 + gc234
+# def gromovCoordsConvex(l):
+#     gc123 = [l[5]+l[4]-l[3], l[5]+l[3]-l[4],l[3]+l[4]-l[5]]
+#     gc124 = [l[5]+l[2]-l[1], l[5]+l[1]-l[2],l[1]+l[2]-l[5]]
+#     gc134 = [l[4]+l[2]-l[0], l[0]+l[4]-l[2],l[0]+l[2]-l[4]]
+#     gc234 = [l[3]+l[1]-l[0], l[3]+l[0]-l[1],l[0]+l[1]-l[3]]
+#     return gc123 + gc124 + gc134 + gc234
 
-def gcPrint(cs):
-    return "".join([b for (a,b) in zip(cs,"123456789TJQ") if a == 0])
+# def gcPrint(cs):
+#     return "".join([b for (a,b) in zip(cs,"123456789TJQ") if a == 0])
 
 braids = [s1,s2,s3,sx,sy,sz,t1,t2,t3,tx,ty,tz]
 braidP = ["s1","s2","s3","sx","sy","sz","t1","t2","t3","tx","ty","tz"]
 bs = zip(braids,braidP)
 
-for (b,bP) in bs:
-    for (c,cP) in bs:
-        hn = HN(b(c(P1)),stab)
-        if len(hn) > 3:
-            print bP, cP, hn
+def wcExpt():
+    A,B,C,D = P1,P2,s1(P2),s2(P1)
+    while True:
+        (b,bP) = choice(bs)
+        A,B,C,D = b(A),b(B),b(C),b(D)
+        print "Applying " + bP + ":"
+        #print A,B,C,D
+        print mass(C,stab,masses)-mass(A,stab,masses)-mass(B,stab,masses)
+        print mass(D,stab,masses)-mass(A,stab,masses)-mass(B,stab,masses)
+        print "***"
 
-for (b,bP) in bs:
-    hn = HN(b(tz(tx(P1))),stab)
-    if len(hn) > 3:
-        print bP, hn
+# for (b,bP) in bs:
+#     for (c,cP) in bs:
+#         hn = HN(b(c(P1)),stab)
+#         if len(hn) > 3:
+#             print bP, cP, hn
 
-hnMaps = []
-for i in range(0,len(stab)):
-    for j in range(1,len(stab)):
-        h = hom(stab2[i],stab2[i+j])
-        h.minimize()
-        qPC = h.qPolynomial().coefficients()
-        degree1Homs = [x for x in qPC if x[1] == -1]
-        if degree1Homs != []:
-            print stab2[i], stab2[i+j], h
-            hnMaps = hnMaps + [(stab2[i],stab2[i+j])]
+# for (b,bP) in bs:
+#     hn = HN(b(tz(tx(P1))),stab)
+#     if len(hn) > 3:
+#         print bP, hn
+
+# hnMaps = []
+# for i in range(0,len(stab)):
+#     for j in range(1,len(stab)):
+#         h = hom(stab2[i],stab2[i+j])
+#         h.minimize()
+#         qPC = h.qPolynomial().coefficients()
+#         degree1Homs = [x for x in qPC if x[1] == -1]
+#         if degree1Homs != []:
+#             print stab2[i], stab2[i+j], h
+#             hnMaps = hnMaps + [(stab2[i],stab2[i+j])]
 
 def isNonOverlapping(b,m):
     m0,m1 = m[0],m[1]
@@ -159,18 +170,27 @@ def isNonOverlapping(b,m):
 
 # * HN Filtrations (concave square stability condition):
 # ** Stable objects:
-# X = s1(P2)
-# Y = s2(P3)
-# Z = s1(s2(P3))
-# sx = composeAll([s2,s1,t2])
-# tx = composeAll([s2,t1,t2])
-# sy = composeAll([s2,s3,t2])
-# ty = composeAll([s2,t3,t2])
-# sz = composeAll([s1,s2,s3,t2,t1])
-# tz = composeAll([s1,s2,t3,t2,t1])
+X = s2(P1)
+Y = s2(P3)
+Z = s1(s2(P3))
+sx = composeAll([s2,s1,t2])
+tx = composeAll([s2,t1,t2])
+sy = composeAll([s2,s3,t2])
+ty = composeAll([s2,t3,t2])
+sz = composeAll([s1,s2,s3,t2,t1])
+tz = composeAll([s1,s2,t3,t2,t1])
 
 # ** Stability condition:
-#stab = [P3, Y, Z, P1, X, P2]
+stab = [P3, s2(P3), s1(s2(P3)), P1, s2(P1), P2]
+masses = [var(x) for x in ['m3','m23','m123','m1','m21','m2']]
+
+T = [P1,P2,X]
+W = [P1,Y,Z]
+U = [P2,P3,Y]
+
+def triangleMasses(tr):
+    a,b,c = tr[0],tr[1],tr[2]
+    return mass(b,stab,masses) + mass(c,stab,masses) - mass(a,stab,masses), -mass(b,stab,masses) + mass(c,stab,masses) + mass(a,stab,masses), mass(b,stab,masses) - mass(c,stab,masses) + mass(a,stab,masses)
 
 # ** Charts:
 # Guess by applying standard twists to all stable objects
