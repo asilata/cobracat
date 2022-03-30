@@ -45,6 +45,14 @@ The other positive roots are certain positive integral linear combinations of th
                            [1,1,1,2]])
 #+end_src
 
+** Simple roots
+Create variables that represent coordinates for the velocity vectors of the simple roots.
+Collect them into a list.
+#+begin_src sage :results silent
+  simple_velocities_d4 = matrix([[var('a' + l), var('b' + l)] for l in simple_root_labels_d4])
+#+end_src
+
+** Initialise central charge
 Set certain initial values for the central charges. These are (at the moment) pretty arbitrary.
 For now we assume again that we work with \(D_{4}\), but this may change in the future.
 Also collect the "simple" central charges into a vector.
@@ -62,14 +70,9 @@ The following function constructs a random central charge vector with \(x\) coor
   #z2 = [-1,4]
   #z3 = [-2,1]
   #zx = [4,7]
-  z1, z2, z3, zx = random_cc(), random_cc(), random_cc(), random_cc()
+  #z1, z2, z3, zx = random_cc(), random_cc(), random_cc(), random_cc()
+  z1, z2, z3, zx = vector([-2,1]), vector([-2,2]), vector([-1,2]), vector([20,1])
   simple_central_charges_d4 = matrix([eval('z' + l) for l in simple_root_labels_d4])
-#+end_src
-
-Create variables that represent coordinates for the velocity vectors of the simple roots.
-Collect them into a list.
-#+begin_src sage :results silent
-  simple_velocities_d4 = matrix([[var('a' + l), var('b' + l)] for l in simple_root_labels_d4])
 #+end_src
 
 * Initialise values corresponding to all roots
@@ -89,16 +92,13 @@ Finally, compute everything for all of the positive roots.
 #+end_src
 
 * The expansive inequalities
+The various inequalities are of the form \(\langle z, v \rangle \ge 0\), where \(z\) is a central charge vector and \(v\) is the corresponding velocity vector.
+We create a list of inequalities (in a form acceptable to sage), and then construct a polyhedron defined by these inequalities over \(\mathbb{Q}\).
 #+begin_src sage
-  dot_products = [x.dot_product(y) for (x,y) in
-                  zip(positive_velocities, positive_central_charges)]
-
-  vector_vars = simple_velocities.list()
-
   def eq_to_ieq(expr):
-       return [0] + [expr.coefficient(x) for x in vector_vars]
+       return [0] + [expr.coefficient(x) for x in simple_velocities.list()]
 
-  ineqs = [eq_to_ieq(e) for e in dot_products]
+  ineqs = [eq_to_ieq(x.dot_product(y)) for (x,y) in zip(positive_velocities, positive_central_charges)]
 
   P = Polyhedron(ieqs = ineqs, base_ring=QQ)
 #+end_src
@@ -106,8 +106,8 @@ Finally, compute everything for all of the positive roots.
 #+RESULTS:
 
 ** Computations on extremal rays
-Recall that an extremal ray consists of the \(a\) and \(b\) coordinates for each of the velocity vectors.
-The following code converts an extremal ray into a matrix of velocities, by splitting the list into pieces of size \(2\) and then converting the output into a matrix.
+Recall that an extremal ray consists of the \(x\) and \(y\) coordinates for each of the velocity vectors.
+The following function converts an extremal ray into a matrix of velocities, by splitting the list into pieces of size \(2\) and then converting the output into a matrix.
 #+begin_src sage :results silent
   def ray_to_velocity_matrix(r):
       return matrix([r[i:i+2] for i in range(0,len(r),2)])
@@ -118,11 +118,12 @@ The central charge vectors that remain rigid (do not expand) are exactly the one
 The collection of these central charge vectors forms (the closure of) a state, namely the appropriate analogue of a pointed pseudo-triangulation without an external edge.
 Among these, some subcollections form rigid components: these are distinguished by the fact that they all have the same ratio of the length of the velocity vector to the length of the central charge vector.
 
-The following code produces a list of rigid components from an extremal ray.
+The following function produces a list of rigid components given an extremal ray.
 #+begin_src sage
   def rigid_components(r):
       velocities = root_matrix * ray_to_velocity_matrix(r)
-      rigid_roots_ratios = [(r,x.norm()/y.norm()) for (r,x,y) in zip(positive_roots,velocities, positive_central_charges) if x.dot_product(y) == 0]
+      rigid_roots_ratios = [(r,x.norm()/y.norm())
+                            for (r,x,y) in zip(positive_roots,velocities, positive_central_charges) if x.dot_product(y) == 0]
       unique_ratios = set(t[1] for t in rigid_roots_ratios)
       components = []
       for ratio in unique_ratios:
@@ -131,67 +132,266 @@ The following code produces a list of rigid components from an extremal ray.
               if t[1] == ratio:
                   this_component.append(t[0])
           components.append(this_component)
-          
+
       return components
 #+end_src
 
 #+RESULTS:
 
-#+begin_src sage
-  for r in P.ray_generator():
-       print(sorted(rigid_components(r), key=len))
+* Results
+First we draw the stability condition we have constructed.
+#+begin_src sage :results file :exports both
+  sum([plot(x) + text(y, x + vector([0,0.5]))
+       for (x,y) in zip(positive_central_charges, positive_roots)])
+#+end_src
+
+#+RESULTS:
+[[file:/home/asilata/.sage/temp/peanut/45179/tmp_mcgvttdl.png]]
+
+Next we compute the rigid components for each of the extremal rays of the polyhedron \(P\).
+#+begin_src sage :exports both
+  collapsed_components = [rigid_components(r) for r in P.ray_generator()]
+  collapsed_states = [flatten(x) for x in collapsed_components]
+  collapsed_states
 #+end_src
 
 #+RESULTS:
 #+begin_example
-[[r1 + r3 + rx], [r1, rx, r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r1 + r2 + rx], [r1, rx, r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r1 + rx], [r2, rx, r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r2 + r3 + rx], [r2, rx, r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r1 + r2 + r3 + rx], [r3, r1 + rx, r2 + rx, r1 + r3 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r3 + rx], [r3, r1 + rx, r2 + rx, r1 + r3 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r1], [r1 + r2 + rx], [r2 + r3 + rx], [r3], [rx], [r2]]
-[[r1], [r2 + r3 + rx], [r1 + r2 + rx], [r3, rx, r3 + rx]]
-[[r1 + rx], [r1, r3, r2 + rx, r1 + r2 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx]]
-[[r1], [r3 + rx], [r3], [r1 + rx], [r1 + r2 + rx], [r2 + r3 + rx]]
-[[r1 + r2 + rx], [r3 + rx], [r2 + r3 + rx], [r1, rx, r1 + rx]]
-[[r2], [r1, r3, r2 + rx, r1 + r2 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx]]
-[[r2 + rx], [r3 + rx], [r2 + r3 + rx], [r1 + rx], [rx], [r1 + r2 + rx]]
-[[r1 + rx], [r1 + r2 + rx], [r3 + rx], [r3, r2 + rx, r2 + r3 + rx]]
-[[r2 + r3 + rx], [r1, r3, rx, r1 + rx, r3 + rx, r1 + r3 + rx]]
-[[r3], [r1 + rx], [r3 + rx], [r1, r2 + rx, r1 + r2 + rx]]
-[[r1], [r3], [r1 + rx], [r2], [r3 + rx], [r2 + rx]]
-[[r2], [r1, r3, rx, r1 + rx, r3 + rx, r1 + r3 + rx]]
-[[r2], [r1 + r2 + rx], [rx], [r1, r2 + r3 + rx, r1 + r2 + r3 + rx]]
-[[rx], [r3], [r2], [r1, r2 + r3 + rx, r1 + r2 + r3 + rx]]
-[[r1 + r2 + r3 + rx], [r1 + r2 + rx], [r2 + r3 + rx], [r2, rx, r2 + rx]]
-[[r1 + r2 + r3 + rx], [r1, r2, rx, r1 + rx, r2 + rx, r1 + r2 + rx]]
-[[r1], [r1 + rx], [r2 + rx], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
-[[r1, rx, r1 + rx], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
-[[r1], [r2], [r1 + r2 + rx], [r3, rx, r3 + rx]]
-[[r1 + r2 + rx], [r2, r3, rx, r2 + rx, r3 + rx, r2 + r3 + rx]]
-[[r1], [rx], [r3], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
-[[r3], [rx], [r1 + r3 + rx], [r1, r2 + r3 + rx, r1 + r2 + r3 + rx]]
-[[r2 + r3 + rx], [rx], [r3], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
-[[r1 + r3 + rx], [r2, r3, rx, r2 + rx, r3 + rx, r2 + r3 + rx]]
-[[r1 + rx], [r3 + rx], [r1 + r3 + rx], [r2, rx, r2 + rx]]
-[[r1, r2 + r3 + rx, r1 + r2 + r3 + rx], [r3, r1 + rx, r1 + r3 + rx]]
-[[r1], [r2 + rx], [r1 + r2 + r3 + rx], [r3, r1 + rx, r1 + r3 + rx]]
-[[r3], [r2], [r3 + rx], [r1, r2 + rx, r1 + r2 + rx]]
-[[r1], [r3], [r2 + rx], [r2, r1 + r3 + rx, r1 + r2 + r3 + rx]]
-[[r2, r1 + r3 + rx, r1 + r2 + r3 + rx], [r3, r2 + rx, r2 + r3 + rx]]
-[[r2 + rx], [r2], [r3 + rx], [r3, r1 + rx, r1 + r3 + rx]]
-[[r3 + rx], [r1, r2, rx, r1 + rx, r2 + rx, r1 + r2 + rx]]
-[[r1], [r2], [r2 + rx], [r3, r1 + rx, r1 + r3 + rx]]
-[[r1 + rx], [rx], [r3 + rx], [r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[rx], [r3 + rx], [r2 + r3 + rx], [r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r1 + rx], [r2 + rx], [r1 + r2 + rx], [rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r1 + r2 + r3 + rx], [r1 + r2 + rx], [r2 + rx], [r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r2 + rx], [r3 + rx], [rx], [r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r2 + rx], [rx], [r1 + r2 + rx], [r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[rx], [r1 + r3 + rx], [r3 + rx], [r1 + rx, r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
-[[r1 + r2 + rx], [r2 + rx], [r2 + r3 + rx], [rx, r1 + r2 + r3 + rx, r1 + r2 + r3 + 2*rx]]
+[[r1, r3, rx, r1 + rx, r3 + rx, r1 + r3 + rx, r2 + rx],
+ [r1, r2, r3 + rx, r1 + r3 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx, r3],
+ [r1,
+  r2,
+  r3 + rx,
+  r1 + r3 + rx,
+  r2 + r3 + rx,
+  r1 + r2 + r3 + rx,
+  r1 + r2 + rx],
+ [r2,
+  r3,
+  r1 + rx,
+  r1 + r2 + rx,
+  r1 + r3 + rx,
+  r1 + r2 + r3 + rx,
+  r2 + r3 + rx],
+ [r1,
+  r2 + rx,
+  r3 + rx,
+  r1 + r2 + rx,
+  r1 + r3 + rx,
+  r1 + r2 + r3 + 2*rx,
+  r2 + r3 + rx],
+ [r2, r3, r1 + rx, r1 + r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + rx, r1],
+ [r2, r1, r3, rx, r1 + rx, r3 + rx, r1 + r3 + rx],
+ [r3 + rx,
+  r3,
+  r1 + rx,
+  r2 + rx,
+  r1 + r3 + rx,
+  r2 + r3 + rx,
+  r1 + r2 + r3 + 2*rx],
+ [r1 + r2 + rx,
+  r3,
+  r1 + rx,
+  r2 + rx,
+  r1 + r3 + rx,
+  r2 + r3 + rx,
+  r1 + r2 + r3 + 2*rx],
+ [r1 + rx,
+  r1,
+  r2 + rx,
+  r3 + rx,
+  r1 + r2 + rx,
+  r1 + r3 + rx,
+  r1 + r2 + r3 + 2*rx],
+ [r2, r1, r3, r2 + rx, r1 + r2 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx],
+ [r2, r1 + rx, r1 + r2 + rx, r3, r2 + rx, r2 + r3 + rx],
+ [r2, r3, rx, r2 + rx, r3 + rx, r2 + r3 + rx, r1],
+ [r2, r3 + rx, r2 + r3 + rx, r1, r2 + rx, r1 + r2 + rx],
+ [r1, r2, rx, r1 + rx, r2 + rx, r1 + r2 + rx, r3 + rx],
+ [r2, r3, rx, r2 + rx, r3 + rx, r2 + r3 + rx, r1 + rx],
+ [r1, r2, rx, r1 + rx, r2 + rx, r1 + r2 + rx, r3],
+ [r2,
+  r1 + rx,
+  r3 + rx,
+  r1 + r2 + rx,
+  r2 + r3 + rx,
+  r1 + r2 + r3 + 2*rx,
+  r2 + rx],
+ [r2,
+  r1 + rx,
+  r3 + rx,
+  r1 + r2 + rx,
+  r2 + r3 + rx,
+  r1 + r2 + r3 + 2*rx,
+  r1 + r3 + rx],
+ [r3, r1 + rx, r1 + r3 + rx, r1, r2 + rx, r1 + r2 + rx],
+ [r2, r3 + rx, r2 + r3 + rx, r3, r1 + rx, r1 + r3 + rx],
+ [r2, r1 + rx, r1 + r2 + rx, r1, r3 + rx, r1 + r3 + rx],
+ [r1, r3 + rx, r1 + r3 + rx, r3, r2 + rx, r2 + r3 + rx],
+ [r1,
+  r3,
+  r2 + rx,
+  r1 + r2 + rx,
+  r2 + r3 + rx,
+  r1 + r2 + r3 + rx,
+  r1 + r3 + rx]]
 #+end_example
+
+** CANCELLED Imposing rigidity equations to resolve rigid components
+Let us write down the "rigidity equations". These are equations that specify, for each root, that the length of that root does not change under a given motion.
+The flavour of this equation is \(\langle v_{\alpha}, z_{\alpha} \rangle = 0\), as opposed to just positive as in the usual equation.
+In fact, in the sage representation, these are exactly the same as the inequalities; they simply need to be specified as equations rather than inequalities.
+#+begin_src sage
+  rigidity_equations = ineqs
+#+end_src
+
+#+RESULTS:
+
+Now if we consider a rigid component, we can get out states from it as follows.
+Take 6-element subsets of a given rigid component, and intersect the corresponding rigidity equations with the polyhedron \(P\).
+The chosen 6-element subset is a state if and only if the intersection is a single ray (?).
+NOTE: This does not work.
+#+begin_src sage
+  import itertools
+  def rigid_component_to_states(c):
+      states = []
+      for subcpt in itertools.combinations(c, 6):
+          print(subcpt)
+          eqns = []
+          for r in subcpt:
+              index = list(positive_roots).index(r)
+              e = rigidity_equations[index]
+              eqns = eqns + [rigidity_equations[index]]
+          print(P.intersection(Polyhedron(eqns = eqns, base_ring = QQ)))
+#+end_src
+
+#+RESULTS:
+
+** Resolving rigid components via crossing pairs
+Let us find crossing pairs in a state as follows: take \(2\)-element subsets of the state that appear together in no other state except one (namely the external flip of the external edge).
+#+begin_src sage
+  def crossing_pairs(s):
+      for pair in itertools.combinations(s,2):
+          for t in collapsed_states:
+              containers = [t for t in collapsed_states if set(pair).issubset(t) if s != t]
+              if len(containers) == 1:
+                  return pair
+      return None
+#+end_src
+
+#+RESULTS:
+
+Given a collapsed state, now produce states from it by removing one element of a crossing pair at a time.
+#+begin_src sage
+  def collapsed_state_to_states(s):
+      pair = crossing_pairs(s)
+      if pair is not None:
+          states = [[x for x in s if x != y] for y in pair]
+          return states
+      else:
+          return [s]
+
+  states_list = [collapsed_state_to_states(t) for t in collapsed_states]
+  all_states = [item for sl in states_list for item in sl]
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  [y for y in collapsed_states if r1 + r2 + r3 + rx in y if r1 + rx in y if r1 in y]
+#+end_src
+
+#+RESULTS:
+: [[r2, r3, r1 + rx, r1 + r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + rx, r1]]
+
+Now for any state (flattening of a list of rigid components), we find its neighbours.
+These are precisely all the other states whose intersection with the current state has all but one of the elements from the current state.
+#+begin_src sage :results silent
+  def are_neighbours(s,t):
+      if s == t:
+          return False
+      if len(s) != len(t):
+          return False
+      commons = set(s) & set(t)
+      s1 = set(s).difference(commons)
+      if len(s1) == 1:
+          return True
+      else:
+          return False
+
+  def state_neighbours(s):
+      nbs = []
+      for t in all_states:
+          if s == t:
+              continue
+          else:
+              if are_neighbours(s,t):
+                  nbs = nbs + [t]
+      return nbs
+  all_neighbours = [(s,state_neighbours(s)) for s in all_states]
+#+end_src
+
+#+begin_src sage :results silent
+  state_graph = Graph()
+  for i in range(0,len(all_states)):
+      for j in range(0,len(all_states)):
+          if are_neighbours(all_states[i],all_states[j]):
+              state_graph.add_edge(i+1,j+1)
+#+end_src
+
+#+name: state_graph
+#+begin_src sage :results file :exports results
+  state_graph.plot()
+#+end_src
+
+#+attr_latex: :width 0.7\textwidth
+#+caption: The flip graph of states.
+#+RESULTS: state_graph
+[[file:/home/asilata/.sage/temp/peanut/45179/tmp_qs_dsddk.png]]
+
+We compute the "flip graph", which connects two roots if and only if one flips to the other in some pair of adjacent states.
+#+begin_src sage :results silent
+  flipgraph = Graph()
+  for s in all_states:
+      for t in all_states:
+          if are_neighbours(s,t):
+              commons = set(s) & set(t)
+              s1 = list(set(s).difference(commons))
+              t1 = list(set(t).difference(commons))
+              if len(s1) == 1 and len(t1) == 1:
+                  flipgraph.add_edge(s1[0],t1[0])
+#+end_src
+
+#+RESULTS:
+[[file:/home/asilata/.sage/temp/peanut/45179/tmp_rms6bo0i.png]]
+  
+#+begin_src sage :results file :exports results
+  flipgraph.plot()
+#+end_src
+
+#+RESULTS:
+[[file:/home/asilata/.sage/temp/peanut/45179/tmp_n3okoc0h.png]]
+
+In Figure ref:cpg we plot the graph of crossing pairs. This connects two roots if and only if they both appear as the constituents of a crossing pair in one of the collapsed states (aka rigid components).
+#+begin_src sage
+  crossing_pairs_graph = Graph()
+  for s in collapsed_states:
+      if len(s) <= 6:
+          continue
+      p = crossing_pairs(s)
+      crossing_pairs_graph.add_edge(p[0],p[1])
+#+end_src
+
+#+RESULTS:
+
+#+name: crossing_pairs_graph
+#+begin_src sage :results file :exports results
+  crossing_pairs_graph.plot()
+#+end_src
+
+#+caption: The graph of crossing edges in the rigid components. label:cpg
+#+RESULTS: crossing_pairs_graph
+[[file:/home/asilata/.sage/temp/peanut/45179/tmp_lpuhd6nd.png]]
 
 ** Test computation for a single extremal ray
 #+begin_src sage
@@ -204,24 +404,26 @@ The following code produces a list of rigid components from an extremal ray.
   test_length_ratios = [x/y for (x,y) in zip(test_velocity_lengths, central_charge_lengths)]
 #+end_src
 
+#+RESULTS:
+
 #+begin_src sage
   list(zip(positive_roots, test_positive_velocities, test_length_ratios, test_dot_products))
 #+end_src
 
 #+RESULTS:
 #+begin_example
-[(r1, (0, 0), 0, 0),
- (r2, (-14, 4), 2/17*sqrt(53)*sqrt(17), 30),
- (r3, (-1, -2), 1, 0),
- (rx, (1, 2), 1/65*sqrt(65)*sqrt(5), 18),
- (r1 + rx, (1, 2), 1/130*sqrt(130)*sqrt(5), 25),
- (r2 + rx, (-13, 6), 1/130*sqrt(205)*sqrt(130), 27),
- (r3 + rx, (0, 0), 0, 0),
- (r1 + r2 + rx, (-13, 6), 1, 0),
- (r1 + r3 + rx, (0, 0), 0, 0),
- (r2 + r3 + rx, (-14, 4), 2/145*sqrt(145)*sqrt(53), 34),
- (r1 + r2 + r3 + rx, (-14, 4), 1, 0),
- (r1 + r2 + r3 + 2*rx, (-13, 6), 1/505*sqrt(505)*sqrt(205), 22)]
+[(r1, (-3, 8), 1/5*sqrt(73)*sqrt(5), 14),
+ (r2, (0, 0), 0, 0),
+ (r3, (2, 1), 1, 0),
+ (rx, (3, -8), 1/101*sqrt(101)*sqrt(73), 22),
+ (r1 + rx, (0, 0), 0, 0),
+ (r2 + rx, (3, -8), 1, 0),
+ (r3 + rx, (5, -7), 1/30*sqrt(74)*sqrt(10), 24),
+ (r1 + r2 + rx, (0, 0), 0, 0),
+ (r1 + r3 + rx, (2, 1), 1/65*sqrt(65)*sqrt(5), 18),
+ (r2 + r3 + rx, (5, -7), 1, 0),
+ (r1 + r2 + r3 + rx, (2, 1), 1/61*sqrt(61)*sqrt(5), 16),
+ (r1 + r2 + r3 + 2*rx, (5, -7), 1/274*sqrt(274)*sqrt(74), 26)]
 #+end_example
 
 
@@ -234,11 +436,101 @@ The following code produces a list of rigid components from an extremal ray.
 #+end_src
 
 #+RESULTS:
-[[file:/home/asilata/.sage/temp/peanut/11734/tmp__92b9ide.png]]
+[[file:/home/asilata/.sage/temp/peanut/45179/tmp_asljrhmp.png]]
 
+* Self-stresses for an arbitrary root system
+Let \(\Delta^+\) be the set of positive (real) roots of some root system.
+Choose a central charge \(z\) on \(\Delta^+\).
+A /self-stress/ on \(\Delta^+\) is an assignment \(\alpha \mapsto \omega_\alpha\) from \(\Delta^+\) to \(\mathbb{R}_{+}\), such that
+\[\sum_{\alpha \in \Delta^+} \omega_{\alpha}z_{\alpha} = 0.\]
 
+* Polytope of pointed pseudo-triangulations
+For \(A_{n}\) type, we know that a choice of \(f_{ij}\) given by
+\[f_{ij} = \det(a,p_i,p_j)\det(b,p_i,p_j)\]
+is a valid choice of parameters.
+In fact, we usually set \(a = b = 0\).
 
+Recall that the \(D_n\) root system can be embedded into Euclidean space as follows.
+Set the simple roots to be \(\{e_i - e_{i+1} \mid 1 \leq i < n\} \cup \{e_{n-1} + e_n\}\).
+Then the positive roots are given by \(\{e_i \pm e_j \mid 1 \leq i < j \leq n \}\).
 
+Naively, if \(\alpha = e_i \pm e_j\), set
+\[f_{\alpha} = \det|e_i, \pm e_j|^2.\]
+#+begin_src sage
+  es = matrix([[1,-1,0,0],[0,0,1,-1],[0,0,1,1],[0,1,-1,0]]).inverse() * simple_central_charges_d4
+  #root_matrix_d4 * simple_roots
+  # smoothing_function_dict = {}
+  # for i in range(0,4):
+  #     for j in range(i+1,4):
+  #         for (r,z) in zip(positive_roots,positive_central_charges):
+  #             if z == es[i] - es[j]:
+  #                 smoothing_function_dict[r] = matrix([es[i],es[j]]).determinant()^2
+  #             elif z == es[i] + es[j]:
+  #                 smoothing_function_dict[r] = matrix([es[i],-es[j]]).determinant()^2
+
+  def random_smoothing():
+    a = randint(-10,10)/10
+    b = randint(-10,10)/10
+    return vector([a,b])
+
+  random_smoothings = [matrix([z,random_smoothing()]).determinant()^2 for z in positive_central_charges]
+#+end_src
+
+#+RESULTS:
+
+#+RESULTS:
+#+begin_example
+[9/100,
+ 1681/25,
+ 3249/25,
+ 3136/25,
+ 961/25,
+ 4,
+ 12769/100,
+ 3844/25,
+ 1296,
+ 1156/25,
+ 16,
+ 184041/100]
+#+end_example
+
+#+begin_src sage
+  def eq_to_inhom_ieq(expr, d):
+    return [-d] + [expr.coefficient(x) for x in simple_velocities.list()]
+
+  inhomogeneous_ineqs = [eq_to_inhom_ieq(x.dot_product(y),s) for (x,y,s) in zip(positive_velocities, positive_central_charges, random_smoothings)]
+  # inhomogeneous_ineqs
+  Pinhom = Polyhedron(ieqs = inhomogeneous_ineqs, base_ring=QQ)
+  Pinhom
+  Pinhom.vertices()
+#+end_src
+
+#+RESULTS:
+#+begin_example
+A 8-dimensional polyhedron in QQ^8 defined as the convex hull of 22 vertices, 24 rays, 1 line (use the .plot() method to plot)
+(A vertex at (2538/1375, 91319/6000, 147683/22000, 149443/22000, 0, 515003/33000, 417627/22000, -3830329/66000),
+ A vertex at (3417/1780, 66299/8900, 185939/97900, 193771/97900, 0, 1/2, 101033/8900, -178321/8900),
+ A vertex at (3251/840, 5959/525, 1608/1925, 1762/1925, 0, 1/2, -123/350, 2638/175),
+ A vertex at (1917/850, 2761/340, 777/400, 809/400, 0, 1/2, 4731/400, -1717/80),
+ A vertex at (-711/80, 557/32, -18467/4000, -18147/4000, 0, 1/2, 73547/4000, -59613/4000),
+ A vertex at (310497/91000, 118688/11375, 146779/22750, 148599/22750, 0, 1388487/91000, 8921/520, -1187673/22750),
+ A vertex at (129447/23800, 86203/5950, 395547/47600, 79871/9520, 0, 491783/23800, 203523/9520, -3345259/47600),
+ A vertex at (-23769/11200, -3553/5600, -18467/4000, -18147/4000, 0, 1/2, 650803/56000, 87849/28000),
+ A vertex at (5583/3800, 13339/1520, 777/400, 809/400, 0, 1/2, 4731/400, -1717/80),
+ A vertex at (-1559/1950, 24959/2340, -15332/2925, 91943/3900, 0, 1/2, 222437/11700, -167759/3900),
+ A vertex at (-502993/79200, 2163787/79200, 51643/4950, 52039/4950, 0, 1/2, 648467/26400, -525091/8800),
+ A vertex at (-23769/11200, -3553/5600, -47987/3600, 218269/7200, 0, 1/2, 2049713/100800, -1598407/50400),
+ A vertex at (129447/23800, 86203/5950, -3901/3500, 1090723/29750, 0, 491783/23800, 3665539/119000, -2931913/29750),
+ A vertex at (-14629/1100, 4243/50, 5553/1100, 20938/275, 0, 36603/550, 33477/550, -64524/275),
+ A vertex at (45099/11000, 32477/2750, 92233/5500, 92673/5500, 0, 319167/11000, 294643/11000, -130422/1375),
+ A vertex at (294909/133000, 267487/33250, -3901/3500, 413139/16625, 0, 1605609/133000, 562273/26600, -1013568/16625),
+ A vertex at (-711/80, 557/32, -47987/3600, 218269/7200, 0, 1/2, 97559/3600, -358237/7200),
+ A vertex at (1917/850, 2761/340, -15899/2125, 257513/8500, 0, 1/2, 180641/8500, -422753/8500),
+ A vertex at (1048/1125, 24629/4500, -6251/1125, 64361/2700, 0, 1/2, 25921/1500, -18911/500),
+ A vertex at (1048/1125, 24629/4500, 51643/4950, 52039/4950, 0, 1/2, 25921/1500, -18911/500),
+ A vertex at (-140033/44000, 134629/4000, 92233/5500, 92673/5500, 0, 319167/11000, 1499001/44000, -5134791/44000),
+ A vertex at (-36837/195800, 34786/2225, -7949/19580, 1200913/48950, 0, 2495187/195800, 4668251/195800, -3414231/48950))
+#+end_example
 
 
 
