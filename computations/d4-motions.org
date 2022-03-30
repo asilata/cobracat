@@ -1,8 +1,7 @@
 # Last updated: [2022-03-28 Mon]
+#+property: header-args:sage :session foo
 
-This is a possible example of a spherical object whose support does not admit an expansive motion.
-But it's not. 
-It just means that the "resolution" of the expansive motions into 6 element states was incorrect.
+* Basic setup for D4
 
 Basic setup for D4
 #+begin_src sage :session foo
@@ -77,6 +76,8 @@ HN filtrations
 
 #+RESULTS:
 
+* A stability condition
+
 A particular stability condition (P1, P2, P3) are on the left and P4 is far to the right and long.
 
 #+begin_src sage :session foo
@@ -102,6 +103,11 @@ See https://trac.sagemath.org/27014 for details.
  [0]: P1<0> :[0]]
 #+end_example
 
+* A weird example
+This is a possible example of a spherical object whose support does not admit an expansive motion.
+But it's not. 
+It just means that the "resolution" of the expansive motions into 6 element states was incorrect.
+
 An object
 #+begin_src sage :session foo
   X = s1(t4(t3(t2(t4(P1)))))
@@ -109,8 +115,26 @@ An object
 #+end_src
 
 #+RESULTS:
+: <string>:136: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
+: See https://trac.sagemath.org/27014 for details.
 : <string>:40: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
 : See https://trac.sagemath.org/27014 for details.
 : [[2]: P1<2>+P2<2>+P3<2> → P4<3> :[3],
 :  [0]: P1<0> → P4<1> :[1],
 :  [-1]: P1<-2> :[-1]]
+
+* More HN filtrations
+#+begin_src sage
+  X = s4(s3(t1(t2(s4(P1)))))
+  HN(X,stab)
+#+end_src
+
+#+RESULTS:
+: <string>:40: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
+: See https://trac.sagemath.org/27014 for details.
+: [[1]: P1<2> :[1],
+:  [0]: P4<1> :[0],
+:  [0]: P1<0> :[0],
+:  [0]: P2<0> :[0],
+:  [-2]: P3<-2> → P4<-1> :[-1],
+:  [-1]: P4<-1> :[-1]]
