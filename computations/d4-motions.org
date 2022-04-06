@@ -586,14 +586,14 @@ We now plot states.  We first record the classes of the objects.
             return sum([arrow(t * vector(ambient_basis[j]) * central_charge_euclidean, s * vector(ambient_basis[i]) * central_charge_euclidean, color=color, width=1,arrowsize=5) for ((s,i), (t,j)) in roots_as_differences[xclass]])
     
     def plot_state(state):
-            return sum([plot_object(x, color=r) for (x,r) in zip(state, rainbow(12))])
+            return sum([plot_object(x, color=r) for (x,r) in zip(state, rainbow(6))])
     
     
     (plot_state(states[0]) + central_charge_plot).show(axes=False)
 #+end_src
 
 #+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_mtx7t3e4.png]]
+[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_2wid_yd5.png]]
 
 ** Expansive motion of a state
 #+begin_src sage 
@@ -637,166 +637,6 @@ We now plot states.  We first record the classes of the objects.
   V = matrix([[v[0],v[1]],[v[2],v[3]],[v[4],v[5]],[v[6],v[7]]])
   [(plot_state(s) + central_charge_plot).show(aspect_ratio=1, axes=False) for s in states]
 #+end_src
-
-#+RESULTS:
-#+begin_example
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_lzexqhkv.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_l23f7m24.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_6z5w06_9.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_hq4slj_s.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_453qt83h.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_r_lnqywl.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_s_9io_g2.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_saho2yl_.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_n4fdnchh.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_tswnfipx.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_s6r37yz2.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_abzcsnb4.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_36j_ihvq.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_uj8mcfzf.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_bucdz83p.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_stfznxnv.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_f73yvbcx.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_k5cbz6m4.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_l5r67k2i.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_j87vu07j.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_rx8ppt7g.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_905ftz5g.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_2n2dmi5w.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_3vj2ooe4.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_nom541oy.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_9n7v1z7k.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_1mdzmhld.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp__b7oeofi.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_m2o6juw0.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_e25h98d6.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_wv6rli91.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_ooas2itg.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_s48ijn4u.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_b76f6j0y.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_hsnzeete.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_9s9xefk1.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_sjmpk2m1.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_01uudnnk.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_93ncto_p.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_3jeu7erc.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_3qzcnltj.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_omw7r_un.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_rs8ejg43.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_x1ot82ak.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_kmciakw7.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_e_5wnzvb.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_h4y1m0d1.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_n8vd40fq.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_sq8fhr83.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_af6qa6bx.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_w5ykikg2.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_laxolrr3.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_ywn9vzkk.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_81ziaxip.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_oqtik_si.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_609vu5js.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_uxm03jh_.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_rxhs8urj.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_8tteuymy.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_22p_hkt7.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_7oy66c64.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_1zq2vn2l.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_fs628wcj.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_nwvzklou.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_ojttba0x.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_xatfiiev.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_fdiohgr9.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_r2bv0z_k.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_kr7z750l.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_t76fpgrp.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_izzai8jw.png]]
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_38r5gvor.png]]
-/home/anandrd/.sage/temp/proteus/431515/tmp_y31exezp.png
-/home/anandrd/.sage/temp/proteus/431515/tmp_judh1p3u.png
-/home/anandrd/.sage/temp/proteus/431515/tmp_v2rwrqk4.png
-/home/anandrd/.sage/temp/proteus/431515/tmp_vbja07gf.png
-/home/anandrd/.sage/temp/proteus/431515/tmp_txhcsdfm.png
-/home/anandrd/.sage/temp/proteus/431515/tmp_0ohlcl3q.png
-[None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None,
- None]
-#+end_example
 
 #+begin_src sage
   states[7]
