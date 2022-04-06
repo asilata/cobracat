@@ -58,13 +58,11 @@ def t3(C):
 def t4(C):
     return t(4, C)
 
-R = RootSystem(['D',4])
+R = RootSystem(CartanType(['D',4]).relabel({1:1,2:4,4:2,3:3}))
 R.root_lattice().dynkin_diagram()
 
 central_charge = matrix([[-3,1],[-2,1], [-1,1],[7,0]])
 
 change_of_basis = matrix([vector(R.ambient_space()(v)) for v in R.root_lattice().simple_roots()])
-change_of_basis
 
 central_change_euclidean = change_of_basis.inverse() * central_charge
-central_change_euclidean

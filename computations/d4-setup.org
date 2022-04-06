@@ -65,17 +65,17 @@
 
 * Root system and the Euclidean embedding
 #+begin_src sage
-  R = RootSystem(['D',4])
+  R = RootSystem(CartanType(['D',4]).relabel({1:1,2:4,4:2,3:3}))
   R.root_lattice().dynkin_diagram()
 #+end_src
 
 #+RESULTS:
-:     O 4
+:     O 2
 :     |
 :     |
 : O---O---O
-: 1   2   3   
-: D4
+: 1   4   3   
+: D4 relabelled by {1: 1, 2: 4, 3: 3, 4: 2}
 
 We will usually define the central charge in the basis given by the simple roots.
 #+begin_src sage

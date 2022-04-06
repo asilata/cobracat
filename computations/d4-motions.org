@@ -8,6 +8,9 @@ Basic setup for D4
   load("d4-setup.sage")
 #+end_src
 
+#+RESULTS:
+: Defining e_1, e_2, e_3, e_4, a, b, c, d, e, f, fa, db, ec, af
+
 HN filtrations
 #+begin_src sage 
   load("../HN.sage")
@@ -293,14 +296,10 @@ This give two possibilities, but one is suspicious.  So we believe the following
 * All  the states in a particular stability condition.
 #+begin_src sage
   central_charge = matrix([[-3,1],[-2,1], [-1,1],[7,0]])
-  central_change_euclidean = change_of_basis.inverse() * central_charge
+  central_charge_euclidean = change_of_basis.inverse() * central_charge
 #+end_src
 
 #+RESULTS:
-: [  -2  5/2]
-: [   1  3/2]
-: [   3  1/2]
-: [   4 -1/2]
 
 Notation:
 X1 = P1
@@ -549,11 +548,12 @@ sphericals.connected_component()
 ** Visualizing a state
 We first draw the central charge.
 #+begin_src  sage :results file
-  central_charge_plot = sum([point(central_change_euclidean.rows()[i], color='blue') for i in range(0,4)]) + sum([point(-1*central_change_euclidean.rows()[i], color='red') for i in range(0,4)]) + point((0,0), color='black')
+  central_charge_plot = sum([point(central_charge_euclidean.rows()[i], color='blue', size=100) for i in range(0,4)]) + sum([point(-1*central_charge_euclidean.rows()[i], color='red', size=100) for i in range(0,4)]) + point((0,0), color='black', size=100)
+  central_charge_plot
 #+end_src
 
 #+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/402480/tmp_d18myl12.png]]
+[[file:/home/anandrd/.sage/temp/proteus/402480/tmp_gv55wh6_.png]]
 
 We now plot states.  We first record the classes of the objects.
 #+begin_src  sage
@@ -579,20 +579,75 @@ We now plot states.  We first record the classes of the objects.
       roots_as_differences = {r : root_as_difference(r) for r in classes.values()}
   #+end_src
 
+  #+RESULTS:
+
   
   We now plot an object.
   #+begin_src sage :results file
     ambient_basis =   R.ambient_space().basis()
     def plot_object(x, color='blue'):
             xclass = classes[x]
-            return sum([arrow(t * vector(ambient_basis[j]) * central_change_euclidean, s * vector(ambient_basis[i]) * central_change_euclidean, linestyle='dashed', color=color) for ((s,i), (t,j)) in roots_as_differences[xclass]])
+            return sum([arrow(t * vector(ambient_basis[j]) * central_charge_euclidean, s * vector(ambient_basis[i]) * central_charge_euclidean, color=color, width=1,arrowsize=2) for ((s,i), (t,j)) in roots_as_differences[xclass]])
     
     def plot_state(state):
             return sum([plot_object(x, color=r) for (x,r) in zip(state, rainbow(6))])
-
-    plot_state(states[0])
+    
+    
+    (plot_state(states[0]) + central_charge_plot).show(axes=False)
 #+end_src
 
 #+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/402480/tmp_dzcq_zt7.png]]
+[[file:/home/anandrd/.sage/temp/proteus/402480/tmp_jodegujj.png]]
+** Expansive motion of a state
+#+begin_src sage :results file
+  def expansive_motion(state):
+      vvars = var('v01','v02','v11','v12','v21','v22','v31', 'v32')
+      positive_roots = R.root_lattice().positive_roots()
+      V = matrix([[v01,v02],[v11,v12],[v21,v22],[v31,v32]])
+      equations = []
+      inequations = []
+      for r in positive_roots:
+          ramb = vector(R.ambient_space()(r))
+          v = (ramb*V).dot_product(ramb*central_charge_euclidean)
+          inequations.append(vector([0]+[v.coefficient(variable) for variable in vvars]))
+  
+      for x in state:
+           r = classes[x]
+           ramb = vector(R.ambient_space()(r))
+           v = (ramb*V).dot_product(ramb*central_charge_euclidean)
+           equations.append(vector([0]+[v.coefficient(variable) for variable in vvars]))
+  
+      P = Polyhedron(ieqs = [vector(QQ, v) for v in inequations] + [vector(QQ, v) for v in equations] + [-1*vector(QQ, v) for v in equations])
+      return P
+  
+  def plot_motion(V):
+      rays = []
+      for i in range(0,4):
+          base = vector(ambient_basis[i]) * central_charge_euclidean
+          direction = vector(ambient_basis[i]) * V
+          rays.append(arrow(base, base+direction, width=0.5, arrowsize=2, linestyle='dotted'))
+          base = -vector(ambient_basis[i]) * central_charge_euclidean
+          direction = -vector(ambient_basis[i]) * V
+          rays.append(arrow(base, base+direction, color='red', width=0.5, arrowsize=1, linestyle='dotted'))
+      return sum(rays)
+  i = 11
+  P = expansive_motion(states[i])
+  v = vector(P.rays()[0])/10 + 0.18 * vector(P.lines()[0])
+  V = matrix([[v[0],v[1]],[v[2],v[3]],[v[4],v[5]],[v[6],v[7]]])
+  (plot_state(states[i]) + plot_motion(V) + central_charge_plot).show(aspect_ratio=1, axes=False)
+#+end_src
 
+#+RESULTS:
+[[file:/home/anandrd/.sage/temp/proteus/402480/tmp_nzwklppu.png]]
+
+#+begin_src sage
+  [classes[x] for x in states[11]]
+#+end_src
+
+#+RESULTS:
+: [alpha[4],
+:  alpha[2],
+:  alpha[1],
+:  alpha[1] + alpha[4],
+:  alpha[3] + alpha[4],
+:  alpha[1] + alpha[3] + alpha[4]]
