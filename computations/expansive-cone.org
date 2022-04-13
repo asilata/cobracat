@@ -267,15 +267,17 @@ NOTE: This does not work.
 
 #+RESULTS:
 
-** Resolving rigid components via crossing pairs
+** CANCELLED Resolving rigid components via crossing pairs
+- Note taken on [2022-03-30 Wed 12:19] \\
+  This does not work for reasons that are as yet mysterious. In particular, while it does produce the expected number (42) of 6-element states, these are not actually HN supports of spherical objects.
+  
 Let us find crossing pairs in a state as follows: take \(2\)-element subsets of the state that appear together in no other state except one (namely the external flip of the external edge).
 #+begin_src sage
   def crossing_pairs(s):
       for pair in itertools.combinations(s,2):
-          for t in collapsed_states:
-              containers = [t for t in collapsed_states if set(pair).issubset(t) if s != t]
-              if len(containers) == 1:
-                  return pair
+          containers = [t for t in collapsed_states if set(pair).issubset(t) if s != t]
+          if len(containers) == 1:
+              return pair
       return None
 #+end_src
 
@@ -294,8 +296,6 @@ Given a collapsed state, now produce states from it by removing one element of a
   states_list = [collapsed_state_to_states(t) for t in collapsed_states]
   all_states = [item for sl in states_list for item in sl]
 #+end_src
-
-#+RESULTS:
 
 #+begin_src sage
   [y for y in collapsed_states if r1 + r2 + r3 + rx in y if r1 + rx in y if r1 in y]
@@ -392,6 +392,44 @@ In Figure ref:cpg we plot the graph of crossing pairs. This connects two roots i
 #+caption: The graph of crossing edges in the rigid components. label:cpg
 #+RESULTS: crossing_pairs_graph
 [[file:/home/asilata/.sage/temp/peanut/45179/tmp_lpuhd6nd.png]]
+
+** Resolving rigid components via incompatible pairs
+Let us find compatible/incompatible pairs in a state as follows: take \(2\)-element subsets of a 7-element state that appear together in some 6-element state.
+If they do, declare them compatible.
+Otherwise, incompatible
+#+begin_src sage
+  def compatible_pairs(s):
+      compatibles = []
+      for pair in itertools.combinations(s,2):
+          containers = [t for t in collapsed_states if len(t) == 6 if set(pair).issubset(t)]
+          if len(containers) > 0:
+              compatibles.append(pair)
+      return compatibles
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  compatibility_graph = Graph()
+  for s in [x for x in collapsed_states]:
+      compats = compatible_pairs(s)
+      for t in compats:
+          compatibility_graph.add_edge(t[0],t[1])
+  compatibility_graph.is_true()
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  for s in collapsed_states:
+      if len(s) == 7 and r1 in s and r2 in s and r3 in s and r1 + r2 + r3 + rx in s:
+          print(s)
+#+end_src
+
+#+RESULTS:
+: [r1, r2, r3 + rx, r1 + r3 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx, r3]
+: [r2, r3, r1 + rx, r1 + r2 + rx, r1 + r3 + rx, r1 + r2 + r3 + rx, r1]
+: [r2, r1, r3, r2 + rx, r1 + r2 + rx, r2 + r3 + rx, r1 + r2 + r3 + rx]
 
 ** Test computation for a single extremal ray
 #+begin_src sage
