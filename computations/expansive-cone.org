@@ -1,5 +1,6 @@
 #+title: Expansive cone calculations
 #+author: Asilata Bapat and Anand Deopurkar and Anthony M. Licata
+#+property: header-args:sage :session foo
 
 * Preconfiguration                                                 :noexport:
 ** Startup
@@ -13,7 +14,7 @@
 
 * The \(D_{4}\) case
 Our first example is the \(D_{4}\) case.
-#+begin_src dot :cmd neato :file d4.svg :results file
+# #+begin_src dot :cmd neato :file d4.svg :results file
   graph {
       1 -- x;
       2 -- x;
@@ -146,7 +147,7 @@ First we draw the stability condition we have constructed.
 #+end_src
 
 #+RESULTS:
-[[file:/home/asilata/.sage/temp/peanut/45179/tmp_mcgvttdl.png]]
+[[file:/home/anandrd/.sage/temp/proteus/284357/tmp_bfk41_gr.png]]
 
 Next we compute the rigid components for each of the extremal rays of the polyhedron \(P\).
 #+begin_src sage :exports both
@@ -236,6 +237,16 @@ Next we compute the rigid components for each of the extremal rays of the polyhe
   r1 + r2 + r3 + rx,
   r1 + r3 + rx]]
 #+end_example
+
+*** Testing whether some supports lie in the states
+#+begin_src sage
+  [s for s in collapsed_states if r1 in s and rx in s and r2 in s and r3+rx in s]
+#+end_src
+
+#+RESULTS:
+: [[r2, r1, r3, rx, r1 + rx, r3 + rx, r1 + r3 + rx],
+:  [r2, r3, rx, r2 + rx, r3 + rx, r2 + r3 + rx, r1],
+:  [r1, r2, rx, r1 + rx, r2 + rx, r1 + r2 + rx, r3 + rx]]
 
 ** CANCELLED Imposing rigidity equations to resolve rigid components
 Let us write down the "rigidity equations". These are equations that specify, for each root, that the length of that root does not change under a given motion.
@@ -347,7 +358,7 @@ These are precisely all the other states whose intersection with the current sta
 #+attr_latex: :width 0.7\textwidth
 #+caption: The flip graph of states.
 #+RESULTS: state_graph
-[[file:/home/asilata/.sage/temp/peanut/45179/tmp_qs_dsddk.png]]
+[[file:/home/anandrd/.sage/temp/proteus/284357/tmp_icff_t8w.png]]
 
 We compute the "flip graph", which connects two roots if and only if one flips to the other in some pair of adjacent states.
 #+begin_src sage :results silent
@@ -370,7 +381,7 @@ We compute the "flip graph", which connects two roots if and only if one flips t
 #+end_src
 
 #+RESULTS:
-[[file:/home/asilata/.sage/temp/peanut/45179/tmp_n3okoc0h.png]]
+[[file:/home/anandrd/.sage/temp/proteus/284357/tmp_9qy8a33e.png]]
 
 In Figure ref:cpg we plot the graph of crossing pairs. This connects two roots if and only if they both appear as the constituents of a crossing pair in one of the collapsed states (aka rigid components).
 #+begin_src sage
@@ -391,7 +402,7 @@ In Figure ref:cpg we plot the graph of crossing pairs. This connects two roots i
 
 #+caption: The graph of crossing edges in the rigid components. label:cpg
 #+RESULTS: crossing_pairs_graph
-[[file:/home/asilata/.sage/temp/peanut/45179/tmp_lpuhd6nd.png]]
+[[file:/home/anandrd/.sage/temp/proteus/284357/tmp_n6q878yc.png]]
 
 ** Resolving rigid components via incompatible pairs
 Let us find compatible/incompatible pairs in a state as follows: take \(2\)-element subsets of a 7-element state that appear together in some 6-element state.
@@ -450,18 +461,18 @@ Otherwise, incompatible
 
 #+RESULTS:
 #+begin_example
-[(r1, (-3, 8), 1/5*sqrt(73)*sqrt(5), 14),
+[(r1, (-3, 18), 3/5*sqrt(37)*sqrt(5), 24),
  (r2, (0, 0), 0, 0),
  (r3, (2, 1), 1, 0),
- (rx, (3, -8), 1/101*sqrt(101)*sqrt(73), 22),
+ (rx, (3, -18), 3/401*sqrt(401)*sqrt(37), 42),
  (r1 + rx, (0, 0), 0, 0),
- (r2 + rx, (3, -8), 1, 0),
- (r3 + rx, (5, -7), 1/30*sqrt(74)*sqrt(10), 24),
+ (r2 + rx, (3, -18), 1, 0),
+ (r3 + rx, (5, -17), 1/370*sqrt(370)*sqrt(314), 44),
  (r1 + r2 + rx, (0, 0), 0, 0),
- (r1 + r3 + rx, (2, 1), 1/65*sqrt(65)*sqrt(5), 18),
- (r2 + r3 + rx, (5, -7), 1, 0),
- (r1 + r2 + r3 + rx, (2, 1), 1/61*sqrt(61)*sqrt(5), 16),
- (r1 + r2 + r3 + 2*rx, (5, -7), 1/274*sqrt(274)*sqrt(74), 26)]
+ (r1 + r3 + rx, (2, 1), 1/305*sqrt(305)*sqrt(5), 38),
+ (r2 + r3 + rx, (5, -17), 1, 0),
+ (r1 + r2 + r3 + rx, (2, 1), 1/87*sqrt(29)*sqrt(5), 36),
+ (r1 + r2 + r3 + 2*rx, (5, -17), 1/182*sqrt(314)*sqrt(26), 56)]
 #+end_example
 
 
@@ -474,7 +485,7 @@ Otherwise, incompatible
 #+end_src
 
 #+RESULTS:
-[[file:/home/asilata/.sage/temp/peanut/45179/tmp_asljrhmp.png]]
+[[file:/home/anandrd/.sage/temp/proteus/284357/tmp__3hrv64h.png]]
 
 * Self-stresses for an arbitrary root system
 Let \(\Delta^+\) be the set of positive (real) roots of some root system.
@@ -546,28 +557,28 @@ Naively, if \(\alpha = e_i \pm e_j\), set
 #+RESULTS:
 #+begin_example
 A 8-dimensional polyhedron in QQ^8 defined as the convex hull of 22 vertices, 24 rays, 1 line (use the .plot() method to plot)
-(A vertex at (2538/1375, 91319/6000, 147683/22000, 149443/22000, 0, 515003/33000, 417627/22000, -3830329/66000),
- A vertex at (3417/1780, 66299/8900, 185939/97900, 193771/97900, 0, 1/2, 101033/8900, -178321/8900),
- A vertex at (3251/840, 5959/525, 1608/1925, 1762/1925, 0, 1/2, -123/350, 2638/175),
- A vertex at (1917/850, 2761/340, 777/400, 809/400, 0, 1/2, 4731/400, -1717/80),
- A vertex at (-711/80, 557/32, -18467/4000, -18147/4000, 0, 1/2, 73547/4000, -59613/4000),
- A vertex at (310497/91000, 118688/11375, 146779/22750, 148599/22750, 0, 1388487/91000, 8921/520, -1187673/22750),
- A vertex at (129447/23800, 86203/5950, 395547/47600, 79871/9520, 0, 491783/23800, 203523/9520, -3345259/47600),
- A vertex at (-23769/11200, -3553/5600, -18467/4000, -18147/4000, 0, 1/2, 650803/56000, 87849/28000),
- A vertex at (5583/3800, 13339/1520, 777/400, 809/400, 0, 1/2, 4731/400, -1717/80),
- A vertex at (-1559/1950, 24959/2340, -15332/2925, 91943/3900, 0, 1/2, 222437/11700, -167759/3900),
- A vertex at (-502993/79200, 2163787/79200, 51643/4950, 52039/4950, 0, 1/2, 648467/26400, -525091/8800),
- A vertex at (-23769/11200, -3553/5600, -47987/3600, 218269/7200, 0, 1/2, 2049713/100800, -1598407/50400),
- A vertex at (129447/23800, 86203/5950, -3901/3500, 1090723/29750, 0, 491783/23800, 3665539/119000, -2931913/29750),
- A vertex at (-14629/1100, 4243/50, 5553/1100, 20938/275, 0, 36603/550, 33477/550, -64524/275),
- A vertex at (45099/11000, 32477/2750, 92233/5500, 92673/5500, 0, 319167/11000, 294643/11000, -130422/1375),
- A vertex at (294909/133000, 267487/33250, -3901/3500, 413139/16625, 0, 1605609/133000, 562273/26600, -1013568/16625),
- A vertex at (-711/80, 557/32, -47987/3600, 218269/7200, 0, 1/2, 97559/3600, -358237/7200),
- A vertex at (1917/850, 2761/340, -15899/2125, 257513/8500, 0, 1/2, 180641/8500, -422753/8500),
- A vertex at (1048/1125, 24629/4500, -6251/1125, 64361/2700, 0, 1/2, 25921/1500, -18911/500),
- A vertex at (1048/1125, 24629/4500, 51643/4950, 52039/4950, 0, 1/2, 25921/1500, -18911/500),
- A vertex at (-140033/44000, 134629/4000, 92233/5500, 92673/5500, 0, 319167/11000, 1499001/44000, -5134791/44000),
- A vertex at (-36837/195800, 34786/2225, -7949/19580, 1200913/48950, 0, 2495187/195800, 4668251/195800, -3414231/48950))
+(A vertex at (-1067571/308000, 2871371/22000, 731993/30800, 771417/30800, 0, 405259/2464, 1434057/61600, -4725381/15400),
+ A vertex at (-1457/975, -1949/780, -489857/27300, -454913/27300, 0, 361/200, 132427/54600, 1504939/13650),
+ A vertex at (3577799/184800, 144923/3696, 731993/30800, 771417/30800, 0, 405259/2464, 1434057/61600, -4725381/15400),
+ A vertex at (-6639601/273000, 12122207/136500, -489857/27300, -454913/27300, 0, 361/200, 132427/54600, 1504939/13650),
+ A vertex at (-8683/1800, -4121/450, 2761/6300, 433/252, 0, 361/200, 218471/12600, -44801/2100),
+ A vertex at (-18027361/1577000, 3774943/157700, -3851/9500, 8309/9500, 0, 361/200, 11155791/1577000, 272487/15770),
+ A vertex at (-1211627/98800, 501133/12350, -462861/19760, 1147929/12350, 0, 361/200, 781119/98800, 15777/24700),
+ A vertex at (-2451521/155800, 8569777/77900, 1427959/90200, 308683/18040, 0, 361/200, 93297/8200, -141027/2050),
+ A vertex at (-2451521/155800, 8569777/77900, -358386/13325, 8654967/53300, 0, 361/200, 93297/8200, -141027/2050),
+ A vertex at (16163947/1760000, 16595147/880000, 18086139/880000, 19212539/880000, 0, 173524899/1760000, 32489217/1760000, -18518337/88000),
+ A vertex at (1457069/166000, 1497739/83000, -9713/5000, 1572651/16600, 0, 67998321/830000, 14309343/830000, -7720803/41500),
+ A vertex at (-2089/160, 443621/2800, 1217/700, 41787/280, 0, 845031/5600, 224487/5600, -31977/80),
+ A vertex at (-118133/31400, -5522/785, -8287/494550, 624737/494550, 0, 361/200, 14197669/1978200, 7526413/494550),
+ A vertex at (-1457/975, -1949/780, -11594621/491400, 23677733/245700, 0, 361/200, 1984519/245700, -170762/61425),
+ A vertex at (-899513/462000, 366921/5500, 598513/28875, 635473/28875, 0, 47210479/462000, 2883299/154000, -1660847/7700),
+ A vertex at (-25231/6280, 1149479/15700, -257/785, 1418643/15700, 0, 2735313/31400, 553257/31400, -1520019/7850),
+ A vertex at (321583/27500, 656641/27500, 1144971/27500, 1180171/27500, 0, 5541201/27500, 178677/6875, -496413/1375),
+ A vertex at (321583/27500, 656641/27500, -9713/5000, 5973741/27500, 0, 5541201/27500, 178677/6875, -496413/1375),
+ A vertex at (-97461/10450, -379603/20900, -3851/9500, 8309/9500, 0, 361/200, 103853/20900, 310256/5225),
+ A vertex at (-97461/10450, -379603/20900, -1838501/41800, 3661393/20900, 0, 361/200, 103853/20900, 310256/5225),
+ A vertex at (1398789/205000, 724507/51250, 1427959/90200, 308683/18040, 0, 361/200, 93297/8200, -141027/2050),
+ A vertex at (1398789/205000, 724507/51250, -358386/13325, 8654967/53300, 0, 361/200, 93297/8200, -141027/2050))
 #+end_example
 
 

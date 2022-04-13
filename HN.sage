@@ -86,3 +86,17 @@ def mass(ob, stab, stableMasses, q=1):
         index = [str(s) for s in stab].index(str(stdStable))
         m = m + stableMasses[index]*(q**level)
     return m
+
+# Return the support of the given stable object
+def support(ob, stab):
+    hn = HN(ob, stab)
+    m = 0
+    support = []
+    for o in hn:
+        (it,i) = twistShift(o, stab)
+        level = i - it
+        stdStable = internalTwist(o,-it).shift(i)
+        index = [str(s) for s in stab].index(str(stdStable))
+        if index not in support:
+                support = support + [index]
+    return set(support)
