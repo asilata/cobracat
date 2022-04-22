@@ -29,8 +29,8 @@ A particular stability condition (P1, P2, P3) are on the left and P4 is far to t
   
 The actual stability condition
 #+begin_src sage :results silent
-    stab = [P4, s1(P4), s3(P4), s2(P4), internalTwist(t4(t1(t2(t3(P4)))),-2).shift(2), s1(s3(P4)), s1(s2(P4)), s1(s3(P4)), s1(s2(s3(P4))), P3, P2, P1]
-    stabclasses = [rx, r1+rx, r3+rx, r2+rx, r3+r2+r1+2*rx, r1+r3+rx, r1+r2+rx, r1+r3+rx, r1+r2+r3+rx, r3, r2, r1]
+  stab = [P4, s1(P4), s3(P4), s2(P4), internalTwist(t4(t1(t2(t3(P4)))),-2).shift(2), s1(s3(P4)), s1(s2(P4)), s2(s3(P4)), s1(s2(s3(P4))), P3, P2, P1]
+  stabclasses = [rx, r1+rx, r3+rx, r2+rx, r3+r2+r1+2*rx, r1+r3+rx, r1+r2+rx, r2+r3+rx, r1+r2+r3+rx, r3, r2, r1]
 #+end_src
 
 * A weird example
@@ -152,6 +152,8 @@ Testing various objects
   len(states)
 #+end_src
 #+RESULTS:
+: <string>:136: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
+: See https://trac.sagemath.org/27014 for details.
 : <string>:40: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
 : See https://trac.sagemath.org/27014 for details.
 : [r1 + rx, r3 + rx, r2 + rx, r1 + r2 + r3 + 2*rx, r1 + r2 + rx]
@@ -190,6 +192,20 @@ So the following state is real.
   print(states)
   len(states)
 #+end_src
+
+#+RESULTS:
+: <string>:40: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
+: See https://trac.sagemath.org/27014 for details.
+: [rx, r1 + rx, r1 + r2 + rx, r3, r2, r1]
+: [[r1, r2, rx, r1 + rx, r2 + rx, r1 + r2 + rx, r3]]
+: 1
+
+#+begin_src sage :results file
+central_charge_plot
+#+end_src
+
+#+RESULTS:
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_w3p269n7.png]]
 
 So the following state is real.
 #+RESULTS:
@@ -459,18 +475,18 @@ Is it a pairwise condition?  Almost but not quite
 
 #+RESULTS:
 #+begin_example
-[{Y3, Y2, B},
- {Y3, B, Y1},
- {Y3, X3, Z3},
- {Y2, B, Y1},
- {Y2, X2, Z2},
- {A, X2, X1},
- {X3, A, X2},
- {C, Z3, Z2},
- {Z1, C, Z3},
+[{X3, Z3, Y3},
+ {X3, X2, A},
  {X3, A, X1},
- {Z1, Y1, X1},
- {Z1, C, Z2}]
+ {Y2, B, Y3},
+ {Y1, B, Y3},
+ {Y2, Y1, B},
+ {X2, A, X1},
+ {Y2, X2, Z2},
+ {C, Z3, Z2},
+ {C, Z3, Z1},
+ {Y1, X1, Z1},
+ {C, Z2, Z1}]
 #+end_example
 
 Is it a pair and triple condition?  No!
@@ -481,15 +497,15 @@ Is it a pair and triple condition?  No!
 #+end_src
 
 #+RESULTS:
-: [{X2, X1, Z2, Z1},
+: [{Y2, X3, X2, Y3},
 :  {Y1, X3, X1, Y3},
-:  {Y1, X2, X1, Y2},
-:  {Z3, X3, X1, Z1},
-:  {Y1, Z2, Z1, Y2},
 :  {X3, X2, Z3, Z2},
-:  {Z3, Z2, Y3, Y2},
+:  {X3, Z3, X1, Z1},
+:  {Y2, Z3, Z2, Y3},
 :  {Y1, Z3, Z1, Y3},
-:  {X3, X2, Y3, Y2}]
+:  {Y2, Y1, X2, X1},
+:  {X2, X1, Z2, Z1},
+:  {Y2, Y1, Z2, Z1}]
 
 Is it a pair and triple and quadruple condition?  
 #+begin_src sage
@@ -544,35 +560,35 @@ sphericals.connected_component()
 ** Visualizing a state
 We first draw the central charge.
 #+begin_src  sage :results file
-  central_charge_plot = sum([point(central_charge_euclidean.rows()[i], color='blue', size=100) for i in range(0,4)]) + sum([point(-1*central_charge_euclidean.rows()[i], color='red', size=100) for i in range(0,4)]) + point((0,0), color='black', size=100)
+  central_charge_plot = sum([point(central_charge_euclidean.rows()[i], color=rainbow(4)[i], legend_label=str(i+1), size=100) for i in range(0,4)]) + sum([point(-1*central_charge_euclidean.rows()[i], color='red', size=100) for i in range(0,4)]) + point((0,0), color='black', size=100)
   central_charge_plot
 #+end_src
 
 #+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_7do4o88h.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_enwb2mxi.png]]
 
 We now plot states.  We first record the classes of the objects.
 #+begin_src  sage
-      alpha = R.root_lattice().simple_roots()
-      classes = {
-          X1 : alpha[1],
-          X2 : alpha[2],
-          X3 : alpha[3],
-          Y1 : alpha[2]+ alpha[3] + alpha[4],
-          Y2 : alpha[1]+ alpha[3] + alpha[4],
-          Y3 : alpha[1]+ alpha[2] + alpha[4],
-          Z1 : alpha[1]+alpha[4],
-          Z2 : alpha[2]+alpha[4],
-          Z3 : alpha[3]+alpha[4],
-          A : alpha[1]+ alpha[2]+ alpha[3] + alpha[4]+alpha[4],
-          B : alpha[4],
-          C : alpha[1]+ alpha[2]+ alpha[3] + alpha[4]
-      }
-      ambient_basis =   R.ambient_space().basis()
-      def root_as_difference(root):
-          return [((s,i),(t,j)) for i in range(0,4) for j in range(0,4) for s in [1,-1] for t in [1,-1] if s*vector(ambient_basis[i]) - t*vector(ambient_basis[j]) == vector(R.ambient_space()(root))]
-  
-      roots_as_differences = {r : root_as_difference(r) for r in classes.values()}
+    alpha = RS.root_lattice().simple_roots()
+    classes = {
+        X1 : alpha[1],
+        X2 : alpha[2],
+        X3 : alpha[3],
+        Y1 : alpha[2]+ alpha[3] + alpha[4],
+        Y2 : alpha[1]+ alpha[3] + alpha[4],
+        Y3 : alpha[1]+ alpha[2] + alpha[4],
+        Z1 : alpha[1]+alpha[4],
+        Z2 : alpha[2]+alpha[4],
+        Z3 : alpha[3]+alpha[4],
+        A : alpha[1]+ alpha[2]+ alpha[3] + alpha[4]+alpha[4],
+        B : alpha[4],
+        C : alpha[1]+ alpha[2]+ alpha[3] + alpha[4]
+    }
+    ambient_basis =   RS.ambient_space().basis()
+    def root_as_difference(root):
+        return [((s,i),(t,j)) for i in range(0,4) for j in range(0,4) for s in [1,-1] for t in [1,-1] if s*vector(ambient_basis[i]) - t*vector(ambient_basis[j]) == vector(RS.ambient_space()(root))]
+    
+    roots_as_differences = {r : root_as_difference(r) for r in classes.values()}
   #+end_src
 
   #+RESULTS:
@@ -580,7 +596,7 @@ We now plot states.  We first record the classes of the objects.
   
   We now plot an object.
   #+begin_src sage :results file
-    ambient_basis =   R.ambient_space().basis()
+    ambient_basis =   RS.ambient_space().basis()
     def plot_object(x, color='blue'):
             xclass = classes[x]
             return sum([arrow(t * vector(ambient_basis[j]) * central_charge_euclidean, s * vector(ambient_basis[i]) * central_charge_euclidean, color=color, width=1,arrowsize=5) for ((s,i), (t,j)) in roots_as_differences[xclass]])
@@ -588,29 +604,28 @@ We now plot states.  We first record the classes of the objects.
     def plot_state(state):
             return sum([plot_object(x, color=r) for (x,r) in zip(state, rainbow(6))])
     
-    
-    (plot_state(states[0]) + central_charge_plot).show(axes=False)
+    plot_state(states[0])
 #+end_src
 
 #+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp_2wid_yd5.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_8o1f7awi.png]]
 
 ** Expansive motion of a state
 #+begin_src sage 
   def expansive_motion(state):
       vvars = var('v01','v02','v11','v12','v21','v22','v31', 'v32')
-      positive_roots = R.root_lattice().positive_roots()
+      positive_roots = RS.root_lattice().positive_roots()
       V = matrix([[v01,v02],[v11,v12],[v21,v22],[v31,v32]])
       equations = []
       inequations = []
       for r in positive_roots:
-          ramb = vector(R.ambient_space()(r))
+          ramb = vector(RS.ambient_space()(r))
           v = (ramb*V).dot_product(ramb*central_charge_euclidean)
           inequations.append(vector([0]+[v.coefficient(variable) for variable in vvars]))
   
       for x in state:
            r = classes[x]
-           ramb = vector(R.ambient_space()(r))
+           ramb = vector(RS.ambient_space()(r))
            v = (ramb*V).dot_product(ramb*central_charge_euclidean)
            equations.append(vector([0]+[v.coefficient(variable) for variable in vvars]))
   
@@ -626,8 +641,8 @@ We now plot states.  We first record the classes of the objects.
           base = -vector(ambient_basis[i]) * central_charge_euclidean
           direction = -vector(ambient_basis[i]) * V
           rays.append(arrow(base, base+direction, color='red', width=0.5, arrowsize=1, linestyle='dotted'))
-      return sum(rays)
-  #+end_src
+      return rays
+    #+end_src
 
 ** Pictures of all the states
 #+begin_src sage
@@ -638,12 +653,181 @@ We now plot states.  We first record the classes of the objects.
   [(plot_state(s) + central_charge_plot).show(aspect_ratio=1, axes=False) for s in states]
 #+end_src
 
-#+begin_src sage
-  states[7]
+#+begin_src sage :results drawer
+  for s in states:
+      [v01, v02, v11, v12, v21, v22, v31, v32] = vector(expansive_motion(s).rays()[0])
+      V = matrix([[v01,v02],[v11,v12],[v21,v22],[v31,v32]])
+      plot_state(s)
+      print([(vector(ambient_basis[i])*V).dot_product(vector(ambient_basis[i])* central_charge_euclidean) for i in range(0,4)])
 #+end_src
 
 #+RESULTS:
-: [B, X3, X1, Z1, Z2, Y3]
+:results:
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_gnxyi6cz.png]]
+[19, 1, 13, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_6z2bxp50.png]]
+[-3/2, 12, 15/2, 3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_v3p7_s81.png]]
+[39/2, 39/2, 3/2, -3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_jxmteqm7.png]]
+[15, -1, 15, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_3rky9k13.png]]
+[9, 15, -1, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_pnc6dls4.png]]
+[1/2, 9/2, 3, -1/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_pfnk1frv.png]]
+[17/2, 0, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_tm8rhedp.png]]
+[9, 13, -1, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_5tnsxwi2.png]]
+[13, 15, 1, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_ql7unyzr.png]]
+[17/2, 0, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_m8crpkxv.png]]
+[9, 13, -1, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_mjzovdij.png]]
+[13, 15, 1, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_jhh3ou1r.png]]
+[209/2, 11/2, 165/2, -11/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_gyoae8_d.png]]
+[45/2, -3/2, 39/2, 3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_lr8vpfcs.png]]
+[11/2, 0, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_dnn0da_n.png]]
+[165/2, -11/2, 143/2, 11/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_1z1jafhk.png]]
+[11/2, 0, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_geox53lz.png]]
+[19, 1, 15, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_gbvnbvcf.png]]
+[0, 77/2, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_ub7gqpo4.png]]
+[1, 9, 5, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_rsynz11t.png]]
+[-1/2, 4, 3, 1/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_phkipw41.png]]
+[0, 7/2, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_6ibp5clr.png]]
+[3/2, 27/2, 15/2, -3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_hi3sgc3d.png]]
+[-1/2, 4, 3, 1/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_o02f_1jp.png]]
+[9, 13, 1, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_p11a3qvc.png]]
+[13, 15, -1, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_dymag_5t.png]]
+[0, 17, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_6uf2n3q5.png]]
+[13, 15, -1, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_89e0f0m2.png]]
+[0, 17, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_o_xgkll0.png]]
+[9, 13, 1, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_oegs1ndv.png]]
+[0, 0, 11/2, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_uxua9w_l.png]]
+[209/2, -11/2, 165/2, 11/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_4vgpqr_f.png]]
+[15, 1, 13, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_haqr21ab.png]]
+[0, 0, 11/2, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_5l344di2.png]]
+[19/2, -1/2, 15/2, 1/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_vnspo6yx.png]]
+[45/2, 3/2, 39/2, -3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_h17dp0h8.png]]
+[-1, 9, 5, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_d5yvz623.png]]
+[11/2, 44, 33, -11/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_fl3qz82v.png]]
+[0, 0, 7, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_hqhqgbvp.png]]
+[1/2, 4, 3, -1/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_9peyrn5h.png]]
+[0, 0, 21/2, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_9_wxj8gf.png]]
+[-3/2, 27/2, 15/2, 3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_ogzhcjhf.png]]
+[13, 15, 1, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_5i4d9404.png]]
+[17/2, 0, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_mbjri7h6.png]]
+[9, 13, -1, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_wkcn80j2.png]]
+[9, 13, -1, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_n282mic7.png]]
+[13, 15, 1, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_3zwhh01d.png]]
+[17/2, 0, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_2g77wwun.png]]
+[45/2, -3/2, 39/2, 3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_7tfe5la_.png]]
+[11/2, 0, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_dpjlb5ar.png]]
+[209/2, 11/2, 165/2, -11/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_j8s5rqbo.png]]
+[209/2, 11/2, 165/2, -11/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_n5l2s0l8.png]]
+[45/2, -3/2, 39/2, 3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_amlgfqg_.png]]
+[11/2, 0, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_fd2rx4mc.png]]
+[-1/2, 4, 3, 1/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_c5r2nvfa.png]]
+[0, 7/2, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_e10gucsi.png]]
+[3/2, 27/2, 15/2, -3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_rs1e6vt1.png]]
+[3/2, 27/2, 15/2, -3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_xu2w_e4d.png]]
+[-1/2, 4, 3, 1/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_tqx_tl2o.png]]
+[0, 7/2, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_dxhm6uny.png]]
+[13, 15, -1, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_b3rt42bs.png]]
+[0, 187/2, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_caqxeahr.png]]
+[9, 13, 1, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_c5exfix7.png]]
+[9, 13, 1, -1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_g8o56uow.png]]
+[13, 15, -1, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_ryaa3cq7.png]]
+[0, 17, 0, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_9lqnld7j.png]]
+[45/2, 3/2, 39/2, -3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_55580z6a.png]]
+[0, 0, 33/2, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_c1qd39ea.png]]
+[19, -1, 15, 1]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_up0c61zh.png]]
+[19/2, -1/2, 15/2, 1/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_quukgac_.png]]
+[45/2, 3/2, 39/2, -3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_x9lxx7kb.png]]
+[0, 0, 11/2, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_62zjcsh8.png]]
+[11/2, 44, 33, -11/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_mc_205tp.png]]
+[0, 0, 21/2, 0]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_bpi6n6kq.png]]
+[-3/2, 27/2, 15/2, 3/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_lfar5avc.png]]
+[-11/2, 99/2, 55/2, 11/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_rbihcguw.png]]
+[1/2, 4, 3, -1/2]
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_hfm0f86r.png
+[0, 0, 21/2, 0]
+:end:
+
+
+#+begin_src  sage :results file
+  plot_state(states[0])
+#+end_src
+
+#+RESULTS:
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_77or25vz.png]]
 
 #+begin_src sage :results file
   (plot_object(Y1) + central_charge_plot).show(axes=False, aspect_ratio=1)
@@ -652,8 +836,47 @@ We now plot states.  We first record the classes of the objects.
 #+RESULTS:
 [[file:/home/anandrd/.sage/temp/proteus/431515/tmp__t2r0dmg.png]]
 
+#+begin_src sage  :results file
+  plot_state([s for s in states if set([X3,Z1,B,Y2,X2]).issubset(set(s)) ][1])
+#+end_src
+
+#+RESULTS:
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_isp9r1_f.png]]
+
+#+begin_src sage :results file
+  plot_state([X1,X2,X3])
+#+end_src
+
+#+RESULTS:
+[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_u0ffhfyd.png]]
+
+
+
+ 
 *** Observations
 1. It is possible to have intersections between edges of the same kind. 
    See state[11], where both B and Y2 appear ([B, X2, X1, Z1, Z3, Y2]).
 2. It is possible to have failure of pointedness.
    See state[1] = [X3, X1, Y3, Y2, Z1, Z2] where Y3, Z2, X3, Y2 create unpointedness at e4.
+
+
+* Squaring
+#+begin_src sage :results file
+  def square(pt):
+      pt2 = (pt[0] + I*pt[1])^2
+      return (real_part(pt2), imag_part(pt2))
+  square_central_charge_plot = sum([point(square(central_charge_euclidean.rows()[i]), color=rainbow(4)[i], legend_label=str(i+1), size=100) for i in range(0,4)]) 
+  square_central_charge_plot
+#+end_src
+
+#+RESULTS:
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_343eekei.png]]
+
+#+begin_src sage :results file
+  plot_state(states[0])
+#+end_src
+
+#+RESULTS:
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_mnwujijh.png]]
+
+
