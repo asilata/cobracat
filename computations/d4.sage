@@ -84,8 +84,8 @@ state = [s2(P4), s1(t2(P4)), s3(P4), P4, s1(P4), t4(s1(t2(t3(P4))))]
 
 # The next part is a root-theoretic calculation for computing cut functionals
 # simples = [var('a'+str(i)) for i in range(1,5)]
-roots = [a1, a1+a4, a1+a2+a4, a2, a1+a2+a3+a4,a1+a3+a4, a1+a2+a3+2*a4, a2+a4, a2+a3+a4, a3, a3+a4, a4]
-cartanMatrix = matrix([[2,0,0,-1],[0,2,0,-1],[0,0,2,-1],[-1,-1,-1,2]])
+# roots = [a1, a1+a4, a1+a2+a4, a2, a1+a2+a3+a4,a1+a3+a4, a1+a2+a3+2*a4, a2+a4, a2+a3+a4, a3, a3+a4, a4]
+# cartanMatrix = matrix([[2,0,0,-1],[0,2,0,-1],[0,0,2,-1],[-1,-1,-1,2]])
 
 def root_to_vec(r):
     return vector([r.coefficient(x) for x in simples])
@@ -310,16 +310,42 @@ def untwist(obj):
     return internalTwist(obj, -it).shift(i)
 
 badPairs = [s[0] for s in doubledEdges(stab)]
-badTriples = [s[0] for s in badChainedTriples(stab)]
+# badTriples = [s[0] for s in badChainedTriples(stab)]
 badPairIndices = [[phase(x, stab)[1] for x in pair] for pair in badPairs]
 
-badTripleIndices = [[phase(x, stab)[1] for x in triple] for triple in badTriples]
-# Note all triples in here are really bad. To be really bad, a triple must be bad in 3 cyclic ways.
-reallyBadTripleIndices = []
-for triple in badTripleIndices:
-    if [triple[1], triple[2], triple[0], triple[1]] in badTripleIndices and [triple[2], triple[0], triple[1], triple[2]] in badTripleIndices:
-        if uniq(sorted(triple)) not in reallyBadTripleIndices:
-            reallyBadTripleIndices.append(uniq(sorted(triple)))
+# badTripleIndices = [[phase(x, stab)[1] for x in triple] for triple in badTriples]
+# # Note all triples in here are really bad. To be really bad, a triple must be bad in 3 cyclic ways.
+# reallyBadTripleIndices = []
+# for triple in badTripleIndices:
+#     if [triple[1], triple[2], triple[0], triple[1]] in badTripleIndices and [triple[2], triple[0], triple[1], triple[2]] in badTripleIndices:
+#         if uniq(sorted(triple)) not in reallyBadTripleIndices:
+#             reallyBadTripleIndices.append(uniq(sorted(triple)))
             
 # maximalStates(range(0,12), badPairIndices, reallyBadTripleIndices)
 # s4(Z)'s HN filtration seems to contradict!
+
+# Collect lots of states
+maximalStates = []
+#X0 = composeAll([s1,s1,t4,t2,t1,s3,s1,s4,t1,t3,t1])(P4)
+X0 = P4
+X = X0
+while True:
+    print("Length of X: " + str(X.maxIndex() - X.minIndex()))
+    if X.maxIndex() - X.minIndex() >= 10:
+        print("Resetting X")
+        X = X0
+
+    twist = [s1,t1,s2,t2,s3,t3,s4,t4][randint(0,7)]
+    X = twist(X)
+    support = HNsupport(X, stab)
+    supportIndices = [i for i in range(0,12) if str(stab[i]) in [str(ob) for ob in support]]
+    if supportIndices not in maximalStates:
+        maximalStates.append(supportIndices)
+        print(supportIndices)
+        f = open('maximalStatesD4.txt','a+')
+        f.write(str(supportIndices))
+        f.close()
+
+            
+
+
