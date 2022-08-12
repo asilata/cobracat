@@ -1,5 +1,5 @@
 # Last updated: [2022-03-28 Mon]
-#+property: header-args:sage :session foo
+#+property: header-args:sage :session foo :eval never-export :exports both
 
 * Basic setup for D4
 
@@ -17,6 +17,8 @@ HN filtrations
 #+end_src
 
 #+RESULTS:
+:results:
+:end:
 
 * A stability condition 
 
@@ -312,6 +314,8 @@ This give two possibilities, but one is suspicious.  So we believe the following
 #+end_src
 
 #+RESULTS:
+:results:
+:end:
 
 Notation:
 X1 = P1
@@ -344,12 +348,14 @@ Type 1
 #+end_src
 
 #+RESULTS:
-: [[X1, X2, Y1, Y3, Z2, Z3],
-:  [X3, X1, Y3, Y2, Z1, Z2],
-:  [X2, X3, Y2, Y1, Z3, Z1],
-:  [X1, X3, Y1, Y2, Z3, Z2],
-:  [X3, X2, Y3, Y1, Z2, Z1],
-:  [X2, X1, Y2, Y3, Z1, Z3]]
+:results:
+[[X1, X2, Y1, Y3, Z2, Z3],
+ [X3, X1, Y3, Y2, Z1, Z2],
+ [X2, X3, Y2, Y1, Z3, Z1],
+ [X1, X3, Y1, Y2, Z3, Z2],
+ [X3, X2, Y3, Y1, Z2, Z1],
+ [X2, X1, Y2, Y3, Z1, Z3]]
+:end:
 
 Type 2
 #+begin_src sage
@@ -358,7 +364,7 @@ Type 2
 #+end_src
 
 #+RESULTS:
-#+begin_example
+:results:
 [[B, X1, X2, Z2, Z3, Y1],
  [B, X3, X1, Z1, Z2, Y3],
  [B, X2, X3, Z3, Z1, Y2],
@@ -395,7 +401,7 @@ Type 2
  [A, Z1, Z3, Y3, Y2, X2],
  [A, Z3, Z2, Y2, Y1, X1],
  [A, Z2, Z1, Y1, Y3, X3]]
-#+end_example
+:end:
 
 Type 3
 #+begin_src sage
@@ -404,7 +410,7 @@ Type 3
 #+end_src
 
 #+RESULTS:
-#+begin_example
+:results:
 [[B, X1, X2, X3, Z1, Y2],
  [B, X1, X2, X3, Z3, Y1],
  [B, X1, X2, X3, Z2, Y3],
@@ -441,13 +447,15 @@ Type 3
  [A, Y1, Y2, Y3, Z1, X3],
  [A, Y1, Y2, Y3, Z3, X2],
  [A, Y1, Y2, Y3, Z2, X1]]
-#+end_example
+:end:
 
 #+begin_src sage
   states = type1_states + type2_states + type3_states
 #+end_src
 
 #+RESULTS:
+:results:
+:end:
 
 All simplices
 #+begin_src sage
@@ -457,13 +465,17 @@ All simplices
  #+end_src
 
  #+RESULTS:
- : [12, 63, 180, 285, 234, 78]
+ :results:
+ [12, 63, 180, 285, 234, 78]
+ :end:
 #+begin_src sage
   12 - 63 + 180 - 285 + 234 - 78
 #+end_src
 
 #+RESULTS:
-: 0
+:results:
+0
+:end:
 
 ** Checking pair/triple/quadruple
 
@@ -565,7 +577,9 @@ We first draw the central charge.
 #+end_src
 
 #+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_enwb2mxi.png]]
+:results:
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_k22fmblk.png]]
+:end:
 
 We now plot states.  We first record the classes of the objects.
 #+begin_src  sage
@@ -592,6 +606,8 @@ We now plot states.  We first record the classes of the objects.
   #+end_src
 
   #+RESULTS:
+  :results:
+  :end:
 
   
   We now plot an object.
@@ -608,7 +624,9 @@ We now plot states.  We first record the classes of the objects.
 #+end_src
 
 #+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_8o1f7awi.png]]
+:results:
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_b3fyc3zq.png]]
+:end:
 
 ** Expansive motion of a state
 #+begin_src sage 
@@ -644,16 +662,12 @@ We now plot states.  We first record the classes of the objects.
       return rays
     #+end_src
 
-** Pictures of all the states
-#+begin_src sage
-  i = 5
-  P = expansive_motion(states[i])
-  v = vector(P.rays()[0])/10 + 0.18 * vector(P.lines()[0])
-  V = matrix([[v[0],v[1]],[v[2],v[3]],[v[4],v[5]],[v[6],v[7]]])
-  [(plot_state(s) + central_charge_plot).show(aspect_ratio=1, axes=False) for s in states]
-#+end_src
+    #+RESULTS:
+    :results:
+    :end:
 
-#+begin_src sage :results drawer
+** Pictures of all the states
+#+begin_src sage :results drawer 
   for s in states:
       [v01, v02, v11, v12, v21, v22, v31, v32] = vector(expansive_motion(s).rays()[0])
       V = matrix([[v01,v02],[v11,v12],[v21,v22],[v31,v32]])
@@ -663,201 +677,163 @@ We now plot states.  We first record the classes of the objects.
 
 #+RESULTS:
 :results:
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_gnxyi6cz.png]]
+file:/home/anandrd/.sage/temp/proteus/10935/tmp_s5d5t4ct.png
 [19, 1, 13, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_6z2bxp50.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp__wq4443s.png]]
 [-3/2, 12, 15/2, 3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_v3p7_s81.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_pepsfte2.png]]
 [39/2, 39/2, 3/2, -3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_jxmteqm7.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_yd5ywzhg.png]]
 [15, -1, 15, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_3rky9k13.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_s2m3e8mf.png]]
 [9, 15, -1, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_pnc6dls4.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp__xwdit5k.png]]
 [1/2, 9/2, 3, -1/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_pfnk1frv.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_x1lkuqa0.png]]
 [17/2, 0, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_tm8rhedp.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_ixrtj_g4.png]]
 [9, 13, -1, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_5tnsxwi2.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_jjt80igb.png]]
 [13, 15, 1, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_ql7unyzr.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_uhwwcut2.png]]
 [17/2, 0, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_m8crpkxv.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_fx2rd301.png]]
 [9, 13, -1, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_mjzovdij.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_ptto6ymn.png]]
 [13, 15, 1, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_jhh3ou1r.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_9t3eqxhp.png]]
 [209/2, 11/2, 165/2, -11/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_gyoae8_d.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_e0vzo2_b.png]]
 [45/2, -3/2, 39/2, 3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_lr8vpfcs.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_pqbfrw_p.png]]
 [11/2, 0, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_dnn0da_n.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_cb6l_fpu.png]]
 [165/2, -11/2, 143/2, 11/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_1z1jafhk.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_ya_oghvj.png]]
 [11/2, 0, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_geox53lz.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_1q23bz4b.png]]
 [19, 1, 15, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_gbvnbvcf.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_yx28qc00.png]]
 [0, 77/2, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_ub7gqpo4.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_jdl46lg9.png]]
 [1, 9, 5, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_rsynz11t.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_o4ntgohj.png]]
 [-1/2, 4, 3, 1/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_phkipw41.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_snyy000l.png]]
 [0, 7/2, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_6ibp5clr.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_2m3o92s7.png]]
 [3/2, 27/2, 15/2, -3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_hi3sgc3d.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_u7u4t6u8.png]]
 [-1/2, 4, 3, 1/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_o02f_1jp.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_kbzv_kdm.png]]
 [9, 13, 1, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_p11a3qvc.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_ehi97w6z.png]]
 [13, 15, -1, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_dymag_5t.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_9emh8orl.png]]
 [0, 17, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_6uf2n3q5.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_m49ngrl7.png]]
 [13, 15, -1, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_89e0f0m2.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_k0sqwc4j.png]]
 [0, 17, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_o_xgkll0.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_z1cgbtut.png]]
 [9, 13, 1, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_oegs1ndv.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_d4y62b8a.png]]
 [0, 0, 11/2, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_uxua9w_l.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_1aucokwc.png]]
 [209/2, -11/2, 165/2, 11/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_4vgpqr_f.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_z2j1lu0d.png]]
 [15, 1, 13, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_haqr21ab.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_ho197ipc.png]]
 [0, 0, 11/2, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_5l344di2.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_4p28pzob.png]]
 [19/2, -1/2, 15/2, 1/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_vnspo6yx.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_w0vareis.png]]
 [45/2, 3/2, 39/2, -3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_h17dp0h8.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_7xnqzbay.png]]
 [-1, 9, 5, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_d5yvz623.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_jh7e8of2.png]]
 [11/2, 44, 33, -11/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_fl3qz82v.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_3jqiql9v.png]]
 [0, 0, 7, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_hqhqgbvp.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_i3sc1an6.png]]
 [1/2, 4, 3, -1/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_9peyrn5h.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_oapovzt1.png]]
 [0, 0, 21/2, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_9_wxj8gf.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_5uk_my8m.png]]
 [-3/2, 27/2, 15/2, 3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_ogzhcjhf.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_9ed66e6q.png]]
 [13, 15, 1, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_5i4d9404.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_stt0ffst.png]]
 [17/2, 0, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_mbjri7h6.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_171x2_ea.png]]
 [9, 13, -1, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_wkcn80j2.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp__mw9d418.png]]
 [9, 13, -1, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_n282mic7.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_eqvitjf7.png]]
 [13, 15, 1, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_3zwhh01d.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_w4sk8shd.png]]
 [17/2, 0, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_2g77wwun.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_ttjwdx1b.png]]
 [45/2, -3/2, 39/2, 3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_7tfe5la_.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_r89dc12n.png]]
 [11/2, 0, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_dpjlb5ar.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_s525q81y.png]]
 [209/2, 11/2, 165/2, -11/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_j8s5rqbo.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_7fqcic7x.png]]
 [209/2, 11/2, 165/2, -11/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_n5l2s0l8.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_9lmi8g2a.png]]
 [45/2, -3/2, 39/2, 3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_amlgfqg_.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_m1elrdop.png]]
 [11/2, 0, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_fd2rx4mc.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_agzvbiyr.png]]
 [-1/2, 4, 3, 1/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_c5r2nvfa.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_o16fyp23.png]]
 [0, 7/2, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_e10gucsi.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_iikqlx8x.png]]
 [3/2, 27/2, 15/2, -3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_rs1e6vt1.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_kg5cf7qs.png]]
 [3/2, 27/2, 15/2, -3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_xu2w_e4d.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_rxg5hzxa.png]]
 [-1/2, 4, 3, 1/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_tqx_tl2o.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_e38uyy1t.png]]
 [0, 7/2, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_dxhm6uny.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_ibv33u2u.png]]
 [13, 15, -1, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_b3rt42bs.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp__v92cexw.png]]
 [0, 187/2, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_caqxeahr.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_434d2x2i.png]]
 [9, 13, 1, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_c5exfix7.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_kaic_9or.png]]
 [9, 13, 1, -1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_g8o56uow.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_0ihf0006.png]]
 [13, 15, -1, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_ryaa3cq7.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_qnjg4dzx.png]]
 [0, 17, 0, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_9lqnld7j.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_hgxs8nzm.png]]
 [45/2, 3/2, 39/2, -3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_55580z6a.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_tlc8lwx3.png]]
 [0, 0, 33/2, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_c1qd39ea.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_a0kpb7f2.png]]
 [19, -1, 15, 1]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_up0c61zh.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_ni16xi15.png]]
 [19/2, -1/2, 15/2, 1/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_quukgac_.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_k2v9jldr.png]]
 [45/2, 3/2, 39/2, -3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_x9lxx7kb.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_pt3olkzt.png]]
 [0, 0, 11/2, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_62zjcsh8.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_mvwvmzhu.png]]
 [11/2, 44, 33, -11/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_mc_205tp.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_e591iq30.png]]
 [0, 0, 21/2, 0]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_bpi6n6kq.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_i2pixez8.png]]
 [-3/2, 27/2, 15/2, 3/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_lfar5avc.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_rscn6jaz.png]]
 [-11/2, 99/2, 55/2, 11/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_rbihcguw.png]]
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp__4nmmb8g.png]]
 [1/2, 4, 3, -1/2]
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_hfm0f86r.png
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_siciqikz.png]]
 [0, 0, 21/2, 0]
 :end:
-
-
-#+begin_src  sage :results file
-  plot_state(states[0])
-#+end_src
-
-#+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_77or25vz.png]]
-
-#+begin_src sage :results file
-  (plot_object(Y1) + central_charge_plot).show(axes=False, aspect_ratio=1)
-#+end_src
-
-#+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/431515/tmp__t2r0dmg.png]]
-
-#+begin_src sage  :results file
-  plot_state([s for s in states if set([X3,Z1,B,Y2,X2]).issubset(set(s)) ][1])
-#+end_src
-
-#+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_isp9r1_f.png]]
-
-#+begin_src sage :results file
-  plot_state([X1,X2,X3])
-#+end_src
-
-#+RESULTS:
-[[file:/home/anandrd/.sage/temp/proteus/17834/tmp_u0ffhfyd.png]]
-
-
-
- 
-*** Observations
-1. It is possible to have intersections between edges of the same kind. 
-   See state[11], where both B and Y2 appear ([B, X2, X1, Z1, Z3, Y2]).
-2. It is possible to have failure of pointedness.
-   See state[1] = [X3, X1, Y3, Y2, Z1, Z2] where Y3, Z2, X3, Y2 create unpointedness at e4.
 
 
 * Squaring
@@ -880,3 +856,32 @@ We now plot states.  We first record the classes of the objects.
 [[file:/home/anandrd/.sage/temp/proteus/10935/tmp_mnwujijh.png]]
 
 
+#+begin_src sage 
+  Y = s3(s4(s1(s4(t3(t4(t2(t2(t4(P1)))))))))
+  print(HN(Y,stab))
+  print(states[5])
+  #+end_src
+
+#+RESULTS:
+: <string>:40: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
+: See https://trac.sagemath.org/27014 for details.
+: [[3]: P1<4>+P2<4> → P4<5> :[4], [1]: P3<2> → P4<3> :[2], [2]: P2<2> :[2], [0]: P1<0>+P3<0> → P4<1> :[1], [0]: P1<0> → P4<1> :[1], [-1]: P1<-2> :[-1], [-3]: P3<-4> → P4<-3> :[-2]]
+: [X2, X1, Y2, Y3, Z1, Z3]
+#+begin_src sage :results file
+  plot_state(states[5]) + central_charge_plot
+#+end_src
+
+#+RESULTS:
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_wfdl5j2v.png]]
+
+#+begin_src sage :results file
+  square_central_charge_plot
+#+end_src
+
+#+RESULTS:
+[[file:/home/anandrd/.sage/temp/proteus/10935/tmp_c474l1wi.png]]
+
+#+RESULTS:
+: <string>:40: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
+: See https://trac.sagemath.org/27014 for details.
+: 5

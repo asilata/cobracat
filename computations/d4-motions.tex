@@ -1,4 +1,4 @@
-% Created 2022-04-11 Mon 12:17
+% Created 2022-04-27 Wed 10:58
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -30,258 +30,323 @@
 \tableofcontents
 
 \begin{verbatim}
-i = 5
-P = expansive_motion(states[i])
-v = vector(P.rays()[0])/10 + 0.18 * vector(P.lines()[0])
-V = matrix([[v[0],v[1]],[v[2],v[3]],[v[4],v[5]],[v[6],v[7]]])
-[(plot_state(s) + central_charge_plot).show(aspect_ratio=1, axes=False) for s in states]
-\end{verbatim}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_pq9z6yod.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_o55cmfe8.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_ryupef8g.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_qb8asy2w.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_wi4gmdtq.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_nobfgcsv.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_9f3kart5.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_1_ul47ng.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_k43k8dgs.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_0i_etcya.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_od9znuzv.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_ptlh674n.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_4eds3pjd.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_z9k2a8d5.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_f942cs8a.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_y25b7j9_.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_v_w4z0ce.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_36l3r6j0.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_yyl78goh.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_ecnt9bz2.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp__7dbnhdi.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_yl2qwn4b.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_acjlcrpl.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_vl3dd1o5.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_0780lqoa.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_ct96pxkx.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_6hiju5bl.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_s4otb_c5.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_4dhrwv4a.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_t8qjm0id.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_602yxgvh.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_r3jcp5z3.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_ghgkh_ay.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_e1b1n0z4.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_iy49y_9o.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_bnyjbouu.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_44lino3_.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_y8_bkp3n.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_nghkn23q.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_394emhwp.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_iseka88r.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_v2pwmd2g.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_6_vqz8po.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_4va9ed25.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_g2a9cvt8.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_5721vuzr.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_vkbxc20_.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_adv5sk22.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_psmqd7nm.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_l95hzilr.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_rytmb4v1.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_n35lsge3.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_irlrllje.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_961dx6y1.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_0ch0huh1.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_jli_6tos.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp__2p9hnzr.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_11hzle8g.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_ep81arr0.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_lwexk265.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_mvrq7z35.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_crrn4x34.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_f3z43cp6.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_nce5iiah.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_060jcwrz.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_zf5n6t9z.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_ll9qu5k_.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_caubgp9c.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_5ls_c07u.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp__9v6w81f.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_ubn03btk.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_azblq7ez.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_wyo2lzl_.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_5q5zkebi.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_syl71doq.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_cr8cvz1g.png}
-\end{center}
-\begin{center}
-\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/17834/tmp_r8b3u502.png}
-\end{center}
-
-\begin{verbatim}
-states[7]
+for s in states:
+    [v01, v02, v11, v12, v21, v22, v31, v32] = vector(expansive_motion(s).rays()[0])
+    V = matrix([[v01,v02],[v11,v12],[v21,v22],[v31,v32]])
+    plot_state(s)
+    print([(vector(ambient_basis[i])*V).dot_product(vector(ambient_basis[i])* central_charge_euclidean) for i in range(0,4)])
 \end{verbatim}
 
-\begin{verbatim}
-(plot_object(Y1) + central_charge_plot).show(axes=False, aspect_ratio=1)
-\end{verbatim}
-
-\section{Observations}
-\label{sec:org35bd8ea}
-\begin{enumerate}
-\item It is possible to have intersections between edges of the same kind. 
-See state[11], where both B and Y2 appear ([B, X2, X1, Z1, Z3, Y2]).
-\item It is possible to have failure of pointedness.
-See state[1] = [X3, X1, Y3, Y2, Z1, Z2] where Y3, Z2, X3, Y2 create unpointedness at e4.
-\end{enumerate}
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_s5d5t4ct.png}
+\end{center}
+[19, 1, 13, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp__wq4443s.png}
+\end{center}
+[-3/2, 12, 15/2, 3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_pepsfte2.png}
+\end{center}
+[39/2, 39/2, 3/2, -3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_yd5ywzhg.png}
+\end{center}
+[15, -1, 15, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_s2m3e8mf.png}
+\end{center}
+[9, 15, -1, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp__xwdit5k.png}
+\end{center}
+[1/2, 9/2, 3, -1/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_x1lkuqa0.png}
+\end{center}
+[17/2, 0, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_ixrtj_g4.png}
+\end{center}
+[9, 13, -1, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_jjt80igb.png}
+\end{center}
+[13, 15, 1, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_uhwwcut2.png}
+\end{center}
+[17/2, 0, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_fx2rd301.png}
+\end{center}
+[9, 13, -1, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_ptto6ymn.png}
+\end{center}
+[13, 15, 1, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_9t3eqxhp.png}
+\end{center}
+[209/2, 11/2, 165/2, -11/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_e0vzo2_b.png}
+\end{center}
+[45/2, -3/2, 39/2, 3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_pqbfrw_p.png}
+\end{center}
+[11/2, 0, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_cb6l_fpu.png}
+\end{center}
+[165/2, -11/2, 143/2, 11/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_ya_oghvj.png}
+\end{center}
+[11/2, 0, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_1q23bz4b.png}
+\end{center}
+[19, 1, 15, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_yx28qc00.png}
+\end{center}
+[0, 77/2, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_jdl46lg9.png}
+\end{center}
+[1, 9, 5, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_o4ntgohj.png}
+\end{center}
+[-1/2, 4, 3, 1/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_snyy000l.png}
+\end{center}
+[0, 7/2, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_2m3o92s7.png}
+\end{center}
+[3/2, 27/2, 15/2, -3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_u7u4t6u8.png}
+\end{center}
+[-1/2, 4, 3, 1/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_kbzv_kdm.png}
+\end{center}
+[9, 13, 1, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_ehi97w6z.png}
+\end{center}
+[13, 15, -1, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_9emh8orl.png}
+\end{center}
+[0, 17, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_m49ngrl7.png}
+\end{center}
+[13, 15, -1, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_k0sqwc4j.png}
+\end{center}
+[0, 17, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_z1cgbtut.png}
+\end{center}
+[9, 13, 1, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_d4y62b8a.png}
+\end{center}
+[0, 0, 11/2, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_1aucokwc.png}
+\end{center}
+[209/2, -11/2, 165/2, 11/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_z2j1lu0d.png}
+\end{center}
+[15, 1, 13, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_ho197ipc.png}
+\end{center}
+[0, 0, 11/2, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_4p28pzob.png}
+\end{center}
+[19/2, -1/2, 15/2, 1/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_w0vareis.png}
+\end{center}
+[45/2, 3/2, 39/2, -3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_7xnqzbay.png}
+\end{center}
+[-1, 9, 5, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_jh7e8of2.png}
+\end{center}
+[11/2, 44, 33, -11/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_3jqiql9v.png}
+\end{center}
+[0, 0, 7, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_i3sc1an6.png}
+\end{center}
+[1/2, 4, 3, -1/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_oapovzt1.png}
+\end{center}
+[0, 0, 21/2, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_5uk_my8m.png}
+\end{center}
+[-3/2, 27/2, 15/2, 3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_9ed66e6q.png}
+\end{center}
+[13, 15, 1, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_stt0ffst.png}
+\end{center}
+[17/2, 0, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_171x2_ea.png}
+\end{center}
+[9, 13, -1, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp__mw9d418.png}
+\end{center}
+[9, 13, -1, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_eqvitjf7.png}
+\end{center}
+[13, 15, 1, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_w4sk8shd.png}
+\end{center}
+[17/2, 0, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_ttjwdx1b.png}
+\end{center}
+[45/2, -3/2, 39/2, 3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_r89dc12n.png}
+\end{center}
+[11/2, 0, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_s525q81y.png}
+\end{center}
+[209/2, 11/2, 165/2, -11/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_7fqcic7x.png}
+\end{center}
+[209/2, 11/2, 165/2, -11/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_9lmi8g2a.png}
+\end{center}
+[45/2, -3/2, 39/2, 3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_m1elrdop.png}
+\end{center}
+[11/2, 0, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_agzvbiyr.png}
+\end{center}
+[-1/2, 4, 3, 1/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_o16fyp23.png}
+\end{center}
+[0, 7/2, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_iikqlx8x.png}
+\end{center}
+[3/2, 27/2, 15/2, -3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_kg5cf7qs.png}
+\end{center}
+[3/2, 27/2, 15/2, -3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_rxg5hzxa.png}
+\end{center}
+[-1/2, 4, 3, 1/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_e38uyy1t.png}
+\end{center}
+[0, 7/2, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_ibv33u2u.png}
+\end{center}
+[13, 15, -1, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp__v92cexw.png}
+\end{center}
+[0, 187/2, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_434d2x2i.png}
+\end{center}
+[9, 13, 1, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_kaic_9or.png}
+\end{center}
+[9, 13, 1, -1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_0ihf0006.png}
+\end{center}
+[13, 15, -1, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_qnjg4dzx.png}
+\end{center}
+[0, 17, 0, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_hgxs8nzm.png}
+\end{center}
+[45/2, 3/2, 39/2, -3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_tlc8lwx3.png}
+\end{center}
+[0, 0, 33/2, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_a0kpb7f2.png}
+\end{center}
+[19, -1, 15, 1]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_ni16xi15.png}
+\end{center}
+[19/2, -1/2, 15/2, 1/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_k2v9jldr.png}
+\end{center}
+[45/2, 3/2, 39/2, -3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_pt3olkzt.png}
+\end{center}
+[0, 0, 11/2, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_mvwvmzhu.png}
+\end{center}
+[11/2, 44, 33, -11/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_e591iq30.png}
+\end{center}
+[0, 0, 21/2, 0]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_i2pixez8.png}
+\end{center}
+[-3/2, 27/2, 15/2, 3/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_rscn6jaz.png}
+\end{center}
+[-11/2, 99/2, 55/2, 11/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp__4nmmb8g.png}
+\end{center}
+[1/2, 4, 3, -1/2]
+\begin{center}
+\includegraphics[width=.9\linewidth]{/home/anandrd/.sage/temp/proteus/10935/tmp_siciqikz.png}
+\end{center}
+[0, 0, 21/2, 0]
 \end{document}
