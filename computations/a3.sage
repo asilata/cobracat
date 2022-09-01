@@ -86,59 +86,59 @@ def t3(C):
 
 heart = [P1, P2, P3]
 
-def isUnimodal(p):
-    coeffs = p.coefficients()
-    if coeffs == []:
-        return True
-    increasing = True
-    current = coeffs[0]
-    peak = coeffs[0]
-    for c in coeffs[1:]:
-        if increasing:
-            if c[0] >= current[0]:
-                current = c
-                peak = c
-            else:
-                increasing = False
-                current = c
-        else:
-            if c[0] <= current[0]:
-                current = c
-            else:
-                print "Sequence not unimodal at power", current[1], "with coefficient", current[0]
-                return False
-    print "Sequence unimodal with peak",peak[0], "at power",peak[1]
-    return True
+# def isUnimodal(p):
+#     coeffs = p.coefficients()
+#     if coeffs == []:
+#         return True
+#     increasing = True
+#     current = coeffs[0]
+#     peak = coeffs[0]
+#     for c in coeffs[1:]:
+#         if increasing:
+#             if c[0] >= current[0]:
+#                 current = c
+#                 peak = c
+#             else:
+#                 increasing = False
+#                 current = c
+#         else:
+#             if c[0] <= current[0]:
+#                 current = c
+#             else:
+#                 print "Sequence not unimodal at power", current[1], "with coefficient", current[0]
+#                 return False
+#     print "Sequence unimodal with peak",peak[0], "at power",peak[1]
+#     return True
 
-N = 100
-obDict = {}
-def constructOb():
-    """Populate obDict with (a,v) where v is the a'th computed point in the orbit. The structure is a binary tree where the left child of a node is the value of s1 and the right child of a node is the value of t2."""
-    c = 1
-    while c < N:
-        if c == 1:
-            obDict[1] = P1
-            c = c + 1
-            continue
-        z = obDict[c // 2]
-        if c % 2 == 0:
-            obDict[c] = s1(z)
-        else:
-            obDict[c] = t2(z)
-        c = c+1
+# N = 100
+# obDict = {}
+# def constructOb():
+#     """Populate obDict with (a,v) where v is the a'th computed point in the orbit. The structure is a binary tree where the left child of a node is the value of s1 and the right child of a node is the value of t2."""
+#     c = 1
+#     while c < N:
+#         if c == 1:
+#             obDict[1] = P1
+#             c = c + 1
+#             continue
+#         z = obDict[c // 2]
+#         if c % 2 == 0:
+#             obDict[c] = s1(z)
+#         else:
+#             obDict[c] = t2(z)
+#         c = c+1
 
-constructOb()
-vs = obDict.values()
-i = -1
-for x in vs:
-    i = i + 1
-    h1,h2 = hom(P1,x),hom(P2,x)
-    p1,p2 = h1.qPolynomial(), h2.qPolynomial()
-    if not isUnimodal(p1):
-        print "number of P2 not unimodal:",i, x,p1
-        break
-    if not isUnimodal(p2):
-        print "number of P1 not unimodal:",i, x,p2
-        break
+# constructOb()
+# vs = obDict.values()
+# i = -1
+# for x in vs:
+#     i = i + 1
+#     h1,h2 = hom(P1,x),hom(P2,x)
+#     p1,p2 = h1.qPolynomial(), h2.qPolynomial()
+#     if not isUnimodal(p1):
+#         print "number of P2 not unimodal:",i, x,p1
+#         break
+#     if not isUnimodal(p2):
+#         print "number of P1 not unimodal:",i, x,p2
+#         break
     
 
