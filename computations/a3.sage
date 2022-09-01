@@ -86,6 +86,10 @@ def t3(C):
 
 heart = [P1, P2, P3]
 
+# ** Stability condition (standard convex stability condition)
+stab = [P3, s2(P3), s1(s2(P3)), P2, s1(P2), P1]
+masses = [var(x) for x in ['m3','m23','m123','m2','m12','m1']]
+
 # def isUnimodal(p):
 #     coeffs = p.coefficients()
 #     if coeffs == []:
