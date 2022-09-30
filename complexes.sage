@@ -328,12 +328,12 @@ class ProjectiveComplex(object):
                     newMapsPlace[(i,j)] = self.maps(place).get((i,j), 0) - changeij
                     # If the objects have bases, we update them to reflect the splitting.
                     # This only needs to be done at place, not place-1, or place+1.
-                    if sourceBasis != None:
+                    if sourceBasis != None and i != source:
                         iBasis = self.objects(place)[i].basis()
                         if iBasis != None:
                             change = self.maps(place).get((i,target), 0) * alphaInverse
                             for elt in sourceBasis:
-                                iBasis[elt] = iBasis.get(elt,0) + change * sourceBasis[elt]
+                                iBasis[elt] = iBasis.get(elt,0) - change * sourceBasis[elt]
 
             # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
             # Now we update the maps
