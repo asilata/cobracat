@@ -456,6 +456,7 @@ def cone(P, Q, M):
     '''
     if DEBUG:
         if not checkMap(P, Q, M):
+            print(P, Q, M)
             raise TypeError("Not a chain map. Cannot make a cone.")
 
     D = P.directSum(Q.shift(-1))

@@ -1,0 +1,70 @@
+#+begin_src sage
+  load("a3.sage")
+  sZ = composeAll([s1,s2,s3,t2,t1])
+  tZ = composeAll([s1,s2,t3,t2,t1])
+  b = composeAll([s2,tZ,t1,s3,s2,tZ,tZ,s2])
+  DEBUG=True
+  def findIso(h, place):
+    maps = h.maps(place)
+    objects = h.objects(place)
+    zero = h._basering(0)
+    for (i,j) in maps:
+      fij = maps.get((i,j), zero)
+      if objects[i].is_invertible(fij):
+        return i, j, fij
+    return None, None, None
+  
+  def findTop(ob):
+    highestHeartFound = -Infinity
+    highestObjectFound = None
+    highestHomFound = None
+    for stable in stab:
+      H = hom(stable, ob)
+      H.minimize()
+      for i in range(H.minIndex(), H.maxIndex()+1):
+        for j in range(0, len(H.objects(i))):
+          if H.objects(i)[j].grade()-i >= highestHeartFound: # Found a better object mapping in
+            highestHeartFound = (H.objects(i)[j].grade()-i)
+            highestObjectFound = internalTwist(stable, H.objects(i)[j].grade()).shift(-i)
+            highestHomFound = H.objects(i)[j].basis()
+    return (highestObjectFound, highestHomFound)
+#+end_src
+
+
+#+RESULTS:
+: Defining e_1, e_2, e_3, a, b, c, d, ab, ba, dc
+: <string>:136: DeprecationWarning: the output of uniq(X) being sorted is deprecated; use sorted(set(X)) instead if you want sorted output
+: See https://trac.sagemath.org/27014 for details.
+
+#+begin_src sage
+  X = tZ(s2(P1)); X
+  Z = findTop(X); Z
+  H = hom(stab[2],X); H
+  findIso(H, 3)
+  H.maps(3).get((2,0),0)
+  iBasis = H.objects(3)[2].basis()
+  sourceBasis = H.objects(3)[0].basis()
+#+end_src
+
+#+RESULTS:
+: [-1]: P2<-1> → P1<0> → P1<2> → P2<3> → P3<4> :[3]
+: ([1]: P1<2> → P2<3> → P3<4> :[3],
+:  {((0, 0), (3, 0)): e_3, ((-2, 0), (1, 0)): 2*e_1, ((-1, 0), (2, 0)): e_2})
+: [-1]: k<-2> → k<0>+k<-2> → k<0>+k<0> → k<2>+k<0>+k<2>+k<2> → k<4>+k<2>+k<4>+k<2>+k<4>+k<2> → k<4>+k<4> :[4]
+: (0, 0, 1)
+: -1
+: ((-2, 0), (1, 0))
+
+#+RESULTS:
+: [-4]: P1<-6> → P1<-4>+P2<-5> → P2<-3>+P2<-3> → P1<-2>+P2<-1> → P1<0>+P1<0> → P1<2>+P1<2>+P2<1> → P1<4>+P2<3>+P2<3>+P3<2> → P2<5>+P3<4> → P3<6> :[4]
+
+#+begin_src sage
+  H = hom(s1(P2), s1(s1(P2)))
+  findIso(H, 0)
+  H.objects(1)[0].basis()
+#+end_src
+
+
+#+RESULTS:
+: (0, 0, -1)
+: {((-1, 0), (0, 0)): a}
