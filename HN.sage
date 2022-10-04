@@ -36,7 +36,7 @@ def HN(ob, stab):
     HNFiltration = []
     while not isZero(ob):
         (topOb, topHom) = findTop(ob)
-        homDegree = uniq([a-c for ((a,b), (c,d)) in topHom.keys()])
+        homDegree = sorted(set([a-c for ((a,b), (c,d)) in topHom.keys()]))
         assert len(homDegree) == 1
         deg = homDegree[0]
         HNFiltration.append(topOb)

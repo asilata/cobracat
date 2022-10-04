@@ -132,7 +132,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
                 degs = degs + [1]
             else:
                 degs = degs + [2]
-        if len(uniq(degs)) == 1:
+        if len(set(degs)) == 1:
             return degs[0]
         else:
             raise Exception("Element not homogeneous: " + str(a))
