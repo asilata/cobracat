@@ -1,0 +1,102 @@
+#+property: header-args:sage :session a2 :result drawer
+
+Ignore deprecated warnings
+#+begin_src sage
+  import warnings
+  warnings.filterwarnings("ignore", category=DeprecationWarning)  
+#+end_src
+
+* Basic setup for A2
+Load the relevant files
+#+begin_src sage
+  load("../complexes.sage")
+  load("../zigzagalgebra.sage")
+  load("../zigzagmodules.sage")
+  load("../braidactions.sage")
+  load("../HN.sage")
+  #+end_src
+
+  #+RESULTS:
+
+  
+Define the algebra, basic simple objects, and twists.
+  #+begin_src sage
+    a2 = make_test(a2graph)
+    R = a2['Z']
+    R.inject_variables()
+    F = ZigZagModule(R, 1, name = "P1")
+    G = ZigZagModule(R, 2, name = "P2")
+
+    P1 = ProjectiveComplex(R)
+    P1.addObject(0, F)
+
+    P2 = ProjectiveComplex(R)
+    P2.addObject(0, G)
+
+    def s(i, C):
+        D = sigma(R, i, C)
+        D.minimize()
+        return D
+
+    def t(i, C):
+        D = sigmaInverse(R, i, C)
+        D.minimize()
+        return D
+
+    def s1(C):
+        return s(1, C)
+
+    def s2(C):
+        return s(2, C)
+
+    def t1(C):
+        return t(1, C)
+
+    def t2(C):
+        return t(2, C)
+  #+end_src
+
+  #+RESULTS:
+  : Defining e_1, e_2, a, b, ab, ba
+
+* Stability condition
+A standard stability condition.  The objects are in the increasing order of phase.
+#+begin_src sage
+  stab = [P1, s2(P1), P2]
+  stableMasses = [var('p1'), var('p12'), var('p2')]
+#+end_src
+
+#+RESULTS:
+
+* HN Filtrations
+Experiments
+#+begin_src sage
+  g = composeAll([t2,s1])
+  obj = P1
+  HNMult(g(g(g(g(g(P1))))))
+#+end_src
+
+#+RESULTS:
+: 13*p1 + 21*p2
+
+#+begin_src sage
+  def HNMult(obj):
+      return mass(obj, stab, stableMasses)
+#+end_src
+
+#+RESULTS:
+
+P12 is the name of the unique extension of P1 by P2, and this is stable.
+#+begin_src sage
+  obj = s2(s1(s1(P2)))
+  g = s2
+  HNMult(g(g(g(g(g(g(g(obj))))))))
+  H = hom(P2,obj)
+  H.minimize()
+  H
+#+end_src
+#+RESULTS:
+: 2*p12 + 13*p2
+: [-3]: k<-6> → 0 → k<-2> :[-1]
+
+Theorem (B,D,L): If g = sigma_X, and Y is any object, then the HN filtration of g^n(X) for large enough n looks like: <constant> + n X * dim Hom(X,Y)
