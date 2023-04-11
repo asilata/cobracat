@@ -1,0 +1,53 @@
+Basic setup for D4
+#+begin_src sage
+  load("d4-setup.sage")
+#+end_src
+
+#+RESULTS:
+: Defining e_1, e_2, e_3, e_4, a, b, c, d, e, f, fa, db, ec, af
+
+#+begin_src sage
+  X1 = s1(t4(P2))
+  X2 = s1(t4(P3))
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  Y1 = t1(t1(s4(P2)))
+  Y2 = t1(t1(s4(P3)))
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  h11 = hom(X1,Y1)
+  h12 = hom(X1,Y2)
+  h21 = hom(X2,Y1)
+  h22 = hom(X2,Y2)
+  h11.minimize()
+  h12.minimize()
+  h21.minimize()
+  h22.minimize()
+  h11
+  h12
+  h21
+  h22
+#+end_src
+
+#+RESULTS:
+: [-2]: k<-4> → k<-2> → k<0>+k<0> → k<2> :[1]
+: [-2]: k<-4> → k<-2>+k<-2> → k<0> → k<2> :[1]
+: [-2]: k<-4> → k<-2>+k<-2> → k<0> → k<2> :[1]
+: [-2]: k<-4> → k<-2> → k<0>+k<0> → k<2> :[1]
+
+#+begin_src sage
+  X = P1
+  Y = s1(s1(t4(t1(s4(P2)))))
+  h = hom(X,Y)
+  h.minimize()
+  h
+#+end_src
+
+#+RESULTS:
+: [-2]: k<-6> :[-2]
