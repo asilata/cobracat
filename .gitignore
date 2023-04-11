@@ -1,1 +1,7 @@
 *.svg
+*.aux
+*.log
+*.out
+/computations/d4-motions.pdf
+*.synctex.gz
+*.toc
