@@ -1,1 +1,6 @@
 /ttauta3/ttauta3.svg
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.toc

@@ -2,6 +2,8 @@
 #+PROPERTY: header-args:html :tangle artifacts/ttauta3.html :mkdirp yes
 #+PROPERTY: header-args:dot :tangle artifacts/ttauta3.dot :mkdirp yes
 #+PROPERTY: header-args:sage :tangle artifacts/ttauta3.sage :mkdirp yes
+#+LATEX_HEADER: \usepackage{tikz}
+
 
 * Generation of supports 
 
@@ -781,112 +783,1153 @@ Composition
   beta = composeTwists(["sa","sb","tc","sd"])
 #+end_src
 
-#+begin_src sage
-  v = {a:1,c:1}
-  for i in range(1,100):
-      v = beta(v)
-      print(v)
+#+RESULTS:
+
+
+
+** Drawings
+:PROPERTIES:
+:latex_header_extra: \usepackage{tikz}
+:EXPORT_FILE_NAME: curves.tex
+:END:
+
+Visualising.
+#+begin_src sage :exports none
+  templateBegin = """\\begin{tikzpicture}
+  \\draw (0,0) node [circle, draw] (1) {};
+  \\draw (0,1) node [circle, draw] (2) {};
+  \\draw (1,1) node [circle, draw] (3) {};
+  \\draw (1,0) node [circle, draw] (4) {};
+  """
+  templateEnd= "\\end{tikzpicture}"
+  def drawCurve(crv):
+      print(templateBegin)
+      for k in crv.keys():
+          line = ""
+          if crv[k] != 0:
+              if k == a:
+                  line="\\draw (1) edge node[left] {\\tiny "+str(crv[k])+"} (2);"
+              elif k == b:
+                  line="\\draw (2) edge node[above] {\\tiny "+str(crv[k])+"} (3);"
+              elif k == c:
+                  line="\\draw (3) edge node[right] {\\tiny "+str(crv[k])+"} (4);"
+              elif k == d:
+                  line="\\draw (4) edge node[below] {\\tiny "+str(crv[k])+"} (1);"
+              elif k == x:
+                  line="\\draw (1) edge node[left] {\\tiny "+str(crv[k])+"} (3);"
+              elif k == y:
+                  line="\\draw (2) edge node[right] {\\tiny "+str(crv[k])+"} (4);"
+          print(line)
+      print(templateEnd)
+#+end_src
+
+#+begin_src sage :results code latex :exports results
+  c = {a:1}
+  for i in range(0,100):
+      c = beta(c)
+      drawCurve(c)
 #+end_src
 
 #+RESULTS:
-#+begin_example
-{d: 5, a: 1, b: 0, x: 1}
-{d: 7, a: 4, b: 1, x: 0}
-{d: 7, a: 3, b: 4, x: 1}
-{d: 11, a: 4, b: 3, x: 4}
-{d: 13, a: 7, b: 4, x: 3}
-{d: 13, a: 6, b: 7, x: 4}
-{d: 17, a: 7, b: 6, x: 7}
-{d: 19, a: 10, b: 7, x: 6}
-{d: 19, a: 9, b: 10, x: 7}
-{d: 23, a: 10, b: 9, x: 10}
-{d: 25, a: 13, b: 10, x: 9}
-{d: 25, a: 12, b: 13, x: 10}
-{d: 29, a: 13, b: 12, x: 13}
-{d: 31, a: 16, b: 13, x: 12}
-{d: 31, a: 15, b: 16, x: 13}
-{d: 35, a: 16, b: 15, x: 16}
-{d: 37, a: 19, b: 16, x: 15}
-{d: 37, a: 18, b: 19, x: 16}
-{d: 41, a: 19, b: 18, x: 19}
-{d: 43, a: 22, b: 19, x: 18}
-{d: 43, a: 21, b: 22, x: 19}
-{d: 47, a: 22, b: 21, x: 22}
-{d: 49, a: 25, b: 22, x: 21}
-{d: 49, a: 24, b: 25, x: 22}
-{d: 53, a: 25, b: 24, x: 25}
-{d: 55, a: 28, b: 25, x: 24}
-{d: 55, a: 27, b: 28, x: 25}
-{d: 59, a: 28, b: 27, x: 28}
-{d: 61, a: 31, b: 28, x: 27}
-{d: 61, a: 30, b: 31, x: 28}
-{d: 65, a: 31, b: 30, x: 31}
-{d: 67, a: 34, b: 31, x: 30}
-{d: 67, a: 33, b: 34, x: 31}
-{d: 71, a: 34, b: 33, x: 34}
-{d: 73, a: 37, b: 34, x: 33}
-{d: 73, a: 36, b: 37, x: 34}
-{d: 77, a: 37, b: 36, x: 37}
-{d: 79, a: 40, b: 37, x: 36}
-{d: 79, a: 39, b: 40, x: 37}
-{d: 83, a: 40, b: 39, x: 40}
-{d: 85, a: 43, b: 40, x: 39}
-{d: 85, a: 42, b: 43, x: 40}
-{d: 89, a: 43, b: 42, x: 43}
-{d: 91, a: 46, b: 43, x: 42}
-{d: 91, a: 45, b: 46, x: 43}
-{d: 95, a: 46, b: 45, x: 46}
-{d: 97, a: 49, b: 46, x: 45}
-{d: 97, a: 48, b: 49, x: 46}
-{d: 101, a: 49, b: 48, x: 49}
-{d: 103, a: 52, b: 49, x: 48}
-{d: 103, a: 51, b: 52, x: 49}
-{d: 107, a: 52, b: 51, x: 52}
-{d: 109, a: 55, b: 52, x: 51}
-{d: 109, a: 54, b: 55, x: 52}
-{d: 113, a: 55, b: 54, x: 55}
-{d: 115, a: 58, b: 55, x: 54}
-{d: 115, a: 57, b: 58, x: 55}
-{d: 119, a: 58, b: 57, x: 58}
-{d: 121, a: 61, b: 58, x: 57}
-{d: 121, a: 60, b: 61, x: 58}
-{d: 125, a: 61, b: 60, x: 61}
-{d: 127, a: 64, b: 61, x: 60}
-{d: 127, a: 63, b: 64, x: 61}
-{d: 131, a: 64, b: 63, x: 64}
-{d: 133, a: 67, b: 64, x: 63}
-{d: 133, a: 66, b: 67, x: 64}
-{d: 137, a: 67, b: 66, x: 67}
-{d: 139, a: 70, b: 67, x: 66}
-{d: 139, a: 69, b: 70, x: 67}
-{d: 143, a: 70, b: 69, x: 70}
-{d: 145, a: 73, b: 70, x: 69}
-{d: 145, a: 72, b: 73, x: 70}
-{d: 149, a: 73, b: 72, x: 73}
-{d: 151, a: 76, b: 73, x: 72}
-{d: 151, a: 75, b: 76, x: 73}
-{d: 155, a: 76, b: 75, x: 76}
-{d: 157, a: 79, b: 76, x: 75}
-{d: 157, a: 78, b: 79, x: 76}
-{d: 161, a: 79, b: 78, x: 79}
-{d: 163, a: 82, b: 79, x: 78}
-{d: 163, a: 81, b: 82, x: 79}
-{d: 167, a: 82, b: 81, x: 82}
-{d: 169, a: 85, b: 82, x: 81}
-{d: 169, a: 84, b: 85, x: 82}
-{d: 173, a: 85, b: 84, x: 85}
-{d: 175, a: 88, b: 85, x: 84}
-{d: 175, a: 87, b: 88, x: 85}
-{d: 179, a: 88, b: 87, x: 88}
-{d: 181, a: 91, b: 88, x: 87}
-{d: 181, a: 90, b: 91, x: 88}
-{d: 185, a: 91, b: 90, x: 91}
-{d: 187, a: 94, b: 91, x: 90}
-{d: 187, a: 93, b: 94, x: 91}
-{d: 191, a: 94, b: 93, x: 94}
-{d: 193, a: 97, b: 94, x: 93}
-{d: 193, a: 96, b: 97, x: 94}
-{d: 197, a: 97, b: 96, x: 97}
-{d: 199, a: 100, b: 97, x: 96}
-{d: 199, a: 99, b: 100, x: 97}
-#+end_example
+#+begin_export latex
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 2} (1);
+
+
+\draw (1) edge node[left] {\tiny 1} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 3} (1);
+\draw (1) edge node[left] {\tiny 2} (2);
+
+
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 2} (1);
+\draw (1) edge node[left] {\tiny 1} (2);
+\draw (2) edge node[above] {\tiny 2} (3);
+
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 4} (1);
+\draw (1) edge node[left] {\tiny 1} (2);
+\draw (2) edge node[above] {\tiny 1} (3);
+\draw (1) edge node[left] {\tiny 2} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 5} (1);
+\draw (1) edge node[left] {\tiny 3} (2);
+\draw (2) edge node[above] {\tiny 1} (3);
+\draw (1) edge node[left] {\tiny 1} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 4} (1);
+\draw (1) edge node[left] {\tiny 2} (2);
+\draw (2) edge node[above] {\tiny 3} (3);
+\draw (1) edge node[left] {\tiny 1} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 6} (1);
+\draw (1) edge node[left] {\tiny 2} (2);
+\draw (2) edge node[above] {\tiny 2} (3);
+\draw (1) edge node[left] {\tiny 3} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 7} (1);
+\draw (1) edge node[left] {\tiny 4} (2);
+\draw (2) edge node[above] {\tiny 2} (3);
+\draw (1) edge node[left] {\tiny 2} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 6} (1);
+\draw (1) edge node[left] {\tiny 3} (2);
+\draw (2) edge node[above] {\tiny 4} (3);
+\draw (1) edge node[left] {\tiny 2} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 8} (1);
+\draw (1) edge node[left] {\tiny 3} (2);
+\draw (2) edge node[above] {\tiny 3} (3);
+\draw (1) edge node[left] {\tiny 4} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 9} (1);
+\draw (1) edge node[left] {\tiny 5} (2);
+\draw (2) edge node[above] {\tiny 3} (3);
+\draw (1) edge node[left] {\tiny 3} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 8} (1);
+\draw (1) edge node[left] {\tiny 4} (2);
+\draw (2) edge node[above] {\tiny 5} (3);
+\draw (1) edge node[left] {\tiny 3} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 10} (1);
+\draw (1) edge node[left] {\tiny 4} (2);
+\draw (2) edge node[above] {\tiny 4} (3);
+\draw (1) edge node[left] {\tiny 5} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 11} (1);
+\draw (1) edge node[left] {\tiny 6} (2);
+\draw (2) edge node[above] {\tiny 4} (3);
+\draw (1) edge node[left] {\tiny 4} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 10} (1);
+\draw (1) edge node[left] {\tiny 5} (2);
+\draw (2) edge node[above] {\tiny 6} (3);
+\draw (1) edge node[left] {\tiny 4} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 12} (1);
+\draw (1) edge node[left] {\tiny 5} (2);
+\draw (2) edge node[above] {\tiny 5} (3);
+\draw (1) edge node[left] {\tiny 6} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 13} (1);
+\draw (1) edge node[left] {\tiny 7} (2);
+\draw (2) edge node[above] {\tiny 5} (3);
+\draw (1) edge node[left] {\tiny 5} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 12} (1);
+\draw (1) edge node[left] {\tiny 6} (2);
+\draw (2) edge node[above] {\tiny 7} (3);
+\draw (1) edge node[left] {\tiny 5} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 14} (1);
+\draw (1) edge node[left] {\tiny 6} (2);
+\draw (2) edge node[above] {\tiny 6} (3);
+\draw (1) edge node[left] {\tiny 7} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 15} (1);
+\draw (1) edge node[left] {\tiny 8} (2);
+\draw (2) edge node[above] {\tiny 6} (3);
+\draw (1) edge node[left] {\tiny 6} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 14} (1);
+\draw (1) edge node[left] {\tiny 7} (2);
+\draw (2) edge node[above] {\tiny 8} (3);
+\draw (1) edge node[left] {\tiny 6} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 16} (1);
+\draw (1) edge node[left] {\tiny 7} (2);
+\draw (2) edge node[above] {\tiny 7} (3);
+\draw (1) edge node[left] {\tiny 8} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 17} (1);
+\draw (1) edge node[left] {\tiny 9} (2);
+\draw (2) edge node[above] {\tiny 7} (3);
+\draw (1) edge node[left] {\tiny 7} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 16} (1);
+\draw (1) edge node[left] {\tiny 8} (2);
+\draw (2) edge node[above] {\tiny 9} (3);
+\draw (1) edge node[left] {\tiny 7} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 18} (1);
+\draw (1) edge node[left] {\tiny 8} (2);
+\draw (2) edge node[above] {\tiny 8} (3);
+\draw (1) edge node[left] {\tiny 9} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 19} (1);
+\draw (1) edge node[left] {\tiny 10} (2);
+\draw (2) edge node[above] {\tiny 8} (3);
+\draw (1) edge node[left] {\tiny 8} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 18} (1);
+\draw (1) edge node[left] {\tiny 9} (2);
+\draw (2) edge node[above] {\tiny 10} (3);
+\draw (1) edge node[left] {\tiny 8} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 20} (1);
+\draw (1) edge node[left] {\tiny 9} (2);
+\draw (2) edge node[above] {\tiny 9} (3);
+\draw (1) edge node[left] {\tiny 10} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 21} (1);
+\draw (1) edge node[left] {\tiny 11} (2);
+\draw (2) edge node[above] {\tiny 9} (3);
+\draw (1) edge node[left] {\tiny 9} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 20} (1);
+\draw (1) edge node[left] {\tiny 10} (2);
+\draw (2) edge node[above] {\tiny 11} (3);
+\draw (1) edge node[left] {\tiny 9} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 22} (1);
+\draw (1) edge node[left] {\tiny 10} (2);
+\draw (2) edge node[above] {\tiny 10} (3);
+\draw (1) edge node[left] {\tiny 11} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 23} (1);
+\draw (1) edge node[left] {\tiny 12} (2);
+\draw (2) edge node[above] {\tiny 10} (3);
+\draw (1) edge node[left] {\tiny 10} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 22} (1);
+\draw (1) edge node[left] {\tiny 11} (2);
+\draw (2) edge node[above] {\tiny 12} (3);
+\draw (1) edge node[left] {\tiny 10} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 24} (1);
+\draw (1) edge node[left] {\tiny 11} (2);
+\draw (2) edge node[above] {\tiny 11} (3);
+\draw (1) edge node[left] {\tiny 12} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 25} (1);
+\draw (1) edge node[left] {\tiny 13} (2);
+\draw (2) edge node[above] {\tiny 11} (3);
+\draw (1) edge node[left] {\tiny 11} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 24} (1);
+\draw (1) edge node[left] {\tiny 12} (2);
+\draw (2) edge node[above] {\tiny 13} (3);
+\draw (1) edge node[left] {\tiny 11} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 26} (1);
+\draw (1) edge node[left] {\tiny 12} (2);
+\draw (2) edge node[above] {\tiny 12} (3);
+\draw (1) edge node[left] {\tiny 13} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 27} (1);
+\draw (1) edge node[left] {\tiny 14} (2);
+\draw (2) edge node[above] {\tiny 12} (3);
+\draw (1) edge node[left] {\tiny 12} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 26} (1);
+\draw (1) edge node[left] {\tiny 13} (2);
+\draw (2) edge node[above] {\tiny 14} (3);
+\draw (1) edge node[left] {\tiny 12} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 28} (1);
+\draw (1) edge node[left] {\tiny 13} (2);
+\draw (2) edge node[above] {\tiny 13} (3);
+\draw (1) edge node[left] {\tiny 14} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 29} (1);
+\draw (1) edge node[left] {\tiny 15} (2);
+\draw (2) edge node[above] {\tiny 13} (3);
+\draw (1) edge node[left] {\tiny 13} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 28} (1);
+\draw (1) edge node[left] {\tiny 14} (2);
+\draw (2) edge node[above] {\tiny 15} (3);
+\draw (1) edge node[left] {\tiny 13} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 30} (1);
+\draw (1) edge node[left] {\tiny 14} (2);
+\draw (2) edge node[above] {\tiny 14} (3);
+\draw (1) edge node[left] {\tiny 15} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 31} (1);
+\draw (1) edge node[left] {\tiny 16} (2);
+\draw (2) edge node[above] {\tiny 14} (3);
+\draw (1) edge node[left] {\tiny 14} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 30} (1);
+\draw (1) edge node[left] {\tiny 15} (2);
+\draw (2) edge node[above] {\tiny 16} (3);
+\draw (1) edge node[left] {\tiny 14} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 32} (1);
+\draw (1) edge node[left] {\tiny 15} (2);
+\draw (2) edge node[above] {\tiny 15} (3);
+\draw (1) edge node[left] {\tiny 16} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 33} (1);
+\draw (1) edge node[left] {\tiny 17} (2);
+\draw (2) edge node[above] {\tiny 15} (3);
+\draw (1) edge node[left] {\tiny 15} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 32} (1);
+\draw (1) edge node[left] {\tiny 16} (2);
+\draw (2) edge node[above] {\tiny 17} (3);
+\draw (1) edge node[left] {\tiny 15} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 34} (1);
+\draw (1) edge node[left] {\tiny 16} (2);
+\draw (2) edge node[above] {\tiny 16} (3);
+\draw (1) edge node[left] {\tiny 17} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 35} (1);
+\draw (1) edge node[left] {\tiny 18} (2);
+\draw (2) edge node[above] {\tiny 16} (3);
+\draw (1) edge node[left] {\tiny 16} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 34} (1);
+\draw (1) edge node[left] {\tiny 17} (2);
+\draw (2) edge node[above] {\tiny 18} (3);
+\draw (1) edge node[left] {\tiny 16} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 36} (1);
+\draw (1) edge node[left] {\tiny 17} (2);
+\draw (2) edge node[above] {\tiny 17} (3);
+\draw (1) edge node[left] {\tiny 18} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 37} (1);
+\draw (1) edge node[left] {\tiny 19} (2);
+\draw (2) edge node[above] {\tiny 17} (3);
+\draw (1) edge node[left] {\tiny 17} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 36} (1);
+\draw (1) edge node[left] {\tiny 18} (2);
+\draw (2) edge node[above] {\tiny 19} (3);
+\draw (1) edge node[left] {\tiny 17} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 38} (1);
+\draw (1) edge node[left] {\tiny 18} (2);
+\draw (2) edge node[above] {\tiny 18} (3);
+\draw (1) edge node[left] {\tiny 19} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 39} (1);
+\draw (1) edge node[left] {\tiny 20} (2);
+\draw (2) edge node[above] {\tiny 18} (3);
+\draw (1) edge node[left] {\tiny 18} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 38} (1);
+\draw (1) edge node[left] {\tiny 19} (2);
+\draw (2) edge node[above] {\tiny 20} (3);
+\draw (1) edge node[left] {\tiny 18} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 40} (1);
+\draw (1) edge node[left] {\tiny 19} (2);
+\draw (2) edge node[above] {\tiny 19} (3);
+\draw (1) edge node[left] {\tiny 20} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 41} (1);
+\draw (1) edge node[left] {\tiny 21} (2);
+\draw (2) edge node[above] {\tiny 19} (3);
+\draw (1) edge node[left] {\tiny 19} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 40} (1);
+\draw (1) edge node[left] {\tiny 20} (2);
+\draw (2) edge node[above] {\tiny 21} (3);
+\draw (1) edge node[left] {\tiny 19} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 42} (1);
+\draw (1) edge node[left] {\tiny 20} (2);
+\draw (2) edge node[above] {\tiny 20} (3);
+\draw (1) edge node[left] {\tiny 21} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 43} (1);
+\draw (1) edge node[left] {\tiny 22} (2);
+\draw (2) edge node[above] {\tiny 20} (3);
+\draw (1) edge node[left] {\tiny 20} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 42} (1);
+\draw (1) edge node[left] {\tiny 21} (2);
+\draw (2) edge node[above] {\tiny 22} (3);
+\draw (1) edge node[left] {\tiny 20} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 44} (1);
+\draw (1) edge node[left] {\tiny 21} (2);
+\draw (2) edge node[above] {\tiny 21} (3);
+\draw (1) edge node[left] {\tiny 22} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 45} (1);
+\draw (1) edge node[left] {\tiny 23} (2);
+\draw (2) edge node[above] {\tiny 21} (3);
+\draw (1) edge node[left] {\tiny 21} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 44} (1);
+\draw (1) edge node[left] {\tiny 22} (2);
+\draw (2) edge node[above] {\tiny 23} (3);
+\draw (1) edge node[left] {\tiny 21} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 46} (1);
+\draw (1) edge node[left] {\tiny 22} (2);
+\draw (2) edge node[above] {\tiny 22} (3);
+\draw (1) edge node[left] {\tiny 23} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 47} (1);
+\draw (1) edge node[left] {\tiny 24} (2);
+\draw (2) edge node[above] {\tiny 22} (3);
+\draw (1) edge node[left] {\tiny 22} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 46} (1);
+\draw (1) edge node[left] {\tiny 23} (2);
+\draw (2) edge node[above] {\tiny 24} (3);
+\draw (1) edge node[left] {\tiny 22} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 48} (1);
+\draw (1) edge node[left] {\tiny 23} (2);
+\draw (2) edge node[above] {\tiny 23} (3);
+\draw (1) edge node[left] {\tiny 24} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 49} (1);
+\draw (1) edge node[left] {\tiny 25} (2);
+\draw (2) edge node[above] {\tiny 23} (3);
+\draw (1) edge node[left] {\tiny 23} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 48} (1);
+\draw (1) edge node[left] {\tiny 24} (2);
+\draw (2) edge node[above] {\tiny 25} (3);
+\draw (1) edge node[left] {\tiny 23} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 50} (1);
+\draw (1) edge node[left] {\tiny 24} (2);
+\draw (2) edge node[above] {\tiny 24} (3);
+\draw (1) edge node[left] {\tiny 25} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 51} (1);
+\draw (1) edge node[left] {\tiny 26} (2);
+\draw (2) edge node[above] {\tiny 24} (3);
+\draw (1) edge node[left] {\tiny 24} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 50} (1);
+\draw (1) edge node[left] {\tiny 25} (2);
+\draw (2) edge node[above] {\tiny 26} (3);
+\draw (1) edge node[left] {\tiny 24} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 52} (1);
+\draw (1) edge node[left] {\tiny 25} (2);
+\draw (2) edge node[above] {\tiny 25} (3);
+\draw (1) edge node[left] {\tiny 26} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 53} (1);
+\draw (1) edge node[left] {\tiny 27} (2);
+\draw (2) edge node[above] {\tiny 25} (3);
+\draw (1) edge node[left] {\tiny 25} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 52} (1);
+\draw (1) edge node[left] {\tiny 26} (2);
+\draw (2) edge node[above] {\tiny 27} (3);
+\draw (1) edge node[left] {\tiny 25} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 54} (1);
+\draw (1) edge node[left] {\tiny 26} (2);
+\draw (2) edge node[above] {\tiny 26} (3);
+\draw (1) edge node[left] {\tiny 27} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 55} (1);
+\draw (1) edge node[left] {\tiny 28} (2);
+\draw (2) edge node[above] {\tiny 26} (3);
+\draw (1) edge node[left] {\tiny 26} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 54} (1);
+\draw (1) edge node[left] {\tiny 27} (2);
+\draw (2) edge node[above] {\tiny 28} (3);
+\draw (1) edge node[left] {\tiny 26} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 56} (1);
+\draw (1) edge node[left] {\tiny 27} (2);
+\draw (2) edge node[above] {\tiny 27} (3);
+\draw (1) edge node[left] {\tiny 28} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 57} (1);
+\draw (1) edge node[left] {\tiny 29} (2);
+\draw (2) edge node[above] {\tiny 27} (3);
+\draw (1) edge node[left] {\tiny 27} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 56} (1);
+\draw (1) edge node[left] {\tiny 28} (2);
+\draw (2) edge node[above] {\tiny 29} (3);
+\draw (1) edge node[left] {\tiny 27} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 58} (1);
+\draw (1) edge node[left] {\tiny 28} (2);
+\draw (2) edge node[above] {\tiny 28} (3);
+\draw (1) edge node[left] {\tiny 29} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 59} (1);
+\draw (1) edge node[left] {\tiny 30} (2);
+\draw (2) edge node[above] {\tiny 28} (3);
+\draw (1) edge node[left] {\tiny 28} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 58} (1);
+\draw (1) edge node[left] {\tiny 29} (2);
+\draw (2) edge node[above] {\tiny 30} (3);
+\draw (1) edge node[left] {\tiny 28} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 60} (1);
+\draw (1) edge node[left] {\tiny 29} (2);
+\draw (2) edge node[above] {\tiny 29} (3);
+\draw (1) edge node[left] {\tiny 30} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 61} (1);
+\draw (1) edge node[left] {\tiny 31} (2);
+\draw (2) edge node[above] {\tiny 29} (3);
+\draw (1) edge node[left] {\tiny 29} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 60} (1);
+\draw (1) edge node[left] {\tiny 30} (2);
+\draw (2) edge node[above] {\tiny 31} (3);
+\draw (1) edge node[left] {\tiny 29} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 62} (1);
+\draw (1) edge node[left] {\tiny 30} (2);
+\draw (2) edge node[above] {\tiny 30} (3);
+\draw (1) edge node[left] {\tiny 31} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 63} (1);
+\draw (1) edge node[left] {\tiny 32} (2);
+\draw (2) edge node[above] {\tiny 30} (3);
+\draw (1) edge node[left] {\tiny 30} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 62} (1);
+\draw (1) edge node[left] {\tiny 31} (2);
+\draw (2) edge node[above] {\tiny 32} (3);
+\draw (1) edge node[left] {\tiny 30} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 64} (1);
+\draw (1) edge node[left] {\tiny 31} (2);
+\draw (2) edge node[above] {\tiny 31} (3);
+\draw (1) edge node[left] {\tiny 32} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 65} (1);
+\draw (1) edge node[left] {\tiny 33} (2);
+\draw (2) edge node[above] {\tiny 31} (3);
+\draw (1) edge node[left] {\tiny 31} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 64} (1);
+\draw (1) edge node[left] {\tiny 32} (2);
+\draw (2) edge node[above] {\tiny 33} (3);
+\draw (1) edge node[left] {\tiny 31} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 66} (1);
+\draw (1) edge node[left] {\tiny 32} (2);
+\draw (2) edge node[above] {\tiny 32} (3);
+\draw (1) edge node[left] {\tiny 33} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 67} (1);
+\draw (1) edge node[left] {\tiny 34} (2);
+\draw (2) edge node[above] {\tiny 32} (3);
+\draw (1) edge node[left] {\tiny 32} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 66} (1);
+\draw (1) edge node[left] {\tiny 33} (2);
+\draw (2) edge node[above] {\tiny 34} (3);
+\draw (1) edge node[left] {\tiny 32} (3);
+\end{tikzpicture}
+\begin{tikzpicture}
+\draw (0,0) node [circle, draw] (1) {};
+\draw (0,1) node [circle, draw] (2) {};
+\draw (1,1) node [circle, draw] (3) {};
+\draw (1,0) node [circle, draw] (4) {};
+
+\draw (4) edge node[below] {\tiny 68} (1);
+\draw (1) edge node[left] {\tiny 33} (2);
+\draw (2) edge node[above] {\tiny 33} (3);
+\draw (1) edge node[left] {\tiny 34} (3);
+\end{tikzpicture}
+#+end_export
