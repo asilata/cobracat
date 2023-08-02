@@ -86,3 +86,76 @@ def t3(C):
     return t(3, C)
 
 heart = [P1, P2, P3]
+
+generators = {}
+generators['s1'] = s1
+generators['s2'] = s2
+generators['s3'] = s3
+generators['t1'] = t1
+generators['t2'] = t2
+generators['t3'] = t3
+
+# Find braids that keep a test object lying in t-slices [-1,1] in the same t-slice.
+testObject = t3(t3(s2(s2(P1))))
+
+positiveGens = [k for k in generators.keys() if k[0] == 's']
+negativeGens = [k for k in generators.keys() if k[0] == 't']
+positiveMonoid = {}
+negativeMonoid = {}
+
+def generateNextLevel(multipliers, given):
+    '''
+    Given a list of braids as "given", generate the next list by multiplying everything in given by everything in multipliers
+    on the left.
+    The givens is a list of list of keys in "generators", and multipliers is a list of keys in "generators"
+    '''
+    output = []
+    for b in multipliers:
+        output = output + [[b] + g for g in given]
+    return output
+
+def positiveBraidsGetOrAdd(n):
+    if n < 1:
+        return None
+    if n in positiveMonoid.keys():
+        return positiveMonoid[n]
+    elif n == 1:
+        new = [[g] for g in positiveGens]
+    else:
+        prev = positiveBraidsGetOrAdd(n-1)
+        new = generateNextLevel(positiveGens, prev)
+    positiveMonoid[n] = new
+    return new
+
+def nameToBraid(name):
+    return composeAll([generators[x] for x in name])
+
+def is_nonexpanding(br, ob):
+    ob2 = br(ob)
+    return ob2.minLevel() >= ob.minLevel() and ob2.maxLevel() <= ob.maxLevel()
+
+def in_pm_1(br, ob):
+    ob2 = br(ob)
+    return ob2.minLevel() >= -1 and ob2.maxLevel() <= 1
+
+def testPositiveUpTo(n):
+    for i in range(1,n+1):
+        bi = positiveBraidsGetOrAdd(i)
+        for br in bi:
+            if is_nonexpanding(nameToBraid(br),testObject):
+                print(br)
+# for i in range(1,5):
+#     bi = positiveBraidsGetOrAdd(i)
+#     for br in bi:
+#         if is_nonexpanding(nameToBraid(br), testObject):
+#             print(br)
+
+# Test the definition of is_nonexpanding
+DEBUG = False
+
+if DEBUG:
+    assert is_nonexpanding(t3, t3(s2(P1))) == False
+    assert is_nonexpanding(s3, t3(s2(P1))) == True
+    assert is_nonexpanding(t2, t3(s2(P1))) == True
+    assert is_nonexpanding(s2, t3(s2(P1))) == False
+    
