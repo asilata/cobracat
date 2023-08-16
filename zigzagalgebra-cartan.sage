@@ -1,6 +1,133 @@
 from itertools import product
 from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element import FiniteDimensionalAlgebraElement
 
+def _zz_idempotents(ct):
+    r"""
+    Given a Cartan Type, generate idempotent names for the zigzag algebra for each vertex.
+    """
+    return [(i,0) for i in ct.index_set()]
+
+def _zz_arrows(ct):
+    r"""
+    Given a Cartan Type, generate names for length-one paths in the zigzag algebra.
+
+    In the Dynkin diagram of the cartan type, assume that edges are ordered from the
+    lower labelled vertex to the higher labelled vertex, for example, 3 -> 4.
+    In this case, there will be two generators corresponding to this edge, namely 'a34' and 'b43'.
+
+    We assume that the given Cartan Type is simply laced.
+    """
+    dynkin_edges = ct.dynkin_diagram().edges()
+    forward_zigzag_arrows = [((i,j),1) for (i,j,_) in dynkin_edges if i < j]
+    backward_zigzag_arrows = [((i,j),1) for (i,j,_) in dynkin_edges if j < i]
+    return forward_zigzag_arrows + backward_zigzag_arrows
+
+def _zz_loops(ct):
+    r"""
+    Given a Cartan Type, generate loop names for the zigzag algebra for each vertex.
+    """
+    return [(i,2) for i in ct.index_set()]    
+
+def _zz_basis(ct):
+    r"""
+    Given a Cartan Type, return a list of names of the basis elements of the
+    corresponding zigzag algebra.
+    """
+    return _zz_idempotents(ct) + _zz_arrows(ct) + _zz_loops(ct)
+
+def _zz_deg(b):
+    r"""
+    Given a basis element of the form (i,n) for n in {0,2} or ((i,j),1), return its degree.
+    """
+    return b[1]
+
+def _zz_source(b):
+    r"""
+    Given a basis element (i.e. a path of length at most 2), return its source vertex.
+    """
+    if _zz_deg(b) == 0 or _zz_deg(b) == 2:
+        return b[0]
+    else:
+        return b[0][0]
+
+def _zz_target(b):
+    r"""
+    Given a basis element (i.e. a path of length at most 2), return its target vertex.
+    """
+    if _zz_deg(b) == 0 or _zz_deg(b) == 2:
+        return b[0]
+    else:
+        return b[0][1]
+
+def _zz_get_name(b):
+    r"""
+    Given a basis element (i.e, a path of length at most 2), construct its name.
+    """
+    if _zz_deg(b) == 0:
+        return 'e' + str(_zz_source(b))
+    elif _zz_deg(b) == 1:
+        return 'a' + str(_zz_source(b)) + str(_zz_target(b))
+    elif _zz_deg(b) == 2:
+        return 'l' + str(_zz_source(b))
+    else:
+        raise ValueError("{} is not a valid basis element!".format(b))
+                 
+    
+def _zz_right_multiply(basis, x, k):
+    r"""
+    Generate the multiplication table for right multiplication by a basis element x of the zigzag algebra.
+    The element x must be in the basis.
+    """
+
+    # Initialize an empty transposed matrix, which we fill in.
+    mult_matrix = Matrix(k, len(basis), len(basis))
+
+    # Case 1: x is an idempotent
+    if _zz_deg(x) == 0:
+        for i in range(len(basis)):
+            b = basis[i]
+            if _zz_target(b) == _zz_source(x):
+                j = basis.index(b)
+                mult_matrix[i,j] = 1
+
+    # Case 2: x is an edge (degree-one element) 
+    elif _zz_deg(x) == 1:
+        for i in range(len(basis)):
+            b = basis[i]
+            if _zz_deg(b) == 0 and _zz_target(b) == _zz_source(x):
+                # Multiplication with idempotent at source of x is x.
+                j = basis.index(b)
+                mult_matrix[i,j] = 1
+            elif (_zz_deg(b) == 1 and
+                  _zz_target(b) == _zz_source(x) and 
+                  _zz_source(b) == _zz_target(x)):
+                # Multiplication with the opposite edge produces the loop at the target of x.
+                # CHECK SIGN CONVENTION HERE.
+                j = basis.index((_zz_target(x),2))
+                if _zz_source(b) < _zz_target(b):
+                    # b is a "forwards" arrow
+                    mult_matrix[i,j] = 1
+                else:
+                    # b is a "backwards" arrow
+                    mult_matrix[i,j] = -1                    
+    # Case 3: x is a loop
+    elif _zz_deg(x) == 2:
+        for i in range(len(basis)):
+            b = basis[i]
+            if _zz_deg(b) > 0 or (_zz_target(b) != _zz_source(x)):
+                # Multiplication with positive degree elements as well as
+                # idempotents that don't match the endpoint of x is zero.
+                pass
+            else:
+                # Multiplication with the idempotent with the same endpoint yields x.
+                j = basis.index(x)
+                mult_matrix[i,j] = 1
+    else:
+        raise ValueError("{} is not a basis element of the zigzag algebra!".format(x))
+    return mult_matrix
+
+
+
 class ZigZagAlgebraElement(FiniteDimensionalAlgebraElement):
     def __init__(self, A, elt=None, check=True):
         FiniteDimensionalAlgebraElement.__init__(self, A = A, elt = elt, check = check)
@@ -18,15 +145,18 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
         k is the base field, and ct is a CartanType.
         '''
-        #R = P.algebra(k)
-        #self._path_semigroup = P
-        ct = CartanType(ct)
-        self._cartan_type = ct
+
+        # For the moment we must input either a genuine CartanType, or a string shorthand such as "A5" or "E8".
+        # For some reason Sage does not seem to accept list inputs such as ['A', 5,1].
+        self._cartan_type = CartanType(ct)
+        self._base_ring = k
+
         if not self._cartan_type.is_simply_laced():
+            # For the moment we only implement simply laced Cartan types.
             raise ValueError("Given Cartan Type must be simply laced.")
 
         # This is currently a list of string names, for the idempotents, degree one edges, and loops of the zigzag algebra respectively.
-        self._basis = _zz_basis(ct)
+        self._basis = _zz_basis(self._cartan_type)
 
         # A list of matrices, where the ith matrix is the matrix of right multiplication
         # by the ith basis element
@@ -36,38 +166,13 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().Graded().WithBasis().Associative())
 
     def _repr_(self):
-        print("Unimplemented.")
-        return None
+        return "Zig-zag algebra of {0} over {1}".format(self._cartan_type, self._base_ring)        
 
-    def isA1Hat(self):
-        print("Unimplemented.")
-        return None
-
-    # def pathsFromTo(self,e,f):
-    #     '''
-    #     Returns the number of paths in the algebra that go from idempotent e to idempotent f.
-    #     Returns an empty list if e or f is not a primitive idempotent in the algebra.
-    #     '''
-    #     ids = self.idempotents()
-    #     if e not in ids or f not in ids:
-    #         return []
-    #     paths = [e * x * f for x in self.basis()]
-    #     return [p for p in paths if p != 0]
-    
     # def idempotents(self):
     #     '''
     #     The list of idempotents of self.
     #     '''
     #     return self.basis()[0:len(self._path_semigroup.idempotents())]
-
-    # def coeff(self, r, monomial):
-    #     '''
-    #     The coefficient of monomial in the expansion of r in the basis. 
-    #     Monomial must be a basis element.
-    #     '''
-    #     i = list(self.basis()).index(monomial)
-    #     return r.monomial_coefficients().get(i, 0)
-
     # def arrows(self):
     #     '''
     #     The list of elements of this algebra representing the arrows in the underlying (doubled) quiver.
@@ -101,6 +206,32 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     #         if b * e != 0:
     #             return e
     #     raise Exception("Something went wrong: {0} does not seem to have a head.".format(b))
+    
+    # def isA1Hat(self):
+    #     print("Unimplemented.")
+    #     return None
+
+    # def pathsFromTo(self,e,f):
+    #     '''
+    #     Returns the number of paths in the algebra that go from idempotent e to idempotent f.
+    #     Returns an empty list if e or f is not a primitive idempotent in the algebra.
+    #     '''
+    #     ids = self.idempotents()
+    #     if e not in ids or f not in ids:
+    #         return []
+    #     paths = [e * x * f for x in self.basis()]
+    #     return [p for p in paths if p != 0]
+    
+
+    # def coeff(self, r, monomial):
+    #     '''
+    #     The coefficient of monomial in the expansion of r in the basis. 
+    #     Monomial must be a basis element.
+    #     '''
+    #     i = list(self.basis()).index(monomial)
+    #     return r.monomial_coefficients().get(i, 0)
+
+
 
     # def dualize(self, b):
     #     '''
@@ -209,129 +340,3 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 #         coeffs = _getCoefficients(R, basis, y*x)
 #         xMatrix.append(coeffs)
 #     return matrix(xMatrix)
-
-def _zz_idempotents(ct):
-    r"""
-    Given a Cartan Type, generate idempotent names for the zigzag algebra for each vertex.
-    """
-    return [(i,0) for i in ct.index_set()]
-
-def _zz_edges(ct):
-    r"""
-    Given a Cartan Type, generate names for length-one paths in the zigzag algebra.
-
-    In the Dynkin diagram of the cartan type, assume that edges are ordered from the
-    lower labelled vertex to the higher labelled vertex, for example, 3 --> 4.
-    In this case, there will be two generators corresponding to this edge, namely 'a_3_4' and 'b_4_3'.
-
-    We assume that the given Cartan Type is simply laced.
-    """
-    dynkin_edges = ct.dynkin_diagram().edges()
-    forward_zigzag_edges = [((i,j),1) for (i,j,_) in dynkin_edges if i < j]
-    backward_zigzag_edges = [((i,j),1) for (i,j,_) in dynkin_edges if j < i]
-    return forward_zigzag_edges + backward_zigzag_edges
-
-def _zz_loops(ct):
-    r"""
-    Given a Cartan Type, generate loop names for the zigzag algebra for each vertex.
-    """
-    return [(i,2) for i in ct.index_set()]    
-
-def _zz_basis(ct):
-    r"""
-    Given a Cartan Type, return a list of names of the basis elements of the
-    corresponding zigzag algebra.
-    """
-    return _zz_idempotents(ct) + _zz_edges(ct) + _zz_loops(ct)
-
-def _zz_deg(b):
-    r"""
-    Given a basis element of the form (i,n) for n in {0,2} or ((i,j),1), return its degree.
-    """
-    return b[1]
-
-def _zz_source(b):
-    r"""
-    Given a basis element (i.e. a path of length at most 2), return its source vertex.
-    """
-    if _zz_deg(b) == 0 or _zz_deg(b) == 2:
-        return b[0]
-    else:
-        return b[0][0]
-
-def _zz_target(b):
-    r"""
-    Given a basis element (i.e. a path of length at most 2), return its target vertex.
-    """
-    if _zz_deg(b) == 0 or _zz_deg(b) == 2:
-        return b[0]
-    else:
-        return b[0][1]
-
-def _zz_get_name(b):
-    r"""
-    Given a basis element (i.e, a path of length at most 2), return its name.
-    """
-    if _zz_deg(b) == 0:
-        return 'e' + str(_zz_source(b))
-    elif _zz_deg(b) == 1:
-        return 'a' + str(_zz_source(b)) + str(_zz_target(b))
-    elif _zz_deg(b) == 2:
-        return 'l' + str(_zz_source(b))
-    else:
-        raise ValueError("{} is not a valid basis element!".format(b))
-                 
-    
-def _zz_right_multiply(basis, x, k):
-    r"""
-    Generate the multiplication table for right multiplication by a basis element x of the zigzag algebra.
-    The element x must be in the basis.
-    """
-
-    # Initialize an empty transposed matrix, which we fill in.
-    mult_matrix = Matrix(k, len(basis), len(basis))
-
-    # Case 1: x is an idempotent
-    if _zz_deg(x) == 0:
-        for i in range(len(basis)):
-            b = basis[i]
-            if _zz_target(b) == _zz_source(x):
-                j = basis.index(b)
-                mult_matrix[i,j] = 1
-
-    # Case 2: x is an edge (degree-one element) 
-    elif _zz_deg(x) == 1:
-        for i in range(len(basis)):
-            b = basis[i]
-            if _zz_deg(b) == 0 and _zz_target(b) == _zz_source(x):
-                # Multiplication with idempotent at source of x is x.
-                j = basis.index(b)
-                mult_matrix[i,j] = 1
-            elif (_zz_deg(b) == 1 and
-                  _zz_target(b) == _zz_source(x) and 
-                  _zz_source(b) == _zz_target(x)):
-                # Multiplication with the opposite edge produces the loop at the target of x.
-                # CHECK SIGN CONVENTION HERE.
-                j = basis.index((_zz_target(x),2))
-                if _zz_source(b) < _zz_target(b):
-                    # b is a "forwards" arrow
-                    mult_matrix[i,j] = 1
-                else:
-                    # b is a "backwards" arrow
-                    mult_matrix[i,j] = -1                    
-    # Case 3: x is a loop
-    elif _zz_deg(x) == 2:
-        for i in range(len(basis)):
-            b = basis[i]
-            if _zz_deg(b) > 0 or (_zz_target(b) != _zz_source(x)):
-                # Multiplication with positive degree elements as well as
-                # idempotents that don't match the endpoint of x is zero.
-                pass
-            else:
-                # Multiplication with the idempotent with the same endpoint yields x.
-                j = basis.index(x)
-                mult_matrix[i,j] = 1
-    else:
-        raise ValueError("{} is not a basis element of the zigzag algebra!".format(x))
-    return mult_matrix
-
