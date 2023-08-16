@@ -151,16 +151,25 @@ for k in fixed_signs.keys():
     bnames_pruned = [b for b in bnames_pruned if not is_pm_or_mp(b)]
 
     pruned_braids[k] = bnames_pruned
-    
-non_homologically_linear_braids = {}
-for k in pruned_braids.keys():
-    print("-------------------------")    
-    print("Starting check for ",k)
-    output = []
-    for b in pruned_braids[k]:
-        if not is_homologically_linear(b):
-            output = [b] + output
-    non_homologically_linear_braids[k] = output
-    print("Finished check for %s", k)
-    print("-------------------------")
+
+
+# Sanitize output into a readable format    
+sanitized_pruned_braids = []
+for l in pruned_braids.values():
+    sanitized_pruned_braids = sanitized_pruned_braids + l
+
+sanitized_pruned_braids = [[y.replace('_','') for y in x] for x in sanitized_pruned_braids]
+sanitized_pruned_braids = ['·'.join(x) for x in sanitized_pruned_braids]
+
+# non_homologically_linear_braids = {}
+# for k in pruned_braids.keys():
+#     print("-------------------------")    
+#     print("Starting check for ",k)
+#     output = []
+#     for b in pruned_braids[k]:
+#         if not is_homologically_linear(b):
+#             output = [b] + output
+#     non_homologically_linear_braids[k] = output
+#     print("Finished check for %s", k)
+#     print("-------------------------")
 
