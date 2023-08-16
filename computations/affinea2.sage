@@ -87,22 +87,6 @@ def t3(C):
 
 heart = [P1, P2, P3]
 
-generators = {}
-generators['s1'] = s1
-generators['s2'] = s2
-generators['s3'] = s3
-generators['t1'] = t1
-generators['t2'] = t2
-generators['t3'] = t3
-
-# Find braids that keep a test object lying in t-slices [-1,1] in the same t-slice.
-testObject = t3(t3(s2(s2(P1))))
-
-positiveGens = [k for k in generators.keys() if k[0] == 's']
-negativeGens = [k for k in generators.keys() if k[0] == 't']
-positiveMonoid = {}
-negativeMonoid = {}
-
 def generateNextLevel(multipliers, given):
     '''
     Given a list of braids as "given", generate the next list by multiplying everything in given by everything in multipliers
@@ -114,48 +98,59 @@ def generateNextLevel(multipliers, given):
         output = output + [[b] + g for g in given]
     return output
 
-def positiveBraidsGetOrAdd(n):
+def braidsGetOrAdd(n, dct, gens):
+    '''
+    Get keyval n from dct. If there is no such key, add braids of length n by getting/creating braids of length (n-1) and multiplying each one by each gen in gens.
+    '''
     if n < 1:
         return None
-    if n in positiveMonoid.keys():
-        return positiveMonoid[n]
+    if n in dct.keys():
+        return dct[n]
     elif n == 1:
-        new = [[g] for g in positiveGens]
+        new = [[g] for g in gens]
     else:
-        prev = positiveBraidsGetOrAdd(n-1)
-        new = generateNextLevel(positiveGens, prev)
-    positiveMonoid[n] = new
+        prev = braidsGetOrAdd(n-1, dct, gens)
+        new = generateNextLevel(gens, prev)
+
+    dct[n] = new
     return new
 
-def nameToBraid(name):
-    return composeAll([generators[x] for x in name])
+def allBraidsGetOrAdd(n):
+    return braidsGetOrAdd(n, allBraidsByLen, generators.keys())
 
-def is_nonexpanding(br, ob):
-    ob2 = br(ob)
-    return ob2.minLevel() >= ob.minLevel() and ob2.maxLevel() <= ob.maxLevel()
+def positiveBraidsGetOrAdd(n):
+    return braidsGetOrAdd(n, positiveMonoid, positiveGens)
 
-def in_pm_1(br, ob):
-    ob2 = br(ob)
-    return ob2.minLevel() >= -1 and ob2.maxLevel() <= 1
+def negativeBraidsGetOrAdd(n):
+    return braidsGetOrAdd(n, negativeMonoid, negativeGens)
+    
+# def is_mixed(b):
+#     if len(b) <=1:
+#         return False
+#     if b[0] in positiveGens:
+#         fst, rest = positiveGens, negativeGens
+#     else:
+#         fst, rest = negativeGens, positiveGens
 
-def testPositiveUpTo(n):
-    for i in range(1,n+1):
-        bi = positiveBraidsGetOrAdd(i)
-        for br in bi:
-            if is_nonexpanding(nameToBraid(br),testObject):
-                print(br)
-# for i in range(1,5):
-#     bi = positiveBraidsGetOrAdd(i)
-#     for br in bi:
-#         if is_nonexpanding(nameToBraid(br), testObject):
-#             print(br)
+#     i = 0
+#     for j in range(0,len(b) + 1):
+#         if b[j] in fst:
+#             i = j
+#         else:
+#             break
+#     if j == len(b):
+#         return True
+#     else:
+#         for 
+
 
 # Test the definition of is_nonexpanding
-DEBUG = False
+# DEBUG = False
 
-if DEBUG:
-    assert is_nonexpanding(t3, t3(s2(P1))) == False
-    assert is_nonexpanding(s3, t3(s2(P1))) == True
-    assert is_nonexpanding(t2, t3(s2(P1))) == True
-    assert is_nonexpanding(s2, t3(s2(P1))) == False
-    
+# if DEBUG:
+#     assert is_nonexpanding(t3, t3(s2(P1))) == False
+#     assert is_nonexpanding(s3, t3(s2(P1))) == True
+#     assert is_nonexpanding(t2, t3(s2(P1))) == True
+#     assert is_nonexpanding(s2, t3(s2(P1))) == False
+
+
