@@ -3,19 +3,28 @@ from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_elemen
 
 def _zz_idempotents(ct):
     r"""
-    Given a Cartan Type, generate idempotent names for the zigzag algebra for each vertex.
+    Given a Cartan Type, generate internal representations for the idempotents of
+    the zigzag algebra for each vertex.
+
+    We represent each idempotent as (i,0) where i is the index of the vertex, and 0
+    represents that it is an element of degree 0.
     """
     return [(i,0) for i in ct.index_set()]
 
 def _zz_arrows(ct):
     r"""
-    Given a Cartan Type, generate names for length-one paths in the zigzag algebra.
+    Given a Cartan Type, generate internal representations for length-one paths in
+    the zigzag algebra.
 
     In the Dynkin diagram of the cartan type, assume that edges are ordered from the
     lower labelled vertex to the higher labelled vertex, for example, 3 -> 4.
-    In this case, there will be two generators corresponding to this edge, namely 'a34' and 'b43'.
+    In this case, there will be two generators corresponding to this edge, one 'forwards'
+    and the other 'backwards'.
 
-    We assume that the given Cartan Type is simply laced.
+    We represent each arrow as ((i,j),0) where i is the source, j the target, and 1
+    represents that it is an element of degree 1.
+
+    We assume (for now) that the given Cartan Type is simply laced.
     """
     dynkin_edges = ct.dynkin_diagram().edges()
     forward_zigzag_arrows = [((i,j),1) for (i,j,_) in dynkin_edges if i < j]
@@ -24,14 +33,18 @@ def _zz_arrows(ct):
 
 def _zz_loops(ct):
     r"""
-    Given a Cartan Type, generate loop names for the zigzag algebra for each vertex.
+    Given a Cartan Type, generate internal representations for the loops in
+    the zigzag algebra for each vertex.
+
+    We represent each loop as (i,2) where i is the source/target, and 2
+    represents that it is an element of degree 2.
     """
     return [(i,2) for i in ct.index_set()]    
 
 def _zz_basis(ct):
     r"""
-    Given a Cartan Type, return a list of names of the basis elements of the
-    corresponding zigzag algebra.
+    Given a Cartan Type, return a list of internal representations of the
+    basis elements of the corresponding zigzag algebra.
     """
     return _zz_idempotents(ct) + _zz_arrows(ct) + _zz_loops(ct)
 
@@ -146,7 +159,8 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         k is the base field, and ct is a CartanType.
         '''
 
-        # For the moment we must input either a genuine CartanType, or a string shorthand such as "A5" or "E8".
+        # For the moment we must input either a genuine CartanType, or a string shorthand
+        # such as "A5" or "E8".
         # For some reason Sage does not seem to accept list inputs such as ['A', 5,1].
         self._cartan_type = CartanType(ct)
         self._base_ring = k
@@ -156,12 +170,12 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
             raise ValueError("Given Cartan Type must be simply laced.")
 
         # This is currently a list of string names, for the idempotents, degree one edges, and loops of the zigzag algebra respectively.
-        self._basis = _zz_basis(self._cartan_type)
+        self._internal_basis = _zz_basis(self._cartan_type)
 
         # A list of matrices, where the ith matrix is the matrix of right multiplication
         # by the ith basis element
-        table = [_zz_right_multiply(self._basis, b, k) for b in self._basis]
-        names = [_zz_get_name(b) for b in self._basis]
+        table = [_zz_right_multiply(self._internal_basis, b, k) for b in self._internal_basis]
+        names = [_zz_get_name(b) for b in self._internal_basis]
         
         super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().Graded().WithBasis().Associative())
 
