@@ -180,7 +180,22 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().Graded().WithBasis().Associative())
 
     def _repr_(self):
-        return "Zig-zag algebra of {0} over {1}".format(self._cartan_type, self._base_ring)        
+        return "Zig-zag algebra of {0} over {1}".format(self._cartan_type, self._base_ring)
+
+    @property
+    def vertices(self):
+        """
+        Returns the index set of the Cartan Type of `self`. That is, the list of vertices of the Dynkin diagram of `self`.
+        """
+        return self._cartan_type.index_set()
+
+    @property
+    def _basis_correspondence(self):
+        """
+        Returns a zipped list of the internal representations of the basis elements of `self`
+        with the algebra representations of the basis elements of `self`.
+        """
+        return zip(self._internal_basis, self.basis())
 
     # def idempotents(self):
     #     '''
