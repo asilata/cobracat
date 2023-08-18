@@ -197,6 +197,9 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
         Assume that `b` is in `self.basis()`.
         """
+        if b not in self.basis():
+            raise ValueError("{} is not a basis element of {}!".format(b,self))
+
         # Assume that _basis_correspondence is a 1-1 correspondence, so return the first element
         # of the first tuple whose second element is b.
         return [x for (x,y) in self._basis_correspondence if y == b][0]
@@ -207,6 +210,9 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
         Assume that `bi` is in self._internal_basis
         """
+        if bi not in self._internal_basis:
+            raise ValueError("{} is not the internal representation of any basis element of {}!".format(bi,self))
+
         # Assume that _basis_correspondence is a 1-1 correspondence, so return the second element
         # of the first tuple whose first element is bi.
         return [y for (x,y) in self._basis_correspondence if x == bi][0]
@@ -232,6 +238,9 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
         Assume that `b` is in `self.basis()`.
         """
+        if b not in self.basis():
+            raise ValueError("{} is not a basis element of {}!".format(b,self))
+
         return _zz_source(self._to_internal_repr(b))
 
     def target(self,b):
@@ -240,6 +249,9 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
         Assume that `b` is in `self.basis()`.
         """
+        if b not in self.basis():
+            raise ValueError("{} is not a basis element of {}!".format(b,self))
+        
         return _zz_target(self._to_internal_repr(b))
 
     @cached_property
