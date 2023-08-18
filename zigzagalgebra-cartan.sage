@@ -1,3 +1,4 @@
+from functools import cached_property
 from itertools import product
 from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element import FiniteDimensionalAlgebraElement
 
@@ -183,13 +184,6 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         return "Zig-zag algebra of {0} over {1}".format(self._cartan_type, self._base_ring)
 
     @property
-    def vertices(self):
-        """
-        Returns the index set of the Cartan Type of `self`. That is, the list of vertices of the Dynkin diagram of `self`.
-        """
-        return self._cartan_type.index_set()
-
-    @property
     def _basis_correspondence(self):
         """
         Returns a zipped list of the internal representations of the basis elements of `self`
@@ -197,45 +191,85 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         """
         return zip(self._internal_basis, self.basis())
 
-    # def idempotents(self):
-    #     '''
-    #     The list of idempotents of self.
-    #     '''
-    #     return self.basis()[0:len(self._path_semigroup.idempotents())]
-    # def arrows(self):
-    #     '''
-    #     The list of elements of this algebra representing the arrows in the underlying (doubled) quiver.
-    #     '''
-    #     return self.basis()[len(self._path_semigroup.idempotents()):len(self._path_semigroup.idempotents())+len(self._path_semigroup.arrows())]
+    def _to_internal_repr(self,b):
+        """
+        Returns the internal representation of a basis element `b` of `self`.
 
-    # def loops(self):
-    #     '''
-    #     The list of elements of this algebra representing the loops. Note that there is a unique loop at every vertex.
-    #     '''
-    #     return self.basis()[len(self._path_semigroup.idempotents()) + len(self._path_semigroup.arrows()):]
+        Assume that `b` is in `self.basis()`.
+        """
+        # Assume that _basis_correspondence is a 1-1 correspondence, so return the first element
+        # of the first tuple whose second element is b.
+        return [x for (x,y) in self._basis_correspondence if y == b][0]
 
-    # def source(self, b):
-    #     '''
-    #     The idempotent corresponding to the source vertex of the arrow represented by b.
-    #     '''
-    #     if b not in self.basis():
-    #         raise Exception("{0} is not a basis element.".format(b))
-    #     for e in self.idempotents():
-    #         if e * b != 0:
-    #             return e
-    #     raise Exception("Something went wrong: {0} does not seem to have a head.".format(b))
+    def _from_internal_repr(self,bi):
+        """
+        Returns the basis element corresponding to the internally represented basis element `bi`.
 
-    # def target(self, b):
-    #     '''
-    #     The idempotent corresponding to the target vertex of the arrow represented by b.
-    #     '''
-    #     if b not in self.basis():
-    #         raise Exception("{0} is not a basis element.".format(b))
-    #     for e in self.idempotents():
-    #         if b * e != 0:
-    #             return e
-    #     raise Exception("Something went wrong: {0} does not seem to have a head.".format(b))
-    
+        Assume that `bi` is in self._internal_basis
+        """
+        # Assume that _basis_correspondence is a 1-1 correspondence, so return the second element
+        # of the first tuple whose first element is bi.
+        return [y for (x,y) in self._basis_correspondence if x == bi][0]
+
+    def deg(self, p):
+        """
+        Returns the degree of a homogeneous element `p` of `self`.
+
+        Assume that `p` is homogeneous.
+        """
+        mons = p.monomials()
+        if mons == []:
+            return -1
+        degs = [_zz_deg(self._to_internal_repr(m)) for m in mons]
+        for d in degs:
+            if d != degs[0]:
+                raise ValueError("{} is not a homogeneous element!".format(p))
+        return degs[0]
+
+    def source(self,b):
+        """
+        Returns the source vertex of the basis element `b` of `self`.
+
+        Assume that `b` is in `self.basis()`.
+        """
+        return _zz_source(self._to_internal_repr(b))
+
+    def target(self,b):
+        """
+        Returns the target vertex of the basis element `b` of `self`.
+
+        Assume that `b` is in `self.basis()`.
+        """
+        return _zz_target(self._to_internal_repr(b))
+
+    @cached_property
+    def vertices(self):
+        """
+        Returns the index set of the Cartan Type of `self`. That is, the list of vertices of the Dynkin diagram of `self`.
+        """
+        return self._cartan_type.index_set()
+
+    @cached_property
+    def idempotents(self):
+        '''
+        The list of idempotents of `self`.
+        '''
+        return [x for x in self.basis() if self.deg(x) == 0]
+
+    @cached_property
+    def arrows(self):
+        '''
+        The list of arrows, or length-1 paths, in `self`.
+        '''
+        return [x for x in self.basis() if self.deg(x) == 1]        
+
+    @cached_property
+    def loops(self):
+        '''
+        The list of elements of this algebra representing the loops. Note that there is a unique loop at every vertex.
+        '''
+        return [x for x in self.basis() if self.deg(x) == 2]                
+
     # def isA1Hat(self):
     #     print("Unimplemented.")
     #     return None
