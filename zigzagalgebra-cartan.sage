@@ -170,7 +170,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
             # For the moment we only implement simply laced Cartan types.
             raise ValueError("Given Cartan Type must be simply laced.")
 
-        # This is currently a list of string names, for the idempotents, degree one edges, and loops of the zigzag algebra respectively.
+        # An internal representation for the basis of `self`, as specified in the helper methods `_zz_basis()`defined previously.
         self._internal_basis = _zz_basis(self._cartan_type)
 
         # A list of matrices, where the ith matrix is the matrix of right multiplication
@@ -280,7 +280,16 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         '''
         The list of elements of this algebra representing the loops. Note that there is a unique loop at every vertex.
         '''
-        return [x for x in self.basis() if self.deg(x) == 2]                
+        return [x for x in self.basis() if self.deg(x) == 2]
+
+    def idempotent_by_vertex(self, v):
+        """
+        Returns the idempotent of `self` corresponding to vertex v.
+        """
+        if v not in self.vertices:
+            raise ValueError("{} is not a vertex of {}!".format(v,self))
+        # Return the first (and only) idempotent that has v as a source vertex.
+        return [e for e in self.idempotents if self.source(e) == v][0]
 
     # def isA1Hat(self):
     #     print("Unimplemented.")
