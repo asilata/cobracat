@@ -54,41 +54,41 @@ class ProjectiveZigZagModule(Module):
 
     # # Here the module is supposed to be the left R-module Re, but the map is right multiplication by r.
     # @cached_method
-    def is_zero(self, r):
-        '''
-        Is right multiplication by r the zero map on self?
-        '''
+    def is_annihilated_by(self, r):
+        r"""
+        Returns True if right multiplication by `r` is the zero map on `self`.
+        """        
         return (self.idempotent * r == 0)
 
-    # @cached_method
-    # def is_invertible(self, r):
-    #     '''
-    #     Is right multiplication by r an invertible map on self?
-    #     '''
-    #     ir = self.idempotent * r
-    #     if ir == 0:
-    #         return False
+    @cached_method
+    def is_invertible(self, r):
+        r"""
+        Returns True if right multiplication by `r` is an invertible map on `self`.
+        """        
+        ir = self.idempotent * r
+        if ir == 0:
+            return False
 
-    #     nonZeroCoeffs = [(x,y) for (x,y) in self.idempotent.monomial_coefficients().items() if y != 0]
-    #     m,d = nonZeroCoeffs[0]
-    #     c = ir.monomial_coefficients().get(m, 0)
-    #     multiple = c/d
+        non_zero_coeffs = [(x,y) for (x,y) in self.idempotent.monomial_coefficients().items() if y != 0]
+        m,d = non_zero_coeffs[0]
+        c = ir.monomial_coefficients().get(m, 0)
+        multiple = c/d
 
-    #     return (ir == multiple*self.idempotent)
+        return (ir == multiple*self.idempotent)
 
-    # @cached_method
-    # def invert(self, r):
-    #     '''
-    #     An element s in basering such that right multiplication by s is the inverse of right multiplication by r.
-    #     Assumes that right multiplication by r is invertible.
-    #     '''
-    #     if not self.is_invertible(r):
-    #         raise TypeError("Not invertible")
-    #     else:
-    #         ir = self.idempotent * r
-    #         nonZeroCoeffs = [(x,y) for (x,y) in self.idempotent.monomial_coefficients().items() if y != 0]
-    #         m,d = nonZeroCoeffs[0]
-    #         c = ir.monomial_coefficients().get(m, 0)
-    #         multiple = c/d
-    #         return d/c * self.idempotent
+    @cached_method
+    def invert(self, r):
+        r"""
+        Returns an element s in basering such that right multiplication by s is the inverse of right multiplication by r.
+        Assumes that right multiplication by r is invertible.
+        """        
+        if not self.is_invertible(r):
+            raise TypeError("Not invertible")
+        else:
+            ir = self.idempotent * r
+            non_zero_coeffs = [(x,y) for (x,y) in self.idempotent.monomial_coefficients().items() if y != 0]
+            m,d = non_zero_coeffs[0]
+            c = ir.monomial_coefficients().get(m, 0)
+            multiple = c/d
+            return d/c * self.idempotent
         

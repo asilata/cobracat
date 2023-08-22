@@ -18,7 +18,7 @@ class ProjectiveComplex(object):
         base_ring: Base ring (not necessarily commutative)
 
         objects: A dictionary of type {i: [P]} where i is an integer and P is projective module over the base ring. A projective module can be anything that implements the following methods: 
-        (1) P.is_zero(r) : Is right multiplication by r the zero map on P?
+        (1) P.is_annihilated_by(r) : Is right multiplication by r the zero map on P?
         (2) P.is_invertible(r): Is right multiplication by r an invertible map on P?
         (3) P.invert(r): If right multiplication by r is invertible, return a ring element which acts as its inverse.
         (4) P.hom(Q): Returns a set of ring elements (monomials), which by right multiplication, define a basis of Hom(P,Q)
@@ -275,7 +275,7 @@ class ProjectiveComplex(object):
 
         for i in range(self.min_index(), self.max_index()-1):
             for k, v in (matrices[i] * matrices[i+1]).dict().items():
-                if not self.objects(i)[k[0]].is_zero(v):
+                if not self.objects(i)[k[0]].is_annihilated_by(v):
                     print("Differential squared not zero at " + str(i) + ".")
                 return False
 
@@ -499,7 +499,7 @@ def checkMap(P, Q, M):
         Mi = matrix(len(P.objects(i)), len(Q.objects(i)), M.get(i,{}))
         Mip1 = matrix(len(P.objects(i+1)), len(Q.objects(i+1)), M.get(i+1,{}))
         for k, v in (dPi*Mip1 - Mi*dQi).dict().items():
-            if not P.objects(i)[k[0]].is_zero(v):
+            if not P.objects(i)[k[0]].is_annihilated_by(v):
                 return False
     return True
     
@@ -521,7 +521,7 @@ class ProjectiveModuleOverField(object):
         return self._vsp.__repr__()
 
     @cached_method
-    def is_zero(self, r):
+    def is_annihilated_by(self, r):
         return (r == 0)
 
     @cached_method
@@ -568,7 +568,7 @@ class GradedProjectiveModuleOverField(object):
         return self._name + "<" + str(self._grade) +">"
 
     @cached_method
-    def is_zero(self, r):
+    def is_annihilated_by(self, r):
         return (r == 0)
 
     @cached_method
