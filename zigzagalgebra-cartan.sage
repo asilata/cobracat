@@ -163,15 +163,16 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         # For the moment we must input either a genuine CartanType, or a string shorthand
         # such as "A5" or "E8".
         # For some reason Sage does not seem to accept list inputs such as ['A', 5,1].
-        self._cartan_type = CartanType(ct)
-        self._base_ring = k
-
-        if not self._cartan_type.is_simply_laced():
+        self.cartan_type = CartanType(ct)
+        if not self.cartan_type.is_simply_laced():
             # For the moment we only implement simply laced Cartan types.
             raise ValueError("Given Cartan Type must be simply laced.")
+        
+        self.vertices = self.cartan_type.index_set()
+        self._base_ring = k
 
         # An internal representation for the basis of `self`, as specified in the helper methods `_zz_basis()`defined previously.
-        self._internal_basis = _zz_basis(self._cartan_type)
+        self._internal_basis = _zz_basis(self.cartan_type)
 
         # A list of matrices, where the ith matrix is the matrix of right multiplication
         # by the ith basis element
@@ -181,7 +182,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().Graded().WithBasis().Associative())
 
     def _repr_(self):
-        return "Zig-zag algebra of {0} over {1}".format(self._cartan_type, self._base_ring)
+        return "Zig-zag algebra of {0} over {1}".format(self.cartan_type, self._base_ring)
 
     @property
     def _basis_correspondence(self):
@@ -253,13 +254,6 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
             raise ValueError("{} is not a basis element of {}!".format(b,self))
         
         return _zz_target(self._to_internal_repr(b))
-
-    @cached_property
-    def vertices(self):
-        """
-        Returns the index set of the Cartan Type of `self`. That is, the list of vertices of the Dynkin diagram of `self`.
-        """
-        return self._cartan_type.index_set()
 
     @cached_property
     def idempotents(self):
