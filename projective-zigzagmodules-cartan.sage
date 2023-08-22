@@ -68,12 +68,10 @@ class ProjectiveZigZagModule(Module):
         ir = self.idempotent * r
         if ir == 0:
             return False
-
         non_zero_coeffs = [(x,y) for (x,y) in self.idempotent.monomial_coefficients().items() if y != 0]
         m,d = non_zero_coeffs[0]
         c = ir.monomial_coefficients().get(m, 0)
         multiple = c/d
-
         return (ir == multiple*self.idempotent)
 
     @cached_method
