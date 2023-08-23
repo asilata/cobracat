@@ -316,21 +316,41 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         # Return the first (and only) idempotent that has v as a source vertex.
         return [e for e in self.idempotents if self.source(e) == v][0]
 
+    def calabi_yau_dual(self, b):
+        r"""
+        Given an element `b` in the basis of `self`, return the unique basis element that is Calabi--Yau dual to `a`.
+
+        `a` is an element such that `a * b` and `b * a` are both (plus or minus) the loops at the corresponding vertices.
+        More explicitly, if b is a loop at a vertex v, then a is the idempotent at v; if b is the idempotent at v then a is the loop at v; if b represents an an arrow, then a represents the reverse arrow.
+
+        The element b must be in the basis.
+        """
+        if b not in self.basis():
+            raise ValueError("{} is not a basis element of {}.".format(b,Z))
+        s,t = self.source(b),self.target(b)
+        for c in self.basis():
+            bc = b * t * c * s
+            if bc in self.loops() or -bc in self.loops():
+                return c
+
+    @cached_method
+    def paths_from_to(self,e,f):
+        r"""
+        Returns a list of basis elements in the algebra that are paths from the source/target of `e` to the source/target of `f`.
+        We assume that `e` and `f` are primitive idempotents, that is, idempotents in the basis.
+        """        
+        if e not in self.idempotents:
+            raise ValueError("First argument {} is not an idempotent of {}!".format(e,self))
+        if f not in self.idempotents:
+            raise ValueError("Second argument {} is not an idempotent of {}!".format(f,self))
+
+        paths = [e * x * f for x in self.basis()]
+        return [p for p in paths if p != 0]
+            
     # def isA1Hat(self):
     #     print("Unimplemented.")
     #     return None
 
-    # def pathsFromTo(self,e,f):
-    #     '''
-    #     Returns the number of paths in the algebra that go from idempotent e to idempotent f.
-    #     Returns an empty list if e or f is not a primitive idempotent in the algebra.
-    #     '''
-    #     ids = self.idempotents()
-    #     if e not in ids or f not in ids:
-    #         return []
-    #     paths = [e * x * f for x in self.basis()]
-    #     return [p for p in paths if p != 0]
-    
 
     # def coeff(self, r, monomial):
     #     '''
@@ -341,21 +361,8 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     #     return r.monomial_coefficients().get(i, 0)
 
 
-
-    # def dualize(self, b):
-    #     '''
-    #     The element a such that a*b and b*a are both loops. Note that deg(a) + deg(b) = 2.
-    #     More explicitly, if b is a loop at a vertex v, then a is the idempotent at v; if b is the idempotent at v then a is the loop at v; if b represents an an arrow, then a represents the reverse arrow. The element b must be in the basis.
-    #     '''
-    #     if b not in self.basis():
-    #         raise Exception("{0} is not a basis element.".format(b))
-    #     s,t = self.source(b),self.target(b)
-    #     for c in self.basis():
-    #         if b * t * c * s in self.loops():
-    #             return c
-
     # def dualPairs(self, e, f):
-    #     auxPairs = [(path, self.dualize(path)) for path in [x * e for x in self.basis()] if path != 0]
+    #     auxPairs = [(path, self.calabi_yau_dual(path)) for path in [x * e for x in self.basis()] if path != 0]
     #     return [(t,v*f) for (t,v) in auxPairs]
     
 
