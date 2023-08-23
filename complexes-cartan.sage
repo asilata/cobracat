@@ -51,7 +51,7 @@ class ProjectiveComplex(object):
         (4) P.hom(Q): Returns a set of ring elements (monomials), which by right multiplication, define a basis of Hom(P,Q)
         See the class ProjectiveModuleOverField for an example.
 
-        maps: A dictionary of type {i: {(a,b): r}} where i is an integer, (a,b) is a pair of positive integers, and r is an element of algebra. The key i represents the map from the i-th to (i+1)-th place of the complex. The pair (a,b) says that the map is from the a-th object in the list of objects at the i-th place to the b-th object in the list of objects at the (i+1)-th place. The value r says that the map is given by right multiplication by r. Currently, there is no provision to specify more complicated maps. 
+        maps: A dictionary of type {i: {(a,b): r}} where i is an integer, (a,b) is a pair of positive integers, and r is an element of algebra. The key i represents the map from the i-th to (i+1)-th index of the complex. The pair (a,b) says that the map is from the a-th object in the list of objects at the i-th index to the b-th object in the list of objects at the (i+1)-th index. The value r says that the map is given by right multiplication by r. Currently, there is no provision to specify more complicated maps. 
 
         names: A dictionary of type {P: n} where P is a projective module and n is a string that acts as a short name for P to put in the string representation of the complex.
         """
@@ -121,22 +121,22 @@ class ProjectiveComplex(object):
     def copy(self):
         return ProjectiveComplex(self.algebra, self.objects, self.maps, self._names)
 
-    def add_object_at(self, place, obj, name = None):
+    def add_object_at(self, index, obj, name = None):
         r"""
-        Add object `obj` at place `place` with name `name`. It goes as the last entry of the list of objects at place `place`.
+        Add object `obj` at index `index` with name `name`. It goes as the last entry of the list of objects at index `index`.
         """
-        if place not in self.objects:
-            self.objects[place] = []
-        self.objects[place].append(obj)
+        if index not in self.objects:
+            self.objects[index] = []
+        self.objects[index].append(obj)
 
-        if place not in self.maps:
-            self.maps[place] = {}
+        if index not in self.maps:
+            self.maps[index] = {}
 
         if name != None:
             self._names[obj] = name
 
-        self.min_index = min(place, self.min_index)
-        self.max_index = max(place, self.max_index)
+        self.min_index = min(index, self.min_index)
+        self.max_index = max(index, self.max_index)
 
 
     def q_polynomial(self, variables = lazy_list(var('q') for i in count())):
@@ -262,19 +262,19 @@ class ProjectiveComplex(object):
             self.minimize_at(i)
         
 
-    def add_map_at(self, place, i, j, scalar):
+    def add_map_at(self, index, i, j, scalar):
         '''
-        Add a map from the i-th object at place to the j-th object at place+1 given by right multiplication by scalar.
+        Add a map from the i-th object at index to the j-th object at index+1 given by right multiplication by scalar.
         '''
         # All actions are right actions!
-        if i < 0 or i >= len(self.objects_at_index(place)):
+        if i < 0 or i >= len(self.objects_at_index(index)):
             raise IndexError("Index out of bounds")
-        if j < 0 or j >= len(self.objects_at_index(place+1)):
+        if j < 0 or j >= len(self.objects_at_index(index+1)):
             raise IndexError("Index out of bounds")
         
-        if place not in self.maps:
-            self.maps[place] = {}
-        self.maps[place][(i,j)] = self.algebra(scalar)
+        if index not in self.maps:
+            self.maps[index] = {}
+        self.maps[index][(i,j)] = self.algebra(scalar)
 
     def is_chain_complex(self):
         '''
@@ -315,20 +315,20 @@ class ProjectiveComplex(object):
                 maps[k][(p+l,q+w)] = Q.maps_at_index(k)[(p,q)]
         return ProjectiveComplex(self.algebra, objs, maps, names)
                       
-    def minimize_at(self, place):
+    def minimize_at(self, index):
         '''
-        Factor out a complex (presumably the biggest such) that is chain homotopic to zero and is concentrated in degrees place and place+1.
+        Factor out a complex (presumably the biggest such) that is chain homotopic to zero and is concentrated in degrees index and index+1.
         '''
         k = self.algebra.base_ring()
         
-        # Find an object at place and an object at (place+1) with an isomorphism between them.
+        # Find an object at index and an object at (index+1) with an isomorphism between them.
         # The return value is (i, j, fij), where:
-        # i is the index of the source object at place,
-        # j is the index of the target object at (place + 1), and
+        # i is the index of the source object at index,
+        # j is the index of the target object at (index + 1), and
         # fij is the isomorphism between them.
-        def _findIso(place):
-            maps = self.maps_at_index(place)
-            objects = self.objects_at_index(place)
+        def _findIso(index):
+            maps = self.maps_at_index(index)
+            objects = self.objects_at_index(index)
             zero = self.algebra(0)
             for (i,j) in maps:
                 fij = maps.get((i,j), zero)
@@ -338,59 +338,59 @@ class ProjectiveComplex(object):
 
         is_already_minimized = False
         while not is_already_minimized:
-            source, target, alpha = _findIso(place)
+            source, target, alpha = _findIso(index)
             if source == None or target == None or alpha == None:
-                #print("Nothing left to minimize at " + str(place))
+                #print("Nothing left to minimize at " + str(index))
                 is_already_minimized = True
                 continue
 
-            # Change the maps from place to place+1
-            newMapsPlace = {}
-            alphaInverse = self.objects_at_index(place)[source].invert(alpha)
-            sourceBasis = self.objects_at_index(place)[source].basis()
-            for i in range(0, len(self.objects_at_index(place))):
-                for j in range(0, len(self.objects_at_index(place+1))):
+            # Change the maps from index to index+1
+            newMapsIndex = {}
+            alphaInverse = self.objects_at_index(index)[source].invert(alpha)
+            sourceBasis = self.objects_at_index(index)[source].basis()
+            for i in range(0, len(self.objects_at_index(index))):
+                for j in range(0, len(self.objects_at_index(index+1))):
                     # Update any maps from i to j by adding the correction factor, unless (i,j) = (source, target).
                     if (i,j) == (source, target):
                         changeij = 0
                     else:
-                        changeij = self.maps_at_index(place).get((i,target), 0) * alphaInverse * self.maps_at_index(place).get((source,j), 0)
-                    newMapsPlace[(i,j)] = self.maps_at_index(place).get((i,j), 0) - changeij
+                        changeij = self.maps_at_index(index).get((i,target), 0) * alphaInverse * self.maps_at_index(index).get((source,j), 0)
+                    newMapsIndex[(i,j)] = self.maps_at_index(index).get((i,j), 0) - changeij
                     
-                # For each object at place except for the source, update the basis if any
+                # For each object at index except for the source, update the basis if any
                 # to reflect the splitting.
                 if sourceBasis != None and i != source:
-                    iBasis = self.objects_at_index(place)[i].basis()
+                    iBasis = self.objects_at_index(index)[i].basis()
                     if iBasis != None:
-                        change = self.maps_at_index(place).get((i,target), 0) * alphaInverse
+                        change = self.maps_at_index(index).get((i,target), 0) * alphaInverse
                         for elt in sourceBasis:
                             iBasis[elt] = iBasis.get(elt,0) - change * sourceBasis[elt]
 
-            # The maps from place-1 to place and place+1 to place+2 do not need to be changed substantially, apart from the indexing.
+            # The maps from index-1 to index and index+1 to index+2 do not need to be changed substantially, apart from the indexing.
             # Now we update the maps
-            self.maps[place] = newMapsPlace
+            self.maps[index] = newMapsIndex
 
             # At this point, our complex is a direct sum of F (source) -> F (target)
             # and another complex C.
             # We simply drop the source and the target
-            self.objects[place].pop(source)
-            self.objects[place+1].pop(target)
+            self.objects[index].pop(source)
+            self.objects[index+1].pop(target)
 
 
             # We now re-index as needed
-            matrixAtPlace = matrix(len(self.objects_at_index(place))+1, len(self.objects_at_index(place+1))+1, self.maps_at_index(place))
-            newMatrixAtPlace = matrixAtPlace.delete_rows([source]).delete_columns([target])
-            self.maps[place] = newMatrixAtPlace.dict()
+            matrixAtIndex = matrix(len(self.objects_at_index(index))+1, len(self.objects_at_index(index+1))+1, self.maps_at_index(index))
+            newMatrixAtIndex = matrixAtIndex.delete_rows([source]).delete_columns([target])
+            self.maps[index] = newMatrixAtIndex.dict()
 
-            matrixAtPlaceMinus1 = matrix(len(self.objects_at_index(place-1)), len(self.objects_at_index(place))+1, self.maps_at_index(place-1))
-            if matrixAtPlaceMinus1.ncols() > 0:
-                newMatrixAtPlaceMinus1 = matrixAtPlaceMinus1.delete_columns([source])
-                self.maps[place-1] = newMatrixAtPlaceMinus1.dict()
+            matrixAtIndexMinus1 = matrix(len(self.objects_at_index(index-1)), len(self.objects_at_index(index))+1, self.maps_at_index(index-1))
+            if matrixAtIndexMinus1.ncols() > 0:
+                newMatrixAtIndexMinus1 = matrixAtIndexMinus1.delete_columns([source])
+                self.maps[index-1] = newMatrixAtIndexMinus1.dict()
 
-            matrixAtPlacePlus1 = matrix(len(self.objects_at_index(place+1))+1, len(self.objects_at_index(place+2)) ,self.maps_at_index(place+1))
-            if matrixAtPlacePlus1.nrows() > 0:
-                newMatrixAtPlacePlus1 = matrixAtPlacePlus1.delete_rows([target])
-                self.maps[place+1] = newMatrixAtPlacePlus1.dict()
+            matrixAtIndexPlus1 = matrix(len(self.objects_at_index(index+1))+1, len(self.objects_at_index(index+2)) ,self.maps_at_index(index+1))
+            if matrixAtIndexPlus1.nrows() > 0:
+                newMatrixAtIndexPlus1 = matrixAtIndexPlus1.delete_rows([target])
+                self.maps[index+1] = newMatrixAtIndexPlus1.dict()
 
         #Finally we do a cleanup
         self.cleanup()
@@ -491,9 +491,9 @@ def cone(P, Q, M):
             raise TypeError("Not a chain map. Cannot make a cone.")
 
     D = P.direct_sum(Q.homological_shift_by(-1))
-    for place in M.keys():
-        for (i,j) in M.get(place,{}):
-            D.add_map_at(place, i, j+len(P.objects_at_index(place+1)), M[place][(i,j)])
+    for index in M.keys():
+        for (i,j) in M.get(index,{}):
+            D.add_map_at(index, i, j+len(P.objects_at_index(index+1)), M[index][(i,j)])
 
     return D
     
