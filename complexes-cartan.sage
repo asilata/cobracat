@@ -99,34 +99,32 @@ class ProjectiveComplex(object):
         return list(self.objects.get(i, []))
 
     def maps_at_index(self, i):
-        '''
+        r"""
         The map from the i-th to the (i+1)-th component, represented as a dictionary {(a,b): r}. The map corresponds to (right) multiplication by the matrix associated to this dictionary.
-        '''
+        """
         return self.maps.get(i, {}).copy()
 
     def names(self):
-        '''
+        r"""
         Short, readable names for the projective objects in the complex.
-        '''
+        """
         return self._names.copy()
 
     def homological_shift_by(self, n = 1):
-        '''
+        r"""
         A new complex obtained by homologically shifting self by [n].
-        '''
-        return ProjectiveComplex(self.algebra,
-                                 {x-n: self.objects[x] for x in self.objects.keys()},
-                                 {x-n: {k: (-1)^n * self.maps[x][k] for k in self.maps[x].keys()}
-                                  for x in self.maps.keys()},
-                                 self._names)
+        """
+        new_objects = {x-n: self.objects[x] for x in self.objects.keys()}
+        new_maps = {x-n: {k: (-1)^n * self.maps[x][k] for k in self.maps[x].keys()} for x in self.maps.keys()}
+        return ProjectiveComplex(self.algebra, new_objects, new_maps, self._names)
 
     def copy(self):
         return ProjectiveComplex(self.algebra, self.objects, self.maps, self._names)
 
     def add_object_at(self, place, obj, name = None):
-        '''
+        r"""
         Add object `obj` at place `place` with name `name`. It goes as the last entry of the list of objects at place `place`.
-        '''
+        """
         if place not in self.objects:
             self.objects[place] = []
         self.objects[place].append(obj)
@@ -145,8 +143,8 @@ class ProjectiveComplex(object):
         answer = 0
         self.minimize()
         for i in range(self.min_index, self.max_index+1):
-            restVariables = lazy_list(variables[i+1] for i in count())
-            answer = answer + variables[0]^(-i) * sum([obj.q_polynomial(restVariables) for obj in self.objects_at_index(i)])
+            rest_variables = lazy_list(variables[i+1] for i in count())
+            answer = answer + variables[0]^(-i) * sum([obj.q_polynomial(rest_variables) for obj in self.objects_at_index(i)])
         return answer.expand()
 
     # def getLevels(self, i):
@@ -168,26 +166,26 @@ class ProjectiveComplex(object):
     def show(self, **args):
         D = DiGraph()
         # Add objects
-        objNames = {}
+        obj_names = {}
         heights = {}
-        levelSets = {}
+        level_sets = {}
         for i in range(self.min_index, self.max_index+1):
             heights[i] = []
             obj = self.objects_at_index(i)
             for j in range(0,len(obj)):
                 ob = obj[j]
-                objNames[(i,j)] = "{0}({1},{2})".format(str(ob),i,j)
-                D.add_vertex(objNames[(i,j)])
+                obj_names[(i,j)] = "{0}({1},{2})".format(str(ob),i,j)
+                D.add_vertex(obj_names[(i,j)])
                 level = i - ob.twist()
-                if level not in levelSets.keys():
-                    levelSets[level] = []
-                levelSets[level].append(objNames[(i,j)])
-                heights[i].append(objNames[(i,j)])
+                if level not in level_sets.keys():
+                    level_sets[level] = []
+                level_sets[level].append(obj_names[(i,j)])
+                heights[i].append(obj_names[(i,j)])
 
         # Add edges
         for i in range(self.min_index, self.max_index):
             for m in self.maps_at_index(i):
-                D.add_edge((objNames[(i,m[0])], objNames[(i+1,m[1])]), label=str(self.maps_at_index(i)[m]))
+                D.add_edge((obj_names[(i,m[0])], obj_names[(i+1,m[1])]), label=str(self.maps_at_index(i)[m]))
 
         # Try to modify the positions to minimize intersections.
         plot = D.graphplot(heights=heights, layout="acyclic", save_pos=True)
@@ -232,7 +230,7 @@ class ProjectiveComplex(object):
         D.set_pos(new_positions)
         # only choose the lighter colors
         colorlist = [c.rgb() for c in colors.values() if sum(c.rgb()) > 2.0] 
-        vertex_colors = {colorlist[level]:levelSets[level] for level in levelSets.keys()}
+        vertex_colors = {colorlist[level]:level_sets[level] for level in level_sets.keys()}
         return D.plot(vertex_colors=vertex_colors, **args)
         
     def cleanup(self):
@@ -258,10 +256,10 @@ class ProjectiveComplex(object):
 
     def minimize(self):
         '''
-        Apply minimizeAt(i) for all i.
+        Apply minimize_at(i) for all i.
         '''
         for i in range(self.min_index, self.max_index):
-            self.minimizeAt(i)
+            self.minimize_at(i)
         
 
     def add_map_at(self, place, i, j, scalar):
@@ -338,12 +336,12 @@ class ProjectiveComplex(object):
                     return i, j, fij
             return None, None, None
 
-        alreadyMinimized = False
-        while not alreadyMinimized:
+        is_already_minimized = False
+        while not is_already_minimized:
             source, target, alpha = _findIso(place)
             if source == None or target == None or alpha == None:
                 #print("Nothing left to minimize at " + str(place))
-                alreadyMinimized = True
+                is_already_minimized = True
                 continue
 
             # Change the maps from place to place+1
