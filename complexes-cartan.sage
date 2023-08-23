@@ -1,3 +1,31 @@
+r"""
+The homotopy category of complexes of projective modules over an algebra
+
+Given an algebra over a (usually commutative) base ring, we implement complexes of projective modules over that algebra. We assume that a projective module is anything that implements the following methods: 
+        (1) P.is_annihilated_by(r) : Is right multiplication by r the zero map on P?
+        (2) P.is_invertible(r): Is right multiplication by r an invertible map on P?
+        (3) P.invert(r): If right multiplication by r is invertible, return a ring element which acts as its inverse.
+        (4) P.hom(Q): Returns a set of ring elements (monomials), which by right multiplication, define a basis of Hom(P,Q)
+See the classes `ProjectiveModuleOverField` and `GradedProjectiveModuleOverField` as examples.
+
+AUTHORS:
+
+- Asilata Bapat (2023-08-23): initial version
+
+- Anand Deopurkar (2023-08-23): initial version
+
+"""
+
+# ****************************************************************************
+#       Copyright (C) 2023 Asilata Bapat <asilata@alum.mit.edu> 
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#                  https://www.gnu.org/licenses/
+# ****************************************************************************
+
 ###################################################################
 # The homotopy category of projective complexes over a fixed ring #
 ###################################################################

@@ -1,3 +1,34 @@
+r"""
+Zig-zag algebras
+
+Zig-zag algebras are (graded) finite-dimensional quotients of path algebras of quivers. Usually we consider zig-zag algebras of quivers without self-loops or multiple edges. In that case, the zig-zag algebra is a quotient of the path algebra of the doubled quiver by the following relations:
+- all length-three paths are sent to zero,
+- all length-two paths whose source is different from the target are sent to zero, and
+- all length-two paths that start and end at the same vertex are set to be equal to each other up to sign. We call these length-two paths `loops`. The sign in the relations is determined by whether the first edge in the loop is an original edge in the quiver or a doubled edge.
+
+There is a natural grading by path length as the relations are homogeneous. A basis for this algebra as a vector space is given by:
+- length-zero paths at each vertex (the `idempotents`),
+- length-one paths between two distinct vertices (the `arrows`), and
+- for each vertex, any one back-and-forth path of length two starting and ending at that vertex (the `loops`).
+
+AUTHORS:
+
+- Asilata Bapat (2023-08-23): initial version
+
+- Anand Deopurkar (2023-08-23): initial version
+
+"""
+
+# ****************************************************************************
+#       Copyright (C) 2023 Asilata Bapat <asilata@alum.mit.edu> 
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#                  https://www.gnu.org/licenses/
+# ****************************************************************************
+
 from functools import cached_property
 from itertools import product
 from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element import FiniteDimensionalAlgebraElement

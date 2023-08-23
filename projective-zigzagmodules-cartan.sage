@@ -1,3 +1,26 @@
+r"""
+Projective (left) modules over zig-zag algebras
+
+We implement indecomposable left projective modules over zig-zag algebras. Given a zig-zag algebra Z and a vertex v of the quiver of Z, we have the primitive idempotent e, which is the length-zero path at v. We construct the left module Ze. This module has a natural grading inherited from Z.
+
+AUTHORS:
+
+- Asilata Bapat (2023-08-23): initial version
+
+- Anand Deopurkar (2023-08-23): initial version
+
+"""
+
+# ****************************************************************************
+#       Copyright (C) 2023 Asilata Bapat <asilata@alum.mit.edu> 
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#                  https://www.gnu.org/licenses/
+# ****************************************************************************
+
 from sage.modules.module import Module
 from sage.structure.element import ModuleElement
 
