@@ -1,4 +1,5 @@
 from itertools import product
+from string import ascii_lowercase
 from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element import FiniteDimensionalAlgebraElement
 
 class ZigZagAlgebraElement(FiniteDimensionalAlgebraElement):
@@ -224,5 +225,15 @@ a2graph = DiGraph({1: {2: 'a'}, 2:{1:'b'}})
 a3graph = DiGraph({1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d'}})
 d4graph = DiGraph({4:{1:'a', 2:'b', 3:'c'}, 2:{4:'d'}, 3:{4:'e'}, 1:{4:'f'}})
 
+# Test constructor using Cartan types.
+def make_test_cartan_type(ct, k = QQ):
+    test_dd = CartanType(ct).dynkin_diagram()
+    test_graph_vertices = test_dd.vertices()
+    test_graph_edges = []
+    for (e,l) in zip(test_dd.edges(), ascii_lowercase):
+        test_graph_edges = [(e[0], e[1], l)] + test_graph_edges
+    test_graph = DiGraph([test_graph_vertices, test_graph_edges])
+
+    return test_graph, ZigZagAlgebra(k, test_graph.path_semigroup())
 
 

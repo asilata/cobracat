@@ -1,4 +1,4 @@
-def sigma(Z, i, C):
+def sigma(Z, i, C, minimize=False):
     '''The spherical twist corresponding to the i-th projective module of
     the ZigZagAlgebra Z.
 
@@ -65,10 +65,13 @@ def sigma(Z, i, C):
         for (i,k) in QObjects[place].keys():
             M[place][(keyDict[place][(i,k)], i)] = mapsQtoC[place][(i,k)]
 
-    return cone(Q, C, M).shift(1)
-    
+    c = cone(Q, C, M).shift(1)
+    if minimize:
+        c.minimize()
+    return c
 
-def sigmaInverse(Z, i, C):
+    
+def sigmaInverse(Z, i, C, minimize=False):
     '''The inverse spherical twist corresponding to the i-th projective
     module of the ZigZagAlgebra Z.
 
@@ -135,7 +138,11 @@ def sigmaInverse(Z, i, C):
         for (i,k) in QObjects[place].keys():
             M[place][(i, keyDict[place][(i,k)])] = mapsCtoQ[place][(i,k)]
 
-    return cone(C, Q, M)
+    # c = cone(C, Q, M).shift(1)
+    c = cone(C,Q,M)
+    if minimize:
+        c.minimize()
+    return c
 
 from functools import reduce
 def composeAll(list_of_functions):
