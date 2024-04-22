@@ -8,9 +8,10 @@ import networkx as nx
 
 load("setup_cartan.sage")
 
-p, s, burau = zz_setup("D4")
+ct = CartanType("D4")
+p, s, burau = zz_setup(ct)
 
-W = WeylGroup("D4")
+W = WeylGroup(ct)
 
 reduced_words = sorted([x.reduced_word() for x in W], key=len)
 
@@ -48,7 +49,8 @@ def in_heart(obj):
 def generate_elements_in_heart():
     admissible_braid_lifts = [tuple(x) for x in braid_lifts]
     outputs = []
-    for l in range(0,13):
+    long_word_length = max([len(x) for x in reduced_words])
+    for l in range(0,long_word_length + 1):
         lifts_of_length_l = [x for x in admissible_braid_lifts if len(x) == l]
         for b in lifts_of_length_l:
             b_of_p1 = composeAll([s[i] for i in b])(p[1])
@@ -98,7 +100,7 @@ def find_no_hom_one_cliques(candidates):
     G.add_edges_from(no_hom_one_pairs)
     g_cliques = list(nx.find_cliques(G))
     m = max([len(x) for x in g_cliques])
-    return [x for x in g_cliques if len(x) == m]
+    return g_cliques, [x for x in g_cliques if len(x) == m]
 
 def find_external_edges(candidates):
     externals = []
@@ -110,8 +112,37 @@ def find_external_edges(candidates):
             externals = externals + [x]
     return externals
 
-def find_ppts():
+def find_heart():
     heart = generate_elements_in_heart()
     smaller_heart_elements = de_duplicate(heart)
-    ppts = find_no_hom_one_cliques(smaller_heart_elements)
-    return ppts
+    return smaller_heart_elements
+    
+def find_ppts():
+    smaller_heart_elements = find_heart()
+    ppts = [frozenset(x) for x in find_no_hom_one_cliques(smaller_heart_elements)]
+    return smaller_heart_elements, ppts
+
+def flip_graph(ppts):
+    max_intersection_pairs = [(ppts[i], ppts[j]) for i in range(0, len(ppts)) for j in range(0,i) if len(ppts[i] & ppts[j]) == len(ppts[i]) - 1]
+    G = nx.Graph()
+    G.add_edges_from(max_intersection_pairs)
+    return G
+
+def find_flips(p, ppts):
+    flip_dictionary = {}
+    for e in p:
+        flips = [q for q in ppts if q != p and q - set([e]) == p - set([e])]
+        flip_dictionary[e] = flips
+    return flip_dictionary
+
+def flip_edge(e, ppt, ppts):
+    set_int = set(ppt) - set([e])
+    return [q for q in ppts if set(q) & set(ppt) == set_int]
+
+def flip_all(ppts):
+    unflippable = {}
+    for p in ppts:
+        for e in p:
+            if len(flip_edge(e,p,ppts)) != 1:
+                unflippable[e] = unflippable.get(e,[]) + [p]
+    return unflippable
