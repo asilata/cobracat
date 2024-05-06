@@ -1,0 +1,366 @@
+#+property: header-args:sage :session d4-states :eval never-export :exports both
+#+title: PPTs and states for type D4
+
+* Setup for D4
+Load libraries and set \(D_4\) as the Cartan type.
+#+name: d4-dynkin
+#+begin_src sage :results silent
+  import itertools
+  load("setup_cartan.sage")
+  ct = CartanType("D4")
+  ct.dynkin_diagram()
+  indices = ct.dynkin_diagram().vertices()
+#+end_src
+
+The resulting Dynkin diagram looks like this; note that \(2\) is the central vertex.
+#+begin_example
+    O 4
+    |
+    |
+O---O---O
+1   2   3   
+D4
+#+end_example
+
+
+
+Now set up the following dictionaries:
+- ~p~ is a dictionary of the indecomposable projectives, indexed by the vertices of the Dynkin diagram;
+- ~s~ is a dictionary of the spherical twists and their inverses, indexed by the vertices of the Dynkin diagram and their negatives.
+
+  #+begin_src sage :results silent
+    p, s, _ = zz_setup(ct)
+  #+end_src
+
+Record the simple roots of type \(D_4\).
+#+begin_src sage :results silent
+  simples = ct.root_system().root_lattice().simple_roots()
+  positives = ct.root_system().root_lattice().positive_roots()
+#+end_src
+
+* Expansive motions business
+Write down a matrix of coefficients of simple roots for each positive root of the root system.
+#+begin_src sage :results silent
+  root_matrix = matrix([[r.coefficient(i) for i in indices] for r in positives])
+#+end_src
+
+Create variables to represent coordinates for the velocity vectors of the simple roots.
+#+begin_src sage :results silent
+  simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in indices])
+#+end_src
+
+Initialise a particular central charge. At the moment we are making up some "good" numbers.
+WARNING: this part of the code is particular to type \(D_4\)!
+#+begin_src sage :results silent
+  simple_ccs_d4 = matrix([vector([-2,1]), vector([20,1]), vector([-2,2]), vector([-1,2])])
+#+end_src
+
+Now compute the central charges and (indeterminate) velocities for all the positive roots.
+#+begin_src sage :results silent
+  positive_ccs = root_matrix * simple_ccs_d4
+  positive_velocities = root_matrix * simple_velocities
+#+end_src
+
+** Expansive inequalities and polytope of expansive motions
+The various inequalities are of the form \(\langle z, v \rangle \ge 0\), where \(z\) is a central charge vector and \(v\) is the corresponding velocity vector.
+We create a list of inequalities (in a form acceptable to sage), and then construct a polyhedron defined by these inequalities over \(\mathbb{Q}\).
+#+begin_src sage :results silent
+  def eq_to_ieq(expr):
+       return [0] + [expr.coefficient(x) for x in simple_velocities.list()]
+
+  ineqs = [eq_to_ieq(x.dot_product(y)) for (x,y) in zip(positive_velocities, positive_ccs)]
+
+  P = Polyhedron(ieqs = ineqs, base_ring=QQ)
+#+end_src
+
+** Computations on extremal rays
+Recall that an extremal ray consists of the \(x\) and \(y\) coordinates for each of the velocity vectors.
+The following function converts an extremal ray into a matrix of velocities, by splitting the list into pieces of size \(2\) and then converting the output into a matrix.
+#+begin_src sage :results silent
+  def ray_to_velocity_matrix(r):
+      return matrix([r[i:i+2] for i in range(0,len(r),2)])
+#+end_src
+
+A matrix of velocities corresponding to an extremal ray specifies how each point moves so that we get an infinitesimally expansive motion.
+The central charge vectors that remain rigid (do not expand) are exactly the ones whose velocity vector have zero dot product with the corresponding central charge vector.
+The collection of these central charge vectors forms (the closure of) a state, namely the appropriate analogue of a pointed pseudo-triangulation without an external edge.
+Among these, some subcollections form rigid components: these are distinguished by the fact that they all have the same ratio of the length of the velocity vector to the length of the central charge vector.
+
+The following function produces a list of rigid components given an extremal ray.
+#+begin_src sage :results silent
+  def rigid_components(ray):
+      velocities = root_matrix * ray_to_velocity_matrix(ray)
+      rigid_roots_ratios = [(ray,x.norm()/y.norm())
+                            for (ray,x,y) in zip(positives,velocities, positive_ccs) if x.dot_product(y) == 0]
+      unique_ratios = set(t[1] for t in rigid_roots_ratios)
+      components = []
+      for ratio in unique_ratios:
+          this_component = []
+          for t in rigid_roots_ratios:
+              if t[1] == ratio:
+                  this_component.append(t[0])
+          components.append(this_component)
+
+      return components
+#+end_src
+
+** Results
+First we draw the stability condition we have constructed.
+#+begin_src sage :results file :exports both
+  sum([plot(x) + text(y, x + vector([0,0.5]))
+       for (x,y) in zip(positive_ccs, positives)])
+#+end_src
+
+#+RESULTS:
+[[file:/tmp/tmpjexuzurg/tmp_4q86gr7g.png]]
+
+Next we compute the rigid components for each of the extremal rays of the polyhedron \(P\).
+#+begin_src sage :exports both :results silent
+  collapsed_components = [rigid_components(r) for r in P.ray_generator()]
+  collapsed_states = [flatten(x) for x in collapsed_components]
+#+end_src
+
+Let us try to tease out the "real" states from the collapsed states.
+We start with the list of 6-element collapsed states: these are certainly real.
+Make them all sets for ease of comparison and intersections.
+#+begin_src sage :results silent
+  original_states = set([frozenset(x) for x in collapsed_states if len(x) == 6])
+#+end_src
+
+Now consider all collapsed states, and look at all potential 6-element subsets of them.
+#+begin_src sage :results silent
+  potential_states = set(sum([[frozenset(x) for x in itertools.combinations(s,6)] for s in collapsed_states], []))
+#+end_src
+
+#+begin_src sage :results silent
+  def flips(state, potential_states):
+      for x in state:
+          sub_state = state - set([x])
+          flips = [s for s in potential_states if sub_state & s == sub_state]
+          print(flips)
+#+end_src
+
+* A stability condition
+
+A helper function to compute the root class of any given projective complex.
+#+begin_src sage :results silent
+  def obj_to_root(obj):
+      proj_dict = dict([(k,0) for k in p.keys()])
+      for d in range(obj.minIndex(), obj.maxIndex()+1):
+          for x in obj.objects(d):
+              proj_key = x._i
+              proj_dict[proj_key] = proj_dict[proj_key] + (-1)**(d - x.twist())
+      return sum([proj_dict[k] * simples[k] for k in proj_dict])
+#+end_src
+
+A helper function to print a short name for an object
+#+begin_src sage :results silent
+  def short_name(obj):
+      root = obj_to_root(obj)
+      return "".join([str(root.coefficient(i)) for i in indices])
+#+end_src
+
+Define the stability condition "by hand".
+#+begin_src sage :results silent
+  stab = [p[2], s[1](p[2]), s[4](p[2]), s[3](p[2]), internalTwist(s[-2](s[-1](s[-4](s[-3](p[2])))),-4).shift(4), s[1](s[4](p[2])), s[1](s[3](p[2])), s[4](s[3](p[2])), s[1](s[4](s[3](p[2]))), p[4], p[3], p[1]]
+#+end_src
+
+A helper function to compute the stable object of a given positive root class.
+#+begin_src sage :results silent
+  def root_to_stable_obj(root):
+      for x in stab:
+          if obj_to_root(x) == root:
+              return x
+      return None
+#+end_src
+
+A helper function to compute the phase of the stable object.
+#+begin_src sage :results silent
+  def cc_to_phase(obj):
+      """
+      Given a list of central charge vectors of all the positive roots
+      """
+      root = obj_to_root(obj)
+      root_cc = [x[1] for x in zip(positives, positive_ccs) if x[0] == root][0]
+      return arg(root_cc[0] + I * root_cc[1])/pi
+#+end_src
+
+A helper function to list all the homs between stables as well as their phases.
+This is in order to discover the convex and reflex morphisms with factorings.
+#+begin_src sage :results silent
+  def homs_with_phases():
+      homs_phases_list = []
+      for i in range(0, len(stab)):
+          for j in range(0, len(stab)):
+              xi,xj = stab[i], stab[j]
+              p = float(cc_to_phase(xj) - cc_to_phase(xi))
+              hij = hom(xi,xj)
+              hij.minimize()
+              hij_degrees = sum([[k - l._grade for l in hij.objects(k)] for k in range(hij.minIndex(), hij.maxIndex()+1)], [])
+              new_homs_phases = [(xi,xj,p + d) for d in hij_degrees]
+              homs_phases_list = homs_phases_list + new_homs_phases
+      return homs_phases_list      
+#+end_src
+
+Helper function to generate "minimal morphism" graph.
+#+begin_src sage :results silent
+  def minimal_morphism_graph():
+      hwp = homs_with_phases()
+      edges = [(short_name(x[0]), short_name(x[1]), x[2]) for x in hwp]
+      G1 = DiGraph(edges)
+      G = DiGraph()
+      print(len(edges))
+      # Only add those reflex edges to G that are minimal reflex.
+      for e in G1.edges():
+          start, end = e[0], e[1]
+          nonconvex_paths = [p for p in G1.all_paths(start, end, report_edges=True, labels=True) if not all([f[2] < 1 for f in p])]
+          #paths_start_end = G.all_paths(start, end, report_edges=True, labels=True)
+          
+          weight_breakdowns = [[f[2] for f in p] for p in nonconvex_paths if len(p) > 1]
+          print("-----------")
+          weight_breakdowns_valid = [wb for wb in weight_breakdowns if round(abs(sum(wb) - e[2]), 4) == 0]
+          print(weight_breakdowns_valid)
+          print("*****")
+          
+          if len(weight_breakdowns_valid) == 0:
+              print(e)
+              print("*****")              
+              # The edge is minimal reflex.
+              G.add_edge([e[0], e[1], round(e[2],3)])
+
+          print("NC path sums are:")
+          print([sum([f[2] for f in p]) for p in nonconvex_paths])
+              
+      print(len(edges))
+      return G, G1
+#+end_src
+
+Helper function to check if a graph has the "no-convex-factoring" property.
+#+begin_src sage :results silent
+  def no_convex_factoring_property(G):
+      reflex_edges = [e for e in G.edges() if e[2] > 1]
+
+      for e in reflex_edges:
+          start, end, weight = e[0], e[1], e[2]
+          for p in G.all_paths_iterator([start], [end], max_length = 3, report_edges=True, labels=True):
+              if len(p) == 1:
+                  # Path too short
+                  continue
+              if not all([f[2] < 1 for f in p]):
+                  # The path is not totally convex.
+                  continue
+              if not round(sum([f[2] for f in p]) - weight, 4) == 0:
+                  # Weights don't sum to our weight.
+                  continue
+              else:
+                  return False
+      return True      
+#+end_src
+
+Helper function to return all subgraphs of a given graph that have the "no-convex-factoring" property.
+#+begin_src sage :results silent
+  def no_convex_factoring_subgraphs(G):
+      result = []
+
+      current_results = [(set([x]), set()) for x in G.vertices()]
+      new_results = []
+      done_p = False
+
+      while not done_p:
+          for data in current_results:
+              vs, hbad = data[0], data[1]
+              print(vs, hbad)              
+              H = G.subgraph(vs)
+              if all([x in set(H.vertices()) | hbad for x in G.vertices()]):
+                  continue
+              for v in G.vertices():
+                  if v in H.vertices() or v in hbad:
+                      continue
+                  new_vs = vs | set([v])
+                  if (new_vs, hbad) in current_results or (new_vs, hbad) in new_results:
+                      continue
+                  if (vs, hbad | set([v])) in current_results or (vs, hbad | set([v])) in new_results:
+                      continue
+                  
+                  H1 = G.subgraph(new_vs)
+                  if no_convex_factoring_property(H1):
+                      print("FOUND ONE:", H1.vertices())
+                      new_results.append((new_vs, hbad))
+                  else:
+                      new_results.append((vs, hbad | set([v])))
+                      
+          if new_results == current_results:
+              done_p = True
+          else:
+              print("---------")
+              print("CHANGING ITERATION")
+              current_results = new_results
+              print(len(new_results))
+
+      return new_results
+#+end_src
+
+Helper function to check if a graph has the property that it has no minimal reflex cycles.
+#+begin_src sage :results silent
+  def no_min_reflex_cycles(G):
+      reflex_edges = [e for e in G.edges() if e[2] > 1]
+      min_reflex_edges = []
+
+      for e in reflex_edges:
+          start, end, weight = e[0], e[1], e[2]
+          reflex_paths = [p for p in G.all_paths(start, end, report_edges=True, labels=True) if len(p) > 1 and not all([f[2] < 1 for f in p])]
+          weights = [sum([f[2] for f in p]) for p in reflex_paths]
+          same_weights = [w for w in weights if round(abs(w - weight), 4) == 0]
+          if len(same_weights) == 0:
+              min_reflex_edges.append(e)
+
+      G1 = DiGraph(min_reflex_edges)
+      return G1, G1.is_directed_acyclic()
+#+end_src
+
+
+Helper function to generate all subgraphs of a given graph that have no cycles of minimal reflex morphisms.
+
+* States
+This is copied over from the d4-motions file.
+#+begin_src sage :results silent
+  X1 = p[1]
+  X2 = p[4]
+  X3 = p[3]
+  Y1 = s[4](s[3](p[2]))
+  Y2 = s[1](s[3](p[2]))
+  Y3 = s[1](s[4](p[2]))
+  Z1 = s[1](p[2])
+  Z2 = s[4](p[2])
+  Z3 = s[3](p[2])
+  A = s[-2](s[-1](s[-4](s[-3](p[2]))))
+  B = p[2]
+  C = s[1](s[4](s[3](p[2])))
+  Xs = {1:X1, 2:X2, 3:X3}
+  Ys = {1:Y1, 2:Y2, 3:Y3}
+  Zs = {1:Z1, 2:Z2, 3:Z3}  
+#+end_src
+
+#+begin_src sage
+  type1_states =[
+      [Xs[p(1)], Xs[p(2)], Ys[p(1)], Ys[p(3)], Zs[p(2)], Zs[p(3)]]
+        for p in SymmetricGroup(3)
+  ]
+  len(type1_states)
+#+end_src
+
+#+begin_src sage
+  type2_states = [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(1)]]     for p in SymmetricGroup(3)] +  [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(3)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(1)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(3)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(1)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(3)]]     for p in SymmetricGroup(3)]
+  len(type2_states)
+  #+end_src
+
+#+begin_src sage :results silent
+  all_states = type1_states + type2_states
+  all_states_as_roots = [[obj_to_root(x) for x in s] for s in all_states]
+#+end_src
+
+#+begin_src sage :results silent
+  flipgraph_edges = [(all_states_as_roots[i], all_states_as_roots[j]) for i in range(0, len(all_states_as_roots)) for j in range(0,i) if len(set(all_states_as_roots[i]) & set(all_states_as_roots[j])) == 5]
+  flipgraph_edges = [(frozenset(x), frozenset(y)) for (x,y) in flipgraph_edges]
+  flip_graph = Graph(flipgraph_edges)
+#+end_src
