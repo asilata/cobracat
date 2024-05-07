@@ -249,7 +249,7 @@ Helper function to check if a graph has the "no-convex-factoring" property.
               if not all([f[2] < 1 for f in p]):
                   # The path is not totally convex.
                   continue
-              if not round(sum([f[2] for f in p]) - weight, 4) == 0:
+              if not abs(sum([f[2] for f in p]) - weight) < 0.0001:
                   # Weights don't sum to our weight.
                   continue
               else:
@@ -338,7 +338,7 @@ Helper function to check if a graph has the property that it has no minimal refl
               if not any([f[2] > 1 for f in p]):
                   # The path does not have a reflex morphism along it
                   continue
-              if not round(sum([f[2] for f in p]) - weight, 4) == 0:
+              if not abs(sum([f[2] for f in p]) - weight) < 0.0001:
                   # Weights don't sum to our weight
                   continue
               else:
@@ -378,17 +378,15 @@ This is copied over from the d4-motions file.
   Zs = {1:Z1, 2:Z2, 3:Z3}  
 #+end_src
 
-#+begin_src sage
+#+begin_src sage :results silent
   type1_states =[
       [Xs[p(1)], Xs[p(2)], Ys[p(1)], Ys[p(3)], Zs[p(2)], Zs[p(3)]]
         for p in SymmetricGroup(3)
   ]
-  len(type1_states)
 #+end_src
 
-#+begin_src sage
+#+begin_src sage :results silent
   type2_states = [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(1)]]     for p in SymmetricGroup(3)] +  [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(3)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(1)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(3)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(1)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(3)]]     for p in SymmetricGroup(3)]
-  len(type2_states)
   #+end_src
 
 #+begin_src sage :results silent
