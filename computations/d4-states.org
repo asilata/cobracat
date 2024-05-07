@@ -176,7 +176,7 @@ A helper function to compute the stable object of a given positive root class.
 
 A helper function to compute the phase of the stable object.
 #+begin_src sage :results silent
-  def cc_to_phase(obj):
+  def obj_to_phase(obj):
       """
       Given a list of central charge vectors of all the positive roots
       """
@@ -193,7 +193,7 @@ This is in order to discover the convex and reflex morphisms with factorings.
       for i in range(0, len(stab)):
           for j in range(0, len(stab)):
               xi,xj = stab[i], stab[j]
-              p = float(cc_to_phase(xj) - cc_to_phase(xi))
+              p = float(obj_to_phase(xj) - obj_to_phase(xi))
               hij = hom(xi,xj)
               hij.minimize()
               hij_degrees = sum([[k - l._grade for l in hij.objects(k)] for k in range(hij.minIndex(), hij.maxIndex()+1)], [])
@@ -327,15 +327,32 @@ Helper function to check if a graph has the property that it has no minimal refl
       min_reflex_edges = []
 
       for e in reflex_edges:
+          # Check if e is non-minimal.
           start, end, weight = e[0], e[1], e[2]
-          reflex_paths = [p for p in G.all_paths(start, end, report_edges=True, labels=True) if len(p) > 1 and not all([f[2] < 1 for f in p])]
-          weights = [sum([f[2] for f in p]) for p in reflex_paths]
-          same_weights = [w for w in weights if round(abs(w - weight), 4) == 0]
-          if len(same_weights) == 0:
+          e_is_minimal_reflex = True
+          for p in G.all_paths_iterator([start], [end], max_length = 3, report_edges=True, labels=True):
+              # If the edge e has a convex/reflex factoring, then a factoring of length 2 is a witness to it.
+              if len(p) == 1:
+                  # Path too short
+                  continue
+              if not any([f[2] > 1 for f in p]):
+                  # The path does not have a reflex morphism along it
+                  continue
+              if not round(sum([f[2] for f in p]) - weight, 4) == 0:
+                  # Weights don't sum to our weight
+                  continue
+              else:
+                  print("Found convex-reflex factoring: ",e,p)
+                  e_is_minimal_reflex = False
+                  break
+              
+          # If e is minimal reflex, add it to our list.
+          if e_is_minimal_reflex:
               min_reflex_edges.append(e)
 
-      G1 = DiGraph(min_reflex_edges)
-      return G1, G1.is_directed_acyclic()
+          #Build a graph on the minimal reflex edges only.
+          G1 = DiGraph(min_reflex_edges)
+          return G1.is_directed_acyclic()
 #+end_src
 
 
