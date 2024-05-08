@@ -15,6 +15,7 @@ ct = CartanType("D4")
 # s = dictionary of positive and negative spherical twists, indexed by the vertices of the Dynkin diagram and their negatives.
 # burau = dictionary of Burau matrices, indexed by the vertices of the Dynkin diagram and their negatives.
 p, s, burau = zz_setup(ct)
+simples = ct.root_system().root_lattice().simple_roots()
 
 # Weyl group of the chosen Cartan type
 W = WeylGroup(ct)
@@ -132,6 +133,27 @@ def find_no_hom_one_cliques(candidates):
     g_cliques = list(nx.find_cliques(G))
     m = max([len(x) for x in g_cliques])
     return [x for x in g_cliques if len(x) == m]
+
+def hom_one_graph(candidates):
+    edges = []
+    for i in range(0, len(candidates)):
+        for j in range(0, i):
+            if exists_hom_one(candidates[i], candidates[j]):
+                edges.append((candidates[i], candidates[j]))
+                edges.append((candidates[j], candidates[i]))                
+    return Graph(edges)
+
+def exists_single_hom_one(x,y):
+    h = hom(x,y)
+    h.minimize()
+    homs = sum([[(a,d) for a in h.objects(d)] for d in range(h.minIndex(), h.maxIndex()+1)], [])
+    if len(homs) != 1:
+        return False
+    single_hom = homs[0]
+    if single_hom[0]._grade - single_hom[1] != -1:
+        return False
+    return True
+            
 
 def no_hom_one_graph(candidates):
     no_hom_one_pairs = [(candidates[i], candidates[j]) for i in range(0, len(candidates)) for j in range(0,i) if not exists_hom_one(candidates[i], candidates[j])]
