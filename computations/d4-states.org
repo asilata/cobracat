@@ -202,37 +202,38 @@ This is in order to discover the convex and reflex morphisms with factorings.
       return homs_phases_list      
 #+end_src
 
-Helper function to generate "minimal morphism" graph.
+Helper function to generate the "minimal morphism" graph.
 #+begin_src sage :results silent
   def minimal_morphism_graph():
       hwp = homs_with_phases()
-      edges = [(short_name(x[0]), short_name(x[1]), x[2]) for x in hwp]
+      edges = [(short_name(x[0]), short_name(x[1]), x[2]) for x in hwp if x[0] != x[1]]
       G1 = DiGraph(edges)
       G = DiGraph()
+      
       print(len(edges))
-      # Only add those reflex edges to G that are minimal reflex.
+      # Only add minimal edges to G.
       for e in G1.edges():
-          start, end = e[0], e[1]
-          nonconvex_paths = [p for p in G1.all_paths(start, end, report_edges=True, labels=True) if not all([f[2] < 1 for f in p])]
-          #paths_start_end = G.all_paths(start, end, report_edges=True, labels=True)
-          
-          weight_breakdowns = [[f[2] for f in p] for p in nonconvex_paths if len(p) > 1]
-          print("-----------")
-          weight_breakdowns_valid = [wb for wb in weight_breakdowns if round(abs(sum(wb) - e[2]), 4) == 0]
-          print(weight_breakdowns_valid)
-          print("*****")
-          
-          if len(weight_breakdowns_valid) == 0:
-              print(e)
-              print("*****")              
-              # The edge is minimal reflex.
-              G.add_edge([e[0], e[1], round(e[2],3)])
+          start, end, weight = e[0], e[1], e[2]
+          # Assume that e is minimal until proven otherwise.
+          e_is_minimal = True
 
-          print("NC path sums are:")
-          print([sum([f[2] for f in p]) for p in nonconvex_paths])
+          for p in G1.all_paths_iterator([start], [end], max_length = 3, report_edges=True, labels=True):
+              # Find out if e factors. if it does, a length-two path will be a witness to the factoring.
+              if len(p) == 1:
+                  # Path too short.
+                  continue
+              if not abs(sum([f[2] for f in p]) - weight) < 0.0001:
+                  # Weights don't sum to our weight
+                  continue
+              else:
+                  # e is not minimal; abort loop.
+                  e_is_minimal = False
+                  break
               
-      print(len(edges))
-      return G, G1
+          if e_is_minimal:
+              G.add_edge(e)
+              
+      return G
 #+end_src
 
 Helper function to check if a graph has the "no-convex-factoring" property.
@@ -342,7 +343,6 @@ Helper function to check if a graph has the property that it has no minimal refl
                   # Weights don't sum to our weight
                   continue
               else:
-                  print("Found convex-reflex factoring: ",e,p)
                   e_is_minimal_reflex = False
                   break
               
@@ -350,13 +350,35 @@ Helper function to check if a graph has the property that it has no minimal refl
           if e_is_minimal_reflex:
               min_reflex_edges.append(e)
 
-          #Build a graph on the minimal reflex edges only.
-          G1 = DiGraph(min_reflex_edges)
-          return G1.is_directed_acyclic()
+      #Build a graph on the minimal reflex edges only.
+      G1 = DiGraph(min_reflex_edges)
+      return G1.is_directed_acyclic()
 #+end_src
 
+Function to compute the Euler characteristic of the simplicial complex formed by a collection of sets.
+#+begin_src sage :results silent
+  def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(len(s)+1))
 
-Helper function to generate all subgraphs of a given graph that have no cycles of minimal reflex morphisms.
+  def euler_characteristic(sc):
+      all_elements = set(sum([[frozenset(y) for y in powerset(x)] for x in sc], []))
+      euler_char = 0
+      return sum([(-1)**len(x) for x in all_elements if len(x) > 0])
+        #+end_src
+
+Helper function to compute the flip graph formed by a collection of sets.
+#+begin_src sage :results silent
+  def flip_graph(sc):
+      sc = list([frozenset(x) for x in sc])
+      edges = []
+      for i in range(0, len(sc)):
+          for j in range(0,i):
+              if len(sc[i] & sc[j]) == len(sc[i]) - 1:
+                  edges.append((sc[i], sc[j]))
+      return Graph(edges)
+#+end_src
 
 * States
 This is copied over from the d4-motions file.
