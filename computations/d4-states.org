@@ -517,5 +517,46 @@ Helper function to return all subgraphs of a given graph that have the "no-conve
       return new_results
 #+end_src
 
-#+RESULTS:
+* States
+This is copied over from the d4-motions file.
+#+begin_src sage :results silent
+  X1 = p[1]
+  X2 = p[4]
+  X3 = p[3]
+  Y1 = s[4](s[3](p[2]))
+  Y2 = s[1](s[3](p[2]))
+  Y3 = s[1](s[4](p[2]))
+  Z1 = s[1](p[2])
+  Z2 = s[4](p[2])
+  Z3 = s[3](p[2])
+  A = s[-2](s[-1](s[-4](s[-3](p[2]))))
+  B = p[2]
+  C = s[1](s[4](s[3](p[2])))
+  Xs = {1:X1, 2:X2, 3:X3}
+  Ys = {1:Y1, 2:Y2, 3:Y3}
+  Zs = {1:Z1, 2:Z2, 3:Z3}  
+#+end_src
 
+#+begin_src sage :results silent
+  type1_states =[
+      [Xs[p(1)], Xs[p(2)], Ys[p(1)], Ys[p(3)], Zs[p(2)], Zs[p(3)]]
+        for p in SymmetricGroup(3)
+  ]
+#+end_src
+
+#+begin_src sage :results silent
+  type2_states = [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(1)]]     for p in SymmetricGroup(3)] +  [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(3)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(1)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(3)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(1)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(3)]]     for p in SymmetricGroup(3)]
+  #+end_src
+
+#+begin_src sage :results silent
+  all_states = type1_states + type2_states
+  all_states_as_roots = [[obj_to_root(x) for x in s] for s in all_states]
+#+end_src
+
+#+begin_src sage :results silent
+  flipgraph_edges = [(all_states_as_roots[i], all_states_as_roots[j]) for i in range(0, len(all_states_as_roots)) for j in range(0,i) if len(set(all_states_as_roots[i]) & set(all_states_as_roots[j])) == 5]
+  flipgraph_edges = [(frozenset(x), frozenset(y)) for (x,y) in flipgraph_edges]
+  flip_graph = Graph(flipgraph_edges)
+#+end_src
+
+>>>>>>> 34a0f48a6e540303670867b1aa1164614acdb45b
