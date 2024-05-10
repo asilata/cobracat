@@ -8,7 +8,6 @@ Load libraries and set \(D_4\) as the Cartan type.
   import itertools
   load("setup_cartan.sage")
   ct = CartanType("D4")
-  ct.dynkin_diagram()
   indices = ct.dynkin_diagram().vertices()
 #+end_src
 
@@ -22,8 +21,6 @@ O---O---O
 D4
 #+end_example
 
-
-
 Now set up the following dictionaries:
 - ~p~ is a dictionary of the indecomposable projectives, indexed by the vertices of the Dynkin diagram;
 - ~s~ is a dictionary of the spherical twists and their inverses, indexed by the vertices of the Dynkin diagram and their negatives.
@@ -32,10 +29,287 @@ Now set up the following dictionaries:
     p, s, _ = zz_setup(ct)
   #+end_src
 
-Record the simple roots of type \(D_4\).
+Record the simple and positive roots of type \(D_4\).
 #+begin_src sage :results silent
   simples = ct.root_system().root_lattice().simple_roots()
   positives = ct.root_system().root_lattice().positive_roots()
+#+end_src
+
+The coefficients of roots in terms of simple roots.
+#+begin_src sage :results silent
+  root_matrix = matrix([[r.coefficient(i) for i in indices] for r in positives])
+#+end_src
+
+** Useful helper functions
+A helper function to compute the root class of any given projective complex.
+#+begin_src sage :results silent
+  def obj_to_root(obj):
+      proj_dict = dict([(k,0) for k in p.keys()])
+      for d in range(obj.minIndex(), obj.maxIndex()+1):
+          for x in obj.objects(d):
+              proj_key = x._i
+              proj_dict[proj_key] = proj_dict[proj_key] + (-1)**(d - x.twist())
+      return sum([proj_dict[k] * simples[k] for k in proj_dict])
+#+end_src
+
+A helper function to return a short name for a root.
+#+begin_src sage :results silent
+  def short_name_root(root):
+      return "".join([str(root.coefficient(i)) for i in indices])
+#+end_src
+
+A helper function to print a short name for an object.
+#+begin_src sage :results silent
+  def short_name(obj):
+      root = obj_to_root(obj)
+      return short_name_root(root)
+#+end_src
+
+* Indecomposable spherical objects in the heart
+We will begin by generating all indecomposable spherical objects in the standard heart.
+
+First, a few helper functions. Check if a given object lies in the standard heart.
+#+begin_src sage :results silent
+  def in_heart(obj):
+      """
+      Return True if and only if the given object is in the standard heart; that is, if it is a linear complex.
+      """
+      for i in range(obj.minIndex(), obj.maxIndex()+1):
+          obj_i = obj.objects(i)
+          for x in obj_i:
+              if x.twist() != i:
+                  return False
+      return True
+#+end_src
+
+Check if two given objects are equal up to shift.
+#+begin_src sage :results silent
+  def equal_upto_shift(x,y):
+      """
+      Check if objects x and y are equal up to shift.
+      """
+      xmin, xmax = x.minIndex(), x.maxIndex()
+      ymin, ymax = y.minIndex(), y.maxIndex()
+      if xmax - xmin != ymax - ymin:
+          return False
+
+      for i in range(0, xmax - xmin + 1):
+          xi, yi = x.objects(i + xmin), y.objects(i + ymin)
+          if len(xi) !=  len(yi):
+              return False
+          if sorted([a.name() for a in xi]) != sorted([a.name() for a in yi]):
+              return False
+      return True
+#+end_src
+
+Helper functions to generate the braid words that we want to apply in order to get all objects in the heart.
+#+begin_src sage :results silent
+  W = WeylGroup(ct)
+
+  def all_signed_combinations(w):
+      """
+      Return a list of all possible signed lifts of a given word w in the Weyl group.
+
+      INPUT:
+      - w, a word in the Weyl group, for example [1,2]
+
+      OUTPUT:
+      - a list of all possible signed versions of the given word. In the previous example that would be [[1,2], [-1,2], [1,-2], [-1,-2]].
+      """
+      current_signed_lifts = [[]]
+      current_word = w
+
+      while(len(current_word) > 0):
+          new_signed_lifts = []
+          current_letter = current_word[0]
+          current_word = current_word[1:]
+          for v in current_signed_lifts:
+              new_signed_lifts.append(v + [current_letter])
+              new_signed_lifts.append(v + [-current_letter])
+          current_signed_lifts = new_signed_lifts
+      return current_signed_lifts
+
+#+end_src
+Generate and return all indecomposable sphericals in the standard heart.
+#+begin_src sage :results silent
+  def indecomposable_sphericals_in_heart():
+      """
+      Return a list of all the spherical objects in the standard heart of the 2-CY category associated to the chosen Cartan type.
+      This list checks if the generated object at any stage is equal (up to shift) to any previously generated object, and only adds it to the outputs if not already present.
+      Thus the returned list should contain no duplicates.
+      """
+      # Collect all signed combinations of all reduced words in the Weyl group.
+      reduced_words = sorted([x.reduced_word() for x in WeylGroup(ct)], key=len)
+      reduced_braid_words = sum([all_signed_combinations(w) for w in reduced_words], [])
+      long_word_length = max([len(x) for x in reduced_words])    
+      
+
+      # Start with the list of reduced braid words; this will be pruned as we go.
+      pruned_braid_words = reduced_braid_words
+      outputs = []
+
+      # Go through words by length, applying the word to p[1] and checking if it is in the heart.
+      # If it is in the heart, then add it to outputs.
+      # Otherwise, prune the remaining braid words by removing any word that has the current word as a rightmost substring.
+      for l in range(0,long_word_length + 1):
+          print("Applying words of length {}.".format(l))
+          lifts_of_length_l = [x for x in pruned_braid_words if len(x) == l]
+          pruned_braid_words = [x for x in pruned_braid_words if len(x) > l]
+          
+          for b in lifts_of_length_l:
+              b_of_p1 = composeAll([s[i] for i in b])(p[1])
+              if in_heart(b_of_p1):
+                  exist_equal_elements = False
+                  for x in outputs:
+                      if equal_upto_shift(x,b_of_p1):
+                          exist_equal_elements = True
+                          break
+
+                  if not exist_equal_elements:
+                      outputs = outputs + [b_of_p1]
+              else:
+                  pruned_braid_words = [x for x in pruned_braid_words if x[-len(b):] != b]
+      return outputs
+#+end_src
+
+* Central charges and stable objects
+We can write down a central charge on the standard heart by specifying a vector in the upper half plane for each simple root.
+
+A helper function to compute the phase of an object.
+The central charge is specified as a dictionary with keys the vertices of the Dynkin diagram, and values the values of the central charge on the corresponding simple root.
+#+begin_src sage :results silent
+  def obj_to_phase(obj, cc):
+      """
+      Given a list of central charge vectors of all the positive roots
+      """
+      root = obj_to_root(obj)
+      positive_ccs = root_matrix * vector(cc.values())
+      
+      root_cc = [x[1] for x in zip(positives, positive_ccs) if x[0] == root][0]
+      return float(arg(root_cc)/pi)
+#+end_src
+
+Given a central charge, we can figure out which of the indecomposable spherical objects in the heart are semistable.
+#+begin_src sage :results silent
+  def semistable_objects(cc, heart):
+      known_stables = []
+      heart_by_length = sorted(heart, key=lambda x: obj_to_root(x).length())
+
+      def exists_hom_zero(y,x):
+          """
+          Return true if there is at least one degree-zero hom from object y to object x.
+          """
+          h = hom(y,x).qPolynomial()
+          hom_zeros = [c for c in h.coefficients() if c[1] == 0 and c[0] != 0]
+          return len(hom_zeros) >= 1
+      
+      def exists_destabilizing_sub_map(y,x):
+          px, py = obj_to_phase(x, cc), obj_to_phase(y, cc)
+          return (py > px) and (exists_hom_zero(y, x))
+
+      for x in heart_by_length:
+          if not any([exists_destabilizing_sub_map(y, x) for y in known_stables]):
+              known_stables.append(x)
+      return sorted(known_stables, key=lambda x: obj_to_phase(x, cc))
+#+end_src
+
+Let us input a sample central charge.
+  #+begin_src sage :results silent
+    cc = {1: 2 + I, 2: -10 + I, 3: 5 + 2*I, 4: -1 + 2*I}
+  #+end_src
+
+* Convex and reflex morphisms
+A helper function to list all the homs between stables as well as their phases.
+This is in order to discover the convex and reflex morphisms with factorings.
+#+begin_src sage :results silent
+  def homs_with_phases(stab, cc):
+      homs_phases_list = []
+      for i in range(0, len(stab)):
+          for j in range(0, len(stab)):
+              xi,xj = stab[i], stab[j]
+              p = obj_to_phase(xj, cc) - obj_to_phase(xi, cc)
+              hij = hom(xi,xj)
+              hij.minimize()
+              hij_degrees = sum([[k - l._grade for l in hij.objects(k)] for k in range(hij.minIndex(), hij.maxIndex()+1)], [])
+              new_homs_phases = [(xi,xj,p + d) for d in hij_degrees]
+              homs_phases_list = homs_phases_list + new_homs_phases
+      return homs_phases_list      
+#+end_src
+
+Helper function to check if a graph has the "no-convex-factoring" property.
+#+begin_src sage :results silent
+  def no_convex_factoring_property(G):
+      reflex_edges = [e for e in G.edges() if e[2] > 1]
+
+      for e in reflex_edges:
+          start, end, weight = e[0], e[1], e[2]
+          for p in G.all_paths_iterator([start], [end], max_length = 3, report_edges=True, labels=True):
+              if len(p) == 1:
+                  # Path too short
+                  continue
+              if not all([f[2] < 1 for f in p]):
+                  # The path is not totally convex.
+                  continue
+              if not abs(sum([f[2] for f in p]) - weight) < 0.0001:
+                  # Weights don't sum to our weight.
+                  continue
+              else:
+                  return False
+      return True      
+#+end_src
+
+Helper function to check if a graph has the property that it has no minimal reflex cycles.
+#+begin_src sage :results silent
+  def no_min_reflex_cycles(G):
+      reflex_edges = [e for e in G.edges() if e[2] > 1]
+      min_reflex_edges = []
+
+      for e in reflex_edges:
+          # Check if e is non-minimal.
+          start, end, weight = e[0], e[1], e[2]
+          e_is_minimal_reflex = True
+          for p in G.all_paths_iterator([start], [end], max_length = 3, report_edges=True, labels=True):
+              # If the edge e has a convex/reflex factoring, then a factoring of length 2 is a witness to it.
+              if len(p) == 1:
+                  # Path too short
+                  continue
+              if not any([f[2] > 1 for f in p]):
+                  # The path does not have a reflex morphism along it
+                  continue
+              if not abs(sum([f[2] for f in p]) - weight) < 0.0001:
+                  # Weights don't sum to our weight
+                  continue
+              else:
+                  e_is_minimal_reflex = False
+                  break
+              
+          # If e is minimal reflex, add it to our list.
+          if e_is_minimal_reflex:
+              min_reflex_edges.append(e)
+
+      #Build a graph on the minimal reflex edges only.
+      G1 = DiGraph(min_reflex_edges)
+      return G1.is_directed_acyclic()
+#+end_src
+
+#+begin_src sage :results silent
+  def get_ncfs_and_nmrc(stab, cc):
+      hwp = homs_with_phases(stab, cc)
+      hwp_edges = [(short_name(x[0]), short_name(x[1]), x[2]) for x in hwp if x[0] != x[1]]
+      G = DiGraph(hwp_edges)
+      size6_subgraphs = [G.subgraph(x) for x in itertools.combinations(G.vertices(), 6)]
+      print("Checking ncfs.")
+      ncfs_6 = [set(H.vertices()) for H in size6_subgraphs if no_convex_factoring_property(H)]
+      print("Checking nmrc.")
+      nmrc_6 = [set(H.vertices()) for H in size6_subgraphs if no_min_reflex_cycles(H)]
+      return G, ncfs_6, nmrc_6
+#+end_src
+
+Construct the flip graph of a set of proposed states.
+#+begin_src sage :results silent
+  def flip_graph(states):
+      edges = [(frozenset(x),frozenset(y)) for x in states for y in states if len(x&y) == len(x) - 1]
+      return Graph(edges)
 #+end_src
 
 * Expansive motions business
@@ -140,121 +414,46 @@ Now consider all collapsed states, and look at all potential 6-element subsets o
           print(flips)
 #+end_src
 
-* A stability condition
-
-A helper function to compute the root class of any given projective complex.
+* States
+This is copied over from the d4-motions file.
 #+begin_src sage :results silent
-  def obj_to_root(obj):
-      proj_dict = dict([(k,0) for k in p.keys()])
-      for d in range(obj.minIndex(), obj.maxIndex()+1):
-          for x in obj.objects(d):
-              proj_key = x._i
-              proj_dict[proj_key] = proj_dict[proj_key] + (-1)**(d - x.twist())
-      return sum([proj_dict[k] * simples[k] for k in proj_dict])
+  X1 = p[1]
+  X2 = p[4]
+  X3 = p[3]
+  Y1 = s[4](s[3](p[2]))
+  Y2 = s[1](s[3](p[2]))
+  Y3 = s[1](s[4](p[2]))
+  Z1 = s[1](p[2])
+  Z2 = s[4](p[2])
+  Z3 = s[3](p[2])
+  A = s[-2](s[-1](s[-4](s[-3](p[2]))))
+  B = p[2]
+  C = s[1](s[4](s[3](p[2])))
+  Xs = {1:X1, 2:X2, 3:X3}
+  Ys = {1:Y1, 2:Y2, 3:Y3}
+  Zs = {1:Z1, 2:Z2, 3:Z3}  
 #+end_src
 
-A helper function to print a short name for an object
 #+begin_src sage :results silent
-  def short_name(obj):
-      root = obj_to_root(obj)
-      return "".join([str(root.coefficient(i)) for i in indices])
+  type1_states =[
+      [Xs[p(1)], Xs[p(2)], Ys[p(1)], Ys[p(3)], Zs[p(2)], Zs[p(3)]]
+        for p in SymmetricGroup(3)
+  ]
 #+end_src
 
-Define the stability condition "by hand".
 #+begin_src sage :results silent
-  stab = [p[2], s[1](p[2]), s[4](p[2]), s[3](p[2]), internalTwist(s[-2](s[-1](s[-4](s[-3](p[2])))),-4).shift(4), s[1](s[4](p[2])), s[1](s[3](p[2])), s[4](s[3](p[2])), s[1](s[4](s[3](p[2]))), p[4], p[3], p[1]]
+  type2_states = [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(1)]]     for p in SymmetricGroup(3)] +  [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(3)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(1)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(3)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(1)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(3)]]     for p in SymmetricGroup(3)]
+  #+end_src
+
+#+begin_src sage :results silent
+  all_states = type1_states + type2_states
+  all_states_as_roots = [[obj_to_root(x) for x in s] for s in all_states]
 #+end_src
 
-A helper function to compute the stable object of a given positive root class.
 #+begin_src sage :results silent
-  def root_to_stable_obj(root):
-      for x in stab:
-          if obj_to_root(x) == root:
-              return x
-      return None
-#+end_src
-
-A helper function to compute the phase of the stable object.
-#+begin_src sage :results silent
-  def obj_to_phase(obj):
-      """
-      Given a list of central charge vectors of all the positive roots
-      """
-      root = obj_to_root(obj)
-      root_cc = [x[1] for x in zip(positives, positive_ccs) if x[0] == root][0]
-      return arg(root_cc[0] + I * root_cc[1])/pi
-#+end_src
-
-A helper function to list all the homs between stables as well as their phases.
-This is in order to discover the convex and reflex morphisms with factorings.
-#+begin_src sage :results silent
-  def homs_with_phases():
-      homs_phases_list = []
-      for i in range(0, len(stab)):
-          for j in range(0, len(stab)):
-              xi,xj = stab[i], stab[j]
-              p = float(obj_to_phase(xj) - obj_to_phase(xi))
-              hij = hom(xi,xj)
-              hij.minimize()
-              hij_degrees = sum([[k - l._grade for l in hij.objects(k)] for k in range(hij.minIndex(), hij.maxIndex()+1)], [])
-              new_homs_phases = [(xi,xj,p + d) for d in hij_degrees]
-              homs_phases_list = homs_phases_list + new_homs_phases
-      return homs_phases_list      
-#+end_src
-
-Helper function to generate "minimal morphism" graph.
-#+begin_src sage :results silent
-  def minimal_morphism_graph():
-      hwp = homs_with_phases()
-      edges = [(short_name(x[0]), short_name(x[1]), x[2]) for x in hwp]
-      G1 = DiGraph(edges)
-      G = DiGraph()
-      print(len(edges))
-      # Only add those reflex edges to G that are minimal reflex.
-      for e in G1.edges():
-          start, end = e[0], e[1]
-          nonconvex_paths = [p for p in G1.all_paths(start, end, report_edges=True, labels=True) if not all([f[2] < 1 for f in p])]
-          #paths_start_end = G.all_paths(start, end, report_edges=True, labels=True)
-          
-          weight_breakdowns = [[f[2] for f in p] for p in nonconvex_paths if len(p) > 1]
-          print("-----------")
-          weight_breakdowns_valid = [wb for wb in weight_breakdowns if round(abs(sum(wb) - e[2]), 4) == 0]
-          print(weight_breakdowns_valid)
-          print("*****")
-          
-          if len(weight_breakdowns_valid) == 0:
-              print(e)
-              print("*****")              
-              # The edge is minimal reflex.
-              G.add_edge([e[0], e[1], round(e[2],3)])
-
-          print("NC path sums are:")
-          print([sum([f[2] for f in p]) for p in nonconvex_paths])
-              
-      print(len(edges))
-      return G, G1
-#+end_src
-
-Helper function to check if a graph has the "no-convex-factoring" property.
-#+begin_src sage :results silent
-  def no_convex_factoring_property(G):
-      reflex_edges = [e for e in G.edges() if e[2] > 1]
-
-      for e in reflex_edges:
-          start, end, weight = e[0], e[1], e[2]
-          for p in G.all_paths_iterator([start], [end], max_length = 3, report_edges=True, labels=True):
-              if len(p) == 1:
-                  # Path too short
-                  continue
-              if not all([f[2] < 1 for f in p]):
-                  # The path is not totally convex.
-                  continue
-              if not abs(sum([f[2] for f in p]) - weight) < 0.0001:
-                  # Weights don't sum to our weight.
-                  continue
-              else:
-                  return False
-      return True      
+  flipgraph_edges = [(all_states_as_roots[i], all_states_as_roots[j]) for i in range(0, len(all_states_as_roots)) for j in range(0,i) if len(set(all_states_as_roots[i]) & set(all_states_as_roots[j])) == 5]
+  flipgraph_edges = [(frozenset(x), frozenset(y)) for (x,y) in flipgraph_edges]
+  flip_graph = Graph(flipgraph_edges)
 #+end_src
 
 Helper function to return all subgraphs of a given graph that have the "no-convex-factoring" property.
@@ -319,84 +518,4 @@ Helper function to return all subgraphs of a given graph that have the "no-conve
 #+end_src
 
 #+RESULTS:
-
-Helper function to check if a graph has the property that it has no minimal reflex cycles.
-#+begin_src sage :results silent
-  def no_min_reflex_cycles(G):
-      reflex_edges = [e for e in G.edges() if e[2] > 1]
-      min_reflex_edges = []
-
-      for e in reflex_edges:
-          # Check if e is non-minimal.
-          start, end, weight = e[0], e[1], e[2]
-          e_is_minimal_reflex = True
-          for p in G.all_paths_iterator([start], [end], max_length = 3, report_edges=True, labels=True):
-              # If the edge e has a convex/reflex factoring, then a factoring of length 2 is a witness to it.
-              if len(p) == 1:
-                  # Path too short
-                  continue
-              if not any([f[2] > 1 for f in p]):
-                  # The path does not have a reflex morphism along it
-                  continue
-              if not abs(sum([f[2] for f in p]) - weight) < 0.0001:
-                  # Weights don't sum to our weight
-                  continue
-              else:
-                  print("Found convex-reflex factoring: ",e,p)
-                  e_is_minimal_reflex = False
-                  break
-              
-          # If e is minimal reflex, add it to our list.
-          if e_is_minimal_reflex:
-              min_reflex_edges.append(e)
-
-          #Build a graph on the minimal reflex edges only.
-          G1 = DiGraph(min_reflex_edges)
-          return G1.is_directed_acyclic()
-#+end_src
-
-
-Helper function to generate all subgraphs of a given graph that have no cycles of minimal reflex morphisms.
-
-* States
-This is copied over from the d4-motions file.
-#+begin_src sage :results silent
-  X1 = p[1]
-  X2 = p[4]
-  X3 = p[3]
-  Y1 = s[4](s[3](p[2]))
-  Y2 = s[1](s[3](p[2]))
-  Y3 = s[1](s[4](p[2]))
-  Z1 = s[1](p[2])
-  Z2 = s[4](p[2])
-  Z3 = s[3](p[2])
-  A = s[-2](s[-1](s[-4](s[-3](p[2]))))
-  B = p[2]
-  C = s[1](s[4](s[3](p[2])))
-  Xs = {1:X1, 2:X2, 3:X3}
-  Ys = {1:Y1, 2:Y2, 3:Y3}
-  Zs = {1:Z1, 2:Z2, 3:Z3}  
-#+end_src
-
-#+begin_src sage :results silent
-  type1_states =[
-      [Xs[p(1)], Xs[p(2)], Ys[p(1)], Ys[p(3)], Zs[p(2)], Zs[p(3)]]
-        for p in SymmetricGroup(3)
-  ]
-#+end_src
-
-#+begin_src sage :results silent
-  type2_states = [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(1)]]     for p in SymmetricGroup(3)] +  [[B, Xs[p(1)], Xs[p(2)], Zs[p(2)], Zs[p(3)], Ys[p(3)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(1)]]     for p in SymmetricGroup(3)] +  [[C, Ys[p(1)], Ys[p(2)], Xs[p(2)], Xs[p(3)], Zs[p(3)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(1)]]     for p in SymmetricGroup(3)] +  [[A, Zs[p(1)], Zs[p(2)], Ys[p(2)], Ys[p(3)], Xs[p(3)]]     for p in SymmetricGroup(3)]
-  #+end_src
-
-#+begin_src sage :results silent
-  all_states = type1_states + type2_states
-  all_states_as_roots = [[obj_to_root(x) for x in s] for s in all_states]
-#+end_src
-
-#+begin_src sage :results silent
-  flipgraph_edges = [(all_states_as_roots[i], all_states_as_roots[j]) for i in range(0, len(all_states_as_roots)) for j in range(0,i) if len(set(all_states_as_roots[i]) & set(all_states_as_roots[j])) == 5]
-  flipgraph_edges = [(frozenset(x), frozenset(y)) for (x,y) in flipgraph_edges]
-  flip_graph = Graph(flipgraph_edges)
-#+end_src
 
