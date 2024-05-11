@@ -1,4 +1,4 @@
-#+property: header-args:sage :session d4-states :eval never-export :exports both
+#+property: header-args:sage :tangle "d4-states.sage" :session d4-states :eval never-export :exports both
 #+title: PPTs and states for type D4
 
 * Setup for D4
