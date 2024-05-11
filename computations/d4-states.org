@@ -213,9 +213,18 @@ Given a central charge, we can figure out which of the indecomposable spherical 
       return sorted(known_stables, key=lambda x: obj_to_phase(x, cc))
 #+end_src
 
+Helper function to plot a central charge.
+#+begin_src sage :results silent
+  def plot_cc(cc):
+      positive_ccs = [vector(x) for x in root_matrix * vector(cc.values())]
+      positive_roots_short = [short_name_root(x) for x in positives]
+      return sum([plot(x) + text(y, 1.1*x) for (x,y) in zip(positive_ccs, positive_roots_short)])
+#+end_src
+
 Let us input a sample central charge.
-  #+begin_src sage :results silent
-    cc = {1: 2 + I, 2: -10 + I, 3: 5 + 2*I, 4: -1 + 2*I}
+  #+begin_src sage :results file
+    cc = {1: -5 + I, 2: -20 + 3*I, 3: 2 + I, 4: 3 + I}
+    plot_cc(cc)
   #+end_src
 
 * Convex and reflex morphisms
@@ -326,12 +335,13 @@ Create variables to represent coordinates for the velocity vectors of the simple
 Initialise a particular central charge. At the moment we are making up some "good" numbers.
 WARNING: this part of the code is particular to type \(D_4\)!
 #+begin_src sage :results silent
-  simple_ccs_d4 = matrix([vector([-2,1]), vector([20,1]), vector([-2,2]), vector([-1,2])])
+  #simple_ccs_d4 = matrix([vector([-2,1]), vector([20,1]), vector([-2,2]), vector([-1,2])])
 #+end_src
 
 Now compute the central charges and (indeterminate) velocities for all the positive roots.
 #+begin_src sage :results silent
-  positive_ccs = root_matrix * simple_ccs_d4
+  positive_ccs = [vector(x) for x in root_matrix * vector(cc.values())]
+  #positive_ccs = root_matrix * simple_ccs_d4
   positive_velocities = root_matrix * simple_velocities
 #+end_src
 
@@ -392,6 +402,7 @@ Next we compute the rigid components for each of the extremal rays of the polyhe
 #+begin_src sage :exports both :results silent
   collapsed_components = [rigid_components(r) for r in P.ray_generator()]
   collapsed_states = [flatten(x) for x in collapsed_components]
+  collapsed_states = [set([short_name_root(x) for x in s]) for s in collapsed_states]
 #+end_src
 
 Let us try to tease out the "real" states from the collapsed states.
