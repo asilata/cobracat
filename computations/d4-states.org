@@ -39,6 +39,10 @@ The coefficients of roots in terms of simple roots.
 #+begin_src sage :results silent
   root_matrix = matrix([[r.coefficient(i) for i in indices] for r in positives])
 #+end_src
+** Debugging
+#+begin_src sage :results silent
+  DEBUG = True
+#+end_src
 
 ** Useful helper functions
 A helper function to compute the root class of any given projective complex.
@@ -54,7 +58,7 @@ A helper function to compute the root class of any given projective complex.
 
 A helper function to return a short name for a root.
 #+begin_src sage :results silent
-  def short_name_root(root):
+  def short_name_from_root(root):
       return "".join([str(root.coefficient(i)) for i in indices])
 #+end_src
 
@@ -62,7 +66,22 @@ A helper function to print a short name for an object.
 #+begin_src sage :results silent
   def short_name(obj):
       root = obj_to_root(obj)
-      return short_name_root(root)
+      return short_name_from_root(root)
+#+end_src
+
+#+begin_src sage :results silent
+  def short_name_to_root(name):
+      coeffs = [int(x) for x in name]
+      return sum([x*y for x, y in zip(coeffs, simples)])
+#+end_src
+
+#+begin_src sage :results silent
+  def short_name_to_obj(name, stab):
+      root = short_name_to_root(name)
+      for x in stab:
+          if obj_to_root(x) == root:
+              return x
+      return None
 #+end_src
 
 * Indecomposable spherical objects in the heart
@@ -172,8 +191,11 @@ Generate and return all indecomposable sphericals in the standard heart.
       return outputs
 #+end_src
 
-* Central charges and stable objects
+* Comuputing with stability conditions
 We can write down a central charge on the standard heart by specifying a vector in the upper half plane for each simple root.
+We will do this later.
+For now, we set up functions to compute semistable objects for the standard stability condition with a given central charge.
+We also set up functions to compute convex and reflex morphisms between them, so that we can write down the "states".
 
 A helper function to compute the phase of an object.
 The central charge is specified as a dictionary with keys the vertices of the Dynkin diagram, and values the values of the central charge on the corresponding simple root.
@@ -191,7 +213,7 @@ The central charge is specified as a dictionary with keys the vertices of the Dy
 
 Given a central charge, we can figure out which of the indecomposable spherical objects in the heart are semistable.
 #+begin_src sage :results silent
-  def semistable_objects(cc, heart):
+  def semistable_objects(heart, cc):
       known_stables = []
       heart_by_length = sorted(heart, key=lambda x: obj_to_root(x).length())
 
@@ -213,30 +235,7 @@ Given a central charge, we can figure out which of the indecomposable spherical 
       return sorted(known_stables, key=lambda x: obj_to_phase(x, cc))
 #+end_src
 
-Helper function to plot a central charge.
-#+begin_src sage :results silent
-  def plot_cc(cc):
-      positive_ccs = [vector(x) for x in root_matrix * vector(cc.values())]
-      positive_roots_short = [short_name_root(x) for x in positives]
-      return sum([plot(x) + text(y, 1.1*x) for (x,y) in zip(positive_ccs, positive_roots_short)])
-#+end_src
-
-Let us input a sample central charge.
-  #+begin_src sage :results file
-    # Both of these appear to be "type 1".
-    cc1 = {1: -1 + I, 2: 20 + I, 3: -1 + 2*I, 4: -1 + 3*I}
-    cc2 = {1: -1 + I, 2: 20 + I, 3: -1 + 2*I, 4: 9+3*I}
-
-    # This one is "type 2".
-    cc3 = {1: -1 + I, 2: 20 + I, 3: -1 + 5*I, 4: 9+3*I}
-
-    # This one is "type 3".
-    cc4 = {1: -1 + 10*I, 2: 20 + I, 3: -1 + 5*I, 4: 9+3*I}            
-    cc = cc4
-    plot_cc(cc)
-  #+end_src
-
-* Convex and reflex morphisms
+** Convex and reflex morphism constraints
 A helper function to list all the homs between stables as well as their phases.
 This is in order to discover the convex and reflex morphisms with factorings.
 #+begin_src sage :results silent
@@ -255,13 +254,15 @@ This is in order to discover the convex and reflex morphisms with factorings.
 #+end_src
 
 Helper function to check if a graph has the "no-convex-factoring" property.
+This means that there are no two convex morphisms that compose to a reflex morphism.
+Equivalently, that there is no sequence of convex morphisms that composes to give a loop map.
 #+begin_src sage :results silent
   def no_convex_factoring_property(G):
       reflex_edges = [e for e in G.edges() if e[2] > 1]
 
       for e in reflex_edges:
           start, end, weight = e[0], e[1], e[2]
-          for p in G.all_paths_iterator([start], [end], max_length = 3, report_edges=True, labels=True):
+          for p in G.all_paths_iterator([start], [end], max_length = 2, report_edges=True, use_multiedges = True, labels=True):
               if len(p) == 1:
                   # Path too short
                   continue
@@ -276,7 +277,12 @@ Helper function to check if a graph has the "no-convex-factoring" property.
       return True      
 #+end_src
 
+#+RESULTS:
+[[file:/tmp/tmpvyav87rj/tmp__90s1nc2.png]]
+
 Helper function to check if a graph has the property that it has no minimal reflex cycles.
+A minimal reflex morphism is one that is reflex, which has no convex-reflex factoring.
+So we want the property that there are no cycles of minimally reflex morphisms.
 #+begin_src sage :results silent
   def no_min_reflex_cycles(G):
       reflex_edges = [e for e in G.edges() if e[2] > 1]
@@ -286,7 +292,7 @@ Helper function to check if a graph has the property that it has no minimal refl
           # Check if e is non-minimal.
           start, end, weight = e[0], e[1], e[2]
           e_is_minimal_reflex = True
-          for p in G.all_paths_iterator([start], [end], max_length = 3, report_edges=True, labels=True):
+          for p in G.all_paths_iterator([start], [end], max_length = 2, use_multiedges = True, report_edges=True, labels=True):
               # If the edge e has a convex/reflex factoring, then a factoring of length 2 is a witness to it.
               if len(p) == 1:
                   # Path too short
@@ -298,6 +304,8 @@ Helper function to check if a graph has the property that it has no minimal refl
                   # Weights don't sum to our weight
                   continue
               else:
+                  if DEBUG:
+                      print("Found convex-reflex factoring of {} as {}".format(e, p))
                   e_is_minimal_reflex = False
                   break
               
@@ -310,11 +318,13 @@ Helper function to check if a graph has the property that it has no minimal refl
       return G1.is_directed_acyclic()
 #+end_src
 
+
+This portion of the code is currently also specifict to type D4. It returns all subgraphs of the morphism graph of stab of size 6, that satisfy the ncfs and nmrc properties mentioned earlier.
 #+begin_src sage :results silent
   def get_ncfs_and_nmrc(stab, cc):
       hwp = homs_with_phases(stab, cc)
       hwp_edges = [(short_name(x[0]), short_name(x[1]), x[2]) for x in hwp if x[0] != x[1]]
-      G = DiGraph(hwp_edges)
+      G = DiGraph(hwp_edges, multiedges=True)
       size6_subgraphs = [G.subgraph(x) for x in itertools.combinations(G.vertices(), 6)]
       print("Checking ncfs.")
       ncfs_6 = [set(H.vertices()) for H in size6_subgraphs if no_convex_factoring_property(H)]
@@ -330,27 +340,52 @@ Construct the flip graph of a set of proposed states.
       return Graph(edges)
 #+end_src
 
-* Expansive motions business
-Write down a matrix of coefficients of simple roots for each positive root of the root system.
+* Central charges
+Helper function to plot a central charge.
 #+begin_src sage :results silent
-  root_matrix = matrix([[r.coefficient(i) for i in indices] for r in positives])
+  def plot_cc(cc):
+      positive_ccs = [vector(x) for x in root_matrix * vector(cc.values())]
+      positive_roots_short = [short_name_from_root(x) for x in positives]
+      return sum([plot(x) + text(y, 1.1*x) for (x,y) in zip(positive_ccs, positive_roots_short)])
 #+end_src
 
+Let us input a sample central charge.
+WARNING: This part of the code is specific to type D4!
+  #+begin_src sage :results file
+    # Both of these appear to be "type 1": 78 total states, with
+    # 78 ncfs, 504 nmrc, with intersection of size 78.
+    cc1 = {1: -1 + I, 2: 20 + I, 3: -1 + 2*I, 4: -1 + 3*I}
+    cc2 = {1: -1 + I, 2: 20 + I, 3: -1 + 2*I, 4: 9+3*I}
+
+    # This one is "type 2": 81 total states, with
+    # 370 ncfs, 642 nmrc, with intersection of size 358.
+    cc3 = {1: -1 + I, 2: 20 + I, 3: -1 + 5*I, 4: 9+3*I}
+
+    # This one is "type 3": 80 total states, with
+    # 324 ncfs, 652 nmrc, with intersection of size 312.
+    cc4 = {1: -1 + 10*I, 2: 20 + I, 3: -1 + 5*I, 4: 9+3*I}
+
+    # This one may be "type 4": still 80 total states, but
+    # 217 ncfs, 594 nmrc, with intersection of size 214. This appears to be a "stable" state somehow.
+    cc5 = {1: -1 + 10*I, 2: 20 + I, 3: -1 + 11*I, 4: 9+3*I}
+
+    cc6 = {1: -5 + I, 2: -20 + 3*I, 3: 2 + I, 4: 3 + I}
+    cc = cc1
+    plot_cc(cc)
+  #+end_src
+
+#+RESULTS:
+[[file:/tmp/tmpvyav87rj/tmp_wsy73o18.png]]
+
+* Expansive motions business
 Create variables to represent coordinates for the velocity vectors of the simple roots.
 #+begin_src sage :results silent
   simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in indices])
 #+end_src
 
-Initialise a particular central charge. At the moment we are making up some "good" numbers.
-WARNING: this part of the code is particular to type \(D_4\)!
-#+begin_src sage :results silent
-  #simple_ccs_d4 = matrix([vector([-2,1]), vector([20,1]), vector([-2,2]), vector([-1,2])])
-#+end_src
-
 Now compute the central charges and (indeterminate) velocities for all the positive roots.
 #+begin_src sage :results silent
   positive_ccs = [vector(x) for x in root_matrix * vector(cc.values())]
-  #positive_ccs = root_matrix * simple_ccs_d4
   positive_velocities = root_matrix * simple_velocities
 #+end_src
 
@@ -397,39 +432,73 @@ The following function produces a list of rigid components given an extremal ray
       return components
 #+end_src
 
-** Results
-First we draw the stability condition we have constructed.
-#+begin_src sage :results file :exports both
-  sum([plot(x) + text(y, x + vector([0,0.5]))
-       for (x,y) in zip(positive_ccs, positives)])
+#+begin_src sage :results silent
+  def construct_polytope_and_components(cc):
+      simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in indices])
+      positive_ccs = [vector(x) for x in root_matrix * vector(cc.values())]
+      positive_velocities = root_matrix * simple_velocities
+      def eq_to_ieq(expr):
+          return [0] + [expr.coefficient(x) for x in simple_velocities.list()]
+
+      ineqs = [eq_to_ieq(x.dot_product(y)) for (x,y) in zip(positive_velocities, positive_ccs)]
+
+      P = Polyhedron(ieqs = ineqs, base_ring=QQ)
+      
+      def rigid_components(ray):
+          velocities = root_matrix * ray_to_velocity_matrix(ray)
+          rigid_roots_ratios = [(ray,x.norm()/y.norm())
+                                for (ray,x,y) in zip(positives,velocities, positive_ccs) if x.dot_product(y) == 0]
+          unique_ratios = set(t[1] for t in rigid_roots_ratios)
+          components = []
+          for ratio in unique_ratios:
+              this_component = []
+              for t in rigid_roots_ratios:
+                  if t[1] == ratio:
+                      this_component.append(t[0])
+              components.append(this_component)
+          return components
+
+      components = [rigid_components(r) for r in P.ray_generator()]
+
+      return P, components
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/tmpjexuzurg/tmp_4q86gr7g.png]]
+[[file:/tmp/tmpvyav87rj/tmp_7e859_eu.png]]
 
-Next we compute the rigid components for each of the extremal rays of the polyhedron \(P\).
+** Results
+We compute the rigid components for each of the extremal rays of the polyhedron \(P\).
 #+begin_src sage :exports both :results silent
   collapsed_components = [rigid_components(r) for r in P.ray_generator()]
   collapsed_states = [flatten(x) for x in collapsed_components]
-  collapsed_states = [set([short_name_root(x) for x in s]) for s in collapsed_states]
+  collapsed_states = [set([short_name_from_root(x) for x in s]) for s in collapsed_states]
 #+end_src
 
-Let us try to tease out the "real" states from the collapsed states.
-We start with the list of 6-element collapsed states: these are certainly real.
-Make them all sets for ease of comparison and intersections.
+Helper function to do everything at once, and return the states as well as whether the flip graph on them is regular.
 #+begin_src sage :results silent
-  original_states = set([frozenset(x) for x in collapsed_states if len(x) == 6])
-#+end_src
+  def check_cc(heart, cc):
+      print("Creating semistable objects.")
+      stab = semistable_objects(heart, cc)
+      _, ncfs, nmrc = get_ncfs_and_nmrc(stab, cc)
+      print("There are {} ncfs subgraphs.".format(len(ncfs)))
+      print("There are {} nmrc subgraphs.".format(len(nmrc)))
+      ncfs_and_nmrc = [x for x in ncfs if x in nmrc]
+      
+      print("Their intersection has size {}.".format(len(ncfs_and_nmrc)))
+      print("Constructing polytope.")
 
-Now consider all collapsed states, and look at all potential 6-element subsets of them.
-#+begin_src sage :results silent
-  potential_states = set(sum([[frozenset(x) for x in itertools.combinations(s,6)] for s in collapsed_states], []))
-#+end_src
+      print("Constructing polytope and rigid components.")
+      
+      P, collapsed_components = construct_polytope_and_components(cc)
+      collapsed_states = [flatten(x) for x in collapsed_components]
+      collapsed_states = [set([short_name_from_root(x) for x in s]) for s in collapsed_states]
 
-#+begin_src sage :results silent
-  def flips(state, potential_states):
-      for x in state:
-          sub_state = state - set([x])
-          flips = [s for s in potential_states if sub_state & s == sub_state]
-          print(flips)
-#+end_src
+      states = [x for x in ncfs_and_nmrc if any([x.issubset(y) for y in collapsed_states])]
+      fg = flip_graph(states)
+
+      return P, ncfs_and_nmrc, states, fg
+      #+end_src
+
+#+RESULTS:
+[[file:/tmp/tmpvyav87rj/tmp_lrmmv46d.png]]
+
