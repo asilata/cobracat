@@ -7,8 +7,10 @@ Load libraries and set \(D_4\) as the Cartan type.
 #+begin_src sage :results silent
   import itertools
   load("setup_cartan.sage")
-  ct = CartanType("D4")
-  indices = ct.dynkin_diagram().vertices()
+
+  # Some global constants
+  CT = CartanType("D4")
+  CT.dynkin_diagram().vertices()
 #+end_src
 
 The resulting Dynkin diagram looks like this; note that \(2\) is the central vertex.
@@ -21,24 +23,39 @@ O---O---O
 D4
 #+end_example
 
-Now set up the following dictionaries:
-- ~p~ is a dictionary of the indecomposable projectives, indexed by the vertices of the Dynkin diagram;
-- ~s~ is a dictionary of the spherical twists and their inverses, indexed by the vertices of the Dynkin diagram and their negatives.
+Now set up the following:
+- ~PROJ~ is a dictionary of the indecomposable projectives, indexed by ~INDICES~.
+- ~TWIST~ is a dictionary of the spherical twists and their inverses, indexed by ~INDICES~ as well as ~-INDICES~.
+- ~SIMPLES~ is a family of simple roots indexed by ~INDICES~.
+- ~INDICES~ is an iterable of the indices of the family of the simple roots.  
+- ~POSITIVES~ is a recursively enumerated set containing the positive roots of ~CT~.
+- ~ROOT_MATRIX~ is a matrix whose rows are indexed by the ~POSITIVES~. The row corresponding to a positive root \(\alpha\) is the vector of coefficients of \(\alpha\) with respect to each simple root in the order of ~INDICES~.
 
   #+begin_src sage :results silent
-    p, s, _ = zz_setup(ct)
-  #+end_src
+    def setup_cartan_type(ct=CT):
+        """
+        Set up global constants for a given CartanType.
+            
+        INPUT:
+            
+        - `ct` -- a CartanType, default the globally defined `CT`.
+        
+        OUTPUT:
+        
+        None, but define the global constants `INDICES`, `PROJ`, `TWIST`, `SIMPLES`, `POSITIVES`, `ROOT_MATRIX`.
+        """
 
-Record the simple and positive roots of type \(D_4\).
-#+begin_src sage :results silent
-  simples = ct.root_system().root_lattice().simple_roots()
-  positives = ct.root_system().root_lattice().positive_roots()
+        global INDICES, PROJ, TWIST, SIMPLES, POSITIVES, ROOT_MATRIX
+        
+        PROJ, TWIST, _ = zz_setup(CT)
+        SIMPLES = CT.root_system().root_lattice().simple_roots()
+        INDICES = SIMPLES.keys()
+        POSITIVES = CT.root_system().root_lattice().positive_roots()
+        ROOT_MATRIX = matrix([[r.coefficient(i) for i in INDICES] for r in POSITIVES])
+        
+        return None
 #+end_src
 
-The coefficients of roots in terms of simple roots.
-#+begin_src sage :results silent
-  root_matrix = matrix([[r.coefficient(i) for i in indices] for r in positives])
-#+end_src
 ** Debugging
 #+begin_src sage :results silent
   DEBUG = True
@@ -48,35 +65,108 @@ The coefficients of roots in terms of simple roots.
 A helper function to compute the root class of any given projective complex.
 #+begin_src sage :results silent
   def obj_to_root(obj):
-      proj_dict = dict([(k,0) for k in p.keys()])
+      """
+      Return the root class of a ProjectiveComplex.
+
+      INPUT:
+
+      - `obj` -- a ProjectiveComplex over the zigzag algebra of type CT.
+
+      OUTPUT:
+
+      The root of the CartanType `CT` that is the class of `obj` in the Grothendieck group.
+
+      EXAMPLES:
+          sage: obj_to_root(PROJ[1])
+          sage: alpha[1]
+      """
+      
+      proj_dict = dict([(k,0) for k in PROJ.keys()])
       for d in range(obj.minIndex(), obj.maxIndex()+1):
           for x in obj.objects(d):
               proj_key = x._i
               proj_dict[proj_key] = proj_dict[proj_key] + (-1)**(d - x.twist())
-      return sum([proj_dict[k] * simples[k] for k in proj_dict])
+              
+      return sum([proj_dict[k] * SIMPLES[k] for k in proj_dict])
 #+end_src
 
 A helper function to return a short name for a root.
 #+begin_src sage :results silent
   def short_name_from_root(root):
-      return "".join([str(root.coefficient(i)) for i in indices])
+      """
+      Return a short string representation of the given root.
+
+      INPUT:
+
+      - `root` -- a root of the root lattice of CT.
+
+      OUTPUT:
+
+      A string consisting of the coefficients of the simples in the given root.
+
+      EXAMPLE:
+
+          sage: short_name_from_root(SIMPLES[1])
+          sage: '1000'
+          sage: short_name_from_root(SIMPLES[2])
+          sage: '0100'
+      """
+      return "".join([str(root.coefficient(i)) for i in INDICES])
 #+end_src
 
 A helper function to print a short name for an object.
 #+begin_src sage :results silent
   def short_name(obj):
-      root = obj_to_root(obj)
-      return short_name_from_root(root)
+      """
+      Return a short string representation of the root class of a given object.
+
+      INPUT:
+
+      - `obj` -- a ProjectiveComplex over the zigzag algebra of type CT.
+
+      OUTPUT:
+
+      A string consisting of the coefficients of the simples in the root class of `obj`.
+
+      EXAMPLE:
+
+          sage: short_name(PROJ[1])
+          sage: '1000'
+          sage: short_name_from_root(PROJ[2])
+          sage: '0100'
+      """
+      return short_name_from_root(obj_to_root(obj))
 #+end_src
 
 #+begin_src sage :results silent
   def short_name_to_root(name):
+      """
+      Return the root class with the given string as a short name.
+
+      INPUT:
+
+      - `name` -- a string of length the size of `INDICES`, whose components are non-negative integers (between 0 and 9).
+
+      OUTPUT:
+
+      A linear combination of elements from SIMPLES, in which the ith simple appears as many times as the integer which is the ith entry of `name`.
+
+      EXAMPLES:
+
+          sage: short_name_to_root('1000')
+          sage: alpha[1]
+          sage: short_name_to_root('1211')
+          sage: alpha[1] + 2*alpha[2] + alpha[3] + alpha[4]
+      """
       coeffs = [int(x) for x in name]
-      return sum([x*y for x, y in zip(coeffs, simples)])
+      return sum([x*y for x, y in zip(coeffs, SIMPLES)])
 #+end_src
 
 #+begin_src sage :results silent
   def short_name_to_obj(name, stab):
+      """
+      
+      """
       root = short_name_to_root(name)
       for x in stab:
           if obj_to_root(x) == root:
@@ -84,6 +174,7 @@ A helper function to print a short name for an object.
       return None
 #+end_src
 
+* 
 * Indecomposable spherical objects in the heart
 We will begin by generating all indecomposable spherical objects in the standard heart.
 
@@ -205,9 +296,9 @@ The central charge is specified as a dictionary with keys the vertices of the Dy
       Given a list of central charge vectors of all the positive roots
       """
       root = obj_to_root(obj)
-      positive_ccs = root_matrix * vector(cc.values())
+      positive_ccs = ROOT_MATRIX * vector(cc.values())
       
-      root_cc = [x[1] for x in zip(positives, positive_ccs) if x[0] == root][0]
+      root_cc = [x[1] for x in zip(POSITIVES, positive_ccs) if x[0] == root][0]
       return float(arg(root_cc)/pi)
 #+end_src
 
@@ -344,8 +435,8 @@ Construct the flip graph of a set of proposed states.
 Helper function to plot a central charge.
 #+begin_src sage :results silent
   def plot_cc(cc):
-      positive_ccs = [vector(x) for x in root_matrix * vector(cc.values())]
-      positive_roots_short = [short_name_from_root(x) for x in positives]
+      positive_ccs = [vector(x) for x in ROOT_MATRIX * vector(cc.values())]
+      positive_roots_short = [short_name_from_root(x) for x in POSITIVES]
       return sum([plot(x) + text(y, 1.1*x) for (x,y) in zip(positive_ccs, positive_roots_short)])
 #+end_src
 
@@ -380,13 +471,13 @@ WARNING: This part of the code is specific to type D4!
 * Expansive motions business
 Create variables to represent coordinates for the velocity vectors of the simple roots.
 #+begin_src sage :results silent
-  simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in indices])
+  simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in INDICES])
 #+end_src
 
 Now compute the central charges and (indeterminate) velocities for all the positive roots.
 #+begin_src sage :results silent
-  positive_ccs = [vector(x) for x in root_matrix * vector(cc.values())]
-  positive_velocities = root_matrix * simple_velocities
+  positive_ccs = [vector(x) for x in ROOT_MATRIX * vector(cc.values())]
+  positive_velocities = ROOT_MATRIX * simple_velocities
 #+end_src
 
 ** Expansive inequalities and polytope of expansive motions
@@ -417,9 +508,9 @@ Among these, some subcollections form rigid components: these are distinguished 
 The following function produces a list of rigid components given an extremal ray.
 #+begin_src sage :results silent
   def rigid_components(ray):
-      velocities = root_matrix * ray_to_velocity_matrix(ray)
+      velocities = ROOT_MATRIX * ray_to_velocity_matrix(ray)
       rigid_roots_ratios = [(ray,x.norm()/y.norm())
-                            for (ray,x,y) in zip(positives,velocities, positive_ccs) if x.dot_product(y) == 0]
+                            for (ray,x,y) in zip(POSITIVES,velocities, positive_ccs) if x.dot_product(y) == 0]
       unique_ratios = set(t[1] for t in rigid_roots_ratios)
       components = []
       for ratio in unique_ratios:
@@ -434,9 +525,9 @@ The following function produces a list of rigid components given an extremal ray
 
 #+begin_src sage :results silent
   def construct_polytope_and_components(cc):
-      simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in indices])
-      positive_ccs = [vector(x) for x in root_matrix * vector(cc.values())]
-      positive_velocities = root_matrix * simple_velocities
+      simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in INDICES])
+      positive_ccs = [vector(x) for x in ROOT_MATRIX * vector(cc.values())]
+      positive_velocities = ROOT_MATRIX * simple_velocities
       def eq_to_ieq(expr):
           return [0] + [expr.coefficient(x) for x in simple_velocities.list()]
 
@@ -445,9 +536,9 @@ The following function produces a list of rigid components given an extremal ray
       P = Polyhedron(ieqs = ineqs, base_ring=QQ)
       
       def rigid_components(ray):
-          velocities = root_matrix * ray_to_velocity_matrix(ray)
+          velocities = ROOT_MATRIX * ray_to_velocity_matrix(ray)
           rigid_roots_ratios = [(ray,x.norm()/y.norm())
-                                for (ray,x,y) in zip(positives,velocities, positive_ccs) if x.dot_product(y) == 0]
+                                for (ray,x,y) in zip(POSITIVES,velocities, positive_ccs) if x.dot_product(y) == 0]
           unique_ratios = set(t[1] for t in rigid_roots_ratios)
           components = []
           for ratio in unique_ratios:
