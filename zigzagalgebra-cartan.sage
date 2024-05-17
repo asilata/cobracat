@@ -328,7 +328,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
     def idempotent_by_vertex(self, v):
         """
-        Returns the idempotent of `self` corresponding to vertex v.
+        Returns the idempotent of `self` corresponding to vertex `v`.
         """
         if v not in self.vertices:
             raise ValueError("{} is not a vertex of {}!".format(v,self))
@@ -337,12 +337,17 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
     def calabi_yau_dual(self, b):
         r"""
-        Given an element `b` in the basis of `self`, return the unique basis element that is Calabi--Yau dual to `a`.
+        Return the unique Calabi--Yau dual basis element of `b`.
 
-        `a` is an element such that `a * b` and `b * a` are both (plus or minus) the loops at the corresponding vertices.
-        More explicitly, if b is a loop at a vertex v, then a is the idempotent at v; if b is the idempotent at v then a is the loop at v; if b represents an an arrow, then a represents the reverse arrow.
+        INPUT:
 
-        The element b must be in the basis.
+        - `b`  -- a basis element of `self`.
+
+        OUTPUT:
+
+        - The unique basis element `a` of `self` such that `a * b` and `b * a` are both plus or minus of the loops at the corresponding vertices.
+        
+          `ValueError` if `b` is not in `self.basis()`.
         """
         if b not in self.basis():
             raise ValueError("{} is not a basis element of {}.".format(b,Z))
