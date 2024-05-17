@@ -48,6 +48,32 @@ The coefficients of roots in terms of simple roots.
 A helper function to compute the root class of any given projective complex.
 #+begin_src sage :results silent
   def obj_to_root(obj):
+      """
+      Compute the root class in the root system of a given complex of
+      projective modules.
+
+      INPUT:
+      
+      - ``obj`` -- ProjectiveComplex
+
+      OUTPUT:
+      
+      An element of the root system of the CartanType ct. The
+      Grothendieck group of the category in which ``obj`` lives is the
+      root lattice of ct. The class of the object ``obj`` is always a
+      positive or negative root in the corresponding root system, and
+      this is the output.
+
+      EXAMPLES:
+      
+          sage: p, s, _ = zz_setup(CartanType("D4"))
+          sage: obj_to_root(p[1])
+          alpha[1]
+          sage: obj_to_root(s[1](p[1]))
+          -alpha[1]
+          sage: obj_to_root(s[2](p[1]))
+          -alpha[1]
+      """
       proj_dict = dict([(k,0) for k in p.keys()])
       for d in range(obj.minIndex(), obj.maxIndex()+1):
           for x in obj.objects(d):
@@ -130,10 +156,13 @@ Helper functions to generate the braid words that we want to apply in order to g
       Return a list of all possible signed lifts of a given word w in the Weyl group.
 
       INPUT:
-      - w, a word in the Weyl group, for example [1,2]
+      
+      - w -- a word in the Weyl group, for example [1,2]
 
       OUTPUT:
-      - a list of all possible signed versions of the given word. In the previous example that would be [[1,2], [-1,2], [1,-2], [-1,-2]].
+      
+      A list of all possible signed versions of the given word. In the previous example that would be [[1,2], [-1,2], [1,-2], [-1,-2]].
+      
       """
       current_signed_lifts = [[]]
       current_word = w
