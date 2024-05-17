@@ -186,9 +186,18 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     
     def __init__(self, ct, k):
         r'''
-        Initialize ``self``.
+        Create a zig-zag algebra.
 
-        k is the base field, and ct is a CartanType.
+        INPUT:
+
+        - `ct` -- CartanType
+        - `k` -- Field
+
+        OUTPUT:
+
+        The zig-zag algebra of type `ct` over the field `k`.  The zig-zag algebra is
+        `Associative`, `Graded`, `FiniteDimensional`, `Algebras(k)`, and `WithBasis`.
+        
         '''
 
         # For the moment we must input either a genuine CartanType, or a string shorthand
@@ -251,9 +260,23 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
     def deg(self, p):
         """
-        Returns the degree of a homogeneous element `p` of `self`.
+        Return the degree of the given homogeneous element.
 
-        Assume that `p` is homogeneous.
+        INPUT:
+
+        - `p` -- A homogeneous `k`-linear combination of basis elements of `self`.
+
+        OUTPUT:
+
+        The degree of `p`.  Raise `ValueError` if `p` is not homogeneous.
+
+        EXAMPLES:
+
+           sage: A = ZigZagAlgebra("A2", QQ)
+           sage: A.deg(A.basis()[0])
+           0
+           sage: A.deg(A.basis()[-1])
+           2
         """
         mons = p.monomials()
         if mons == []:
