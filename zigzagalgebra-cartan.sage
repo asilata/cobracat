@@ -33,76 +33,73 @@ from functools import cached_property
 from itertools import product
 from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element import FiniteDimensionalAlgebraElement
 
-def _zz_idempotents(ct):
-    r"""
-    Given a Cartan Type, generate internal representations for the idempotents of
-    the zigzag algebra for each vertex.
-
-    We represent each idempotent as (i,0) where i is the index of the vertex, and 0
-    represents that it is an element of degree 0.
-    """
-    return [(i,0) for i in ct.index_set()]
-
-def _zz_arrows(ct):
-    r"""
-    Given a Cartan Type, generate internal representations for length-one paths in
-    the zigzag algebra.
-
-    In the Dynkin diagram of the cartan type, assume that edges are ordered from the
-    lower labelled vertex to the higher labelled vertex, for example, 3 -> 4.
-    In this case, there will be two generators corresponding to this edge, one 'forwards'
-    and the other 'backwards'.
-
-    We represent each arrow as ((i,j),0) where i is the source, j the target, and 1
-    represents that it is an element of degree 1.
-
-    We assume (for now) that the given Cartan Type is simply laced.
-    """
-    dynkin_edges = ct.dynkin_diagram().edges()
-    forward_zigzag_arrows = [((i,j),1) for (i,j,_) in dynkin_edges if i < j]
-    backward_zigzag_arrows = [((i,j),1) for (i,j,_) in dynkin_edges if j < i]
-    return forward_zigzag_arrows + backward_zigzag_arrows
-
-def _zz_loops(ct):
-    r"""
-    Given a Cartan Type, generate internal representations for the loops in
-    the zigzag algebra for each vertex.
-
-    We represent each loop as (i,2) where i is the source/target, and 2
-    represents that it is an element of degree 2.
-    """
-    return [(i,2) for i in ct.index_set()]    
-
 def _zz_basis(ct):
     r"""
-    Given a Cartan Type, return a list of internal representations of the
-    basis elements of the corresponding zigzag algebra.
-    """
-    return _zz_idempotents(ct) + _zz_arrows(ct) + _zz_loops(ct)
+    Return a list of basis elements of the zigzag algebra of CartanType `ct`.
+    
+    The standard basis of the zigzag algebra consists of the primitive
+    idempotents at each vertex, arrows between two vertices, and loop
+    maps at each vertex.  Each path is represented as a tuple
+    `(i,j,d)`, where `i` is its source vertex, `j` is its target
+    vertex, and `d` is its degree.
+    
+    We assume (for now) that the given Cartan Type is simply laced.
+    
+    INPUT:
 
-def _zz_deg(b):
-    r"""
-    Given a basis element of the form (i,n) for n in {0,2} or ((i,j),1), return its degree.
+    - `ct` -- a CartanType
+
+    OUTPUT:
+
+    A list of paths that form the standard basis of the zigzag algebra. 
     """
-    return b[1]
+    idempotents = [(i,i,0) for i in ct.index_set()]
+    arrows = [(i,j,1) for (i,j,_) in ct.dynkin_diagram().edges()]
+    loops = [(i,i,2) for i in ct.index_set()]
+    
+    return idempotents + arrows + loops
 
 def _zz_source(b):
     r"""
-    Given a basis element (i.e. a path of length at most 2), return its source vertex.
+    Return the source vertex of the given basis element.
+    
+    INPUT:
+
+    - `b` -- the internal representation of a basis element of the zigzag algebra of CartanType `ct`.
+
+    OUTPUT:
+
+    The source vertex of the given basis element. Given (i,j,d), return i.
     """
-    if _zz_deg(b) == 0 or _zz_deg(b) == 2:
-        return b[0]
-    else:
-        return b[0][0]
+    return b[0]
 
 def _zz_target(b):
     r"""
-    Given a basis element (i.e. a path of length at most 2), return its target vertex.
+    Return the target vertex of the given basis element.
+    
+    INPUT:
+
+    - `b` -- the internal representation of a basis element of the zigzag algebra of CartanType `ct`.
+
+    OUTPUT:
+
+    The target vertex of the given basis element. Given (i,j,d), return j.
     """
-    if _zz_deg(b) == 0 or _zz_deg(b) == 2:
-        return b[0]
-    else:
-        return b[0][1]
+    return b[1]
+
+def _zz_deg(b):
+    r"""
+    Return the degree of a given basis element.
+
+    INPUT:
+
+    - `b` -- the internal representation of a  basis element of the zigzag algebra of CartanType `ct`.
+
+    OUTPUT:
+
+    The degree of the given basis element. Given (i,j,d), return d.
+    """
+    return b[2]
 
 def _zz_get_name(b):
     r"""
@@ -116,12 +113,13 @@ def _zz_get_name(b):
         return 'l' + str(_zz_source(b))
     else:
         raise ValueError("{} is not a valid basis element!".format(b))
-                 
-    
-def _zz_right_multiply(basis, x, k):
+
+def _zz_right_multiply(basis, x, k=QQ):
     r"""
-    Generate the multiplication table for right multiplication by a basis element x of the zigzag algebra.
-    The element x must be in the basis.
+    Return the multiplication table for right multiplication by the basis element `x`.
+    
+    Generate the multiplication table for right multiplication of the elements in `basis` by a basis element `x` of the zigzag algebra.
+    The element `x` must be in `basis`.
     """
 
     # Initialize an empty transposed matrix, which we fill in.
@@ -170,8 +168,6 @@ def _zz_right_multiply(basis, x, k):
     else:
         raise ValueError("{} is not a basis element of the zigzag algebra!".format(x))
     return mult_matrix
-
-
 
 class ZigZagAlgebraElement(FiniteDimensionalAlgebraElement):
     def __init__(self, A, elt=None, check=True):
