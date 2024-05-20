@@ -379,13 +379,9 @@ Equivalently, that there is no sequence of convex morphisms that composes to giv
 #+RESULTS:
 [[file:/tmp/tmpvyav87rj/tmp__90s1nc2.png]]
 
-Helper function to check if a graph has the property that it has no minimal reflex cycles.
-A minimal reflex morphism is one that is reflex, which has no convex-reflex factoring.
-So we want the property that there are no cycles of minimally reflex morphisms.
 #+begin_src sage :results silent
-  def no_min_reflex_cycles(G):
+  def min_reflex_morphism_subgraph(G):
       reflex_edges = {e : list(G.edges()).count(e) for e in G.edges() if e[2] > 1}
-      #[e for e in G.edges() if e[2] > 1]
       min_reflex_edges = []
 
       for e in reflex_edges:
@@ -421,8 +417,16 @@ So we want the property that there are no cycles of minimally reflex morphisms.
           if e_is_minimal_reflex:
               min_reflex_edges.append(e)
 
-      #Build a graph on the minimal reflex edges only.
-      G1 = DiGraph(min_reflex_edges)
+      #Return a graph on the minimal reflex edges only.
+      return DiGraph(min_reflex_edges)
+#+end_src
+
+Helper function to check if a graph has the property that it has no minimal reflex cycles.
+A minimal reflex morphism is one that is reflex, which has no convex-reflex factoring.
+So we want the property that there are no cycles of minimally reflex morphisms.
+#+begin_src sage :results silent
+  def no_min_reflex_cycles(G):
+      G1 = min_reflex_morphism_subgraph(G)
       return G1.is_directed_acyclic()
 #+end_src
 
