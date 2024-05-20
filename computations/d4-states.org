@@ -352,6 +352,29 @@ This is in order to discover the convex and reflex morphisms with factorings.
       return homs_phases_list      
 #+end_src
 
+Helper function to return a list of all convex factorings of reflex morphisms in a given morphism graph \(G\).
+#+begin_src sage :results silent
+    def convex_factorings(G):
+      reflex_edges = [e for e in G.edges() if e[2] > 1]
+      convex_factorings = []
+
+      for e in reflex_edges:
+          start, end, weight = e[0], e[1], e[2]
+          for p in G.all_paths_iterator([start], [end], max_length = 2, report_edges=True, use_multiedges = True, labels=True):
+              if len(p) == 1:
+                  # Path too short
+                  continue
+              if not all([f[2] < 1 for f in p]):
+                  # The path is not totally convex.
+                  continue
+              if not abs(sum([f[2] for f in p]) - weight) < 0.0001:
+                  # Weights don't sum to our weight.
+                  continue
+              else:
+                  convex_factorings.append((e, p))
+      return convex_factorings
+#+end_src
+
 Helper function to check if a graph has the "no-convex-factoring" property.
 This means that there are no two convex morphisms that compose to a reflex morphism.
 Equivalently, that there is no sequence of convex morphisms that composes to give a loop map.
@@ -430,6 +453,18 @@ So we want the property that there are no cycles of minimally reflex morphisms.
       return G1.is_directed_acyclic()
 #+end_src
 
+#+begin_src sage :results silent
+  def single_rigid_component(G):
+      convex_edges = [e for e in G.edges() if e[2] < 1]
+      G1 = DiGraph(convex_edges, multiedges=True)
+
+      H = Graph()
+      for c in G1.all_simple_cycles():
+          for i in range(0, len(c)):
+              for j in range(0, i):
+                  H.add_edge(i,j)
+      return H.clique_number() == len(G.vertices())
+#+end_src
 
 This portion of the code is currently also specifict to type D4. It returns all subgraphs of the morphism graph of stab of size 6, that satisfy the ncfs and nmrc properties mentioned earlier.
 #+begin_src sage :results silent
