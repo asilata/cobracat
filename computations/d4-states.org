@@ -175,7 +175,6 @@ A helper function to print a short name for an object.
       return None
 #+end_src
 
-* 
 * Indecomposable spherical objects in the heart
 We will begin by generating all indecomposable spherical objects in the standard heart.
 
@@ -257,32 +256,37 @@ Generate and return all indecomposable sphericals in the standard heart.
       reduced_braid_words = sum([all_signed_combinations(w) for w in reduced_words], [])
       long_word_length = max([len(x) for x in reduced_words])    
       
-
       # Start with the list of reduced braid words; this will be pruned as we go.
       pruned_braid_words = reduced_braid_words
       outputs = []
 
       # Go through words by length, applying the word to p[1] and checking if it is in the heart.
-      # If it is in the heart, then add it to outputs.
-      # Otherwise, prune the remaining braid words by removing any word that has the current word as a rightmost substring.
+      # If it is something we have already seen, or if it is not in the heart, then
+      # prune the remaining braid words by removing any word that has the current word as a rightmost substring.
+      # Otherwise, we have found a new element of the heart, so add it to outputs.
       for l in range(0,long_word_length + 1):
           print("Applying words of length {}.".format(l))
+          print("There are {} pruned braid words left.".format(len(pruned_braid_words)))
           lifts_of_length_l = [x for x in pruned_braid_words if len(x) == l]
+          print("There are {} lifts of length {}.".format(len(lifts_of_length_l), l))
           pruned_braid_words = [x for x in pruned_braid_words if len(x) > l]
+          print("There are {} pruned braid words left.".format(len(pruned_braid_words)))
+
+          if len(lifts_of_length_l) == 0:
+              # There are no more words to check so break the loop.
+              print("Nothing left to do!")
+              break
           
           for b in lifts_of_length_l:
               b_of_p1 = composeAll([TWIST[i] for i in b])(PROJ[1])
-              if in_heart(b_of_p1):
-                  exist_equal_elements = False
-                  for x in outputs:
-                      if equal_upto_shift(x,b_of_p1):
-                          exist_equal_elements = True
-                          break
 
-                  if not exist_equal_elements:
-                      outputs = outputs + [b_of_p1]
+              if any([equal_upto_shift(b_of_p1, x) for x in outputs]) or not in_heart(b_of_p1):
+                  # The braid is either redundant or not linear, so prune the braid words.
+                  pruned_braid_words = [x for x in pruned_braid_words if x[-len(b):] != b]                  
               else:
-                  pruned_braid_words = [x for x in pruned_braid_words if x[-len(b):] != b]
+                  # b_of_p1 is a new object in the heart.
+                  outputs.append(b_of_p1)
+                  print("Adding {} to outputs".format(b_of_p1))
       return outputs
 #+end_src
 
