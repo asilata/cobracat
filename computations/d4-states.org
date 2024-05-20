@@ -58,7 +58,7 @@ Now set up the following:
 
 ** Debugging
 #+begin_src sage :results silent
-  DEBUG = True
+  DEBUG = False
 #+end_src
 
 ** Useful helper functions
@@ -457,29 +457,35 @@ Let us input a sample central charge.
 WARNING: This part of the code is specific to type D4!
   #+begin_src sage :results file
     # Both of these appear to be "type 1": 78 total states, with
-    # 78 ncfs, 504 nmrc, with intersection of size 78.
+    # 594 ncfs, 456 nmrc, with intersection of size 456.
     cc1 = {1: -1 + I, 2: 20 + I, 3: -1 + 2*I, 4: -1 + 3*I}
     cc2 = {1: -1 + I, 2: 20 + I, 3: -1 + 2*I, 4: 9+3*I}
 
     # This one is "type 2": 81 total states, with
-    # 370 ncfs, 642 nmrc, with intersection of size 358.
+    # 532 ncfs, 263 nmrc, with intersection of size 157.
     cc3 = {1: -1 + I, 2: 20 + I, 3: -1 + 5*I, 4: 9+3*I}
 
     # This one is "type 3": 80 total states, with
-    # 324 ncfs, 652 nmrc, with intersection of size 312.
+    # 480 ncfs, 288 nmrc, with intersection of size 136.
     cc4 = {1: -1 + 10*I, 2: 20 + I, 3: -1 + 5*I, 4: 9+3*I}
 
     # This one may be "type 4": still 80 total states, but
-    # 217 ncfs, 594 nmrc, with intersection of size 214. This appears to be a "stable" state somehow.
+    # 576 ncfs, 347 nmrc, with intersection of size 289. This appears to be a "stable" state somehow.
     cc5 = {1: -1 + 10*I, 2: 20 + I, 3: -1 + 11*I, 4: 9+3*I}
 
+    # This is "type 2" again.
     cc6 = {1: -5 + I, 2: -20 + 3*I, 3: 2 + I, 4: 3 + I}
-    cc = cc1
+
+    # These are both "type 3".
+    cc7 = {1: 10 + I , 2: -9 + 5*I , 3: 4+3*I , 4: 20}
+    cc8 = {1: 9, 2: 4 + 3*I , 3: -4+3*I , 4: -33+I}
+
+    cc = cc8
     plot_cc(cc)
   #+end_src
 
 #+RESULTS:
-[[file:/tmp/tmpvyav87rj/tmp_wsy73o18.png]]
+[[file:/tmp/tmpxpturmus/tmp_ta2x3nf5.png]]
 
 * Expansive motions business
 Create variables to represent coordinates for the velocity vectors of the simple roots.
@@ -598,11 +604,13 @@ Helper function to do everything at once, and return the states as well as wheth
       collapsed_states = [set([short_name_from_root(x) for x in s]) for s in collapsed_states]
 
       states = [x for x in ncfs_and_nmrc if any([x.issubset(y) for y in collapsed_states])]
+      print("There are {} states.".format(len(states)))
       fg = flip_graph(states)
+      if fg.is_regular():
+          print("The flip graph is regular!")
+      else:
+          print("The flip graph is NOT regular.")
 
       return P, ncfs_and_nmrc, states, fg
       #+end_src
-
-#+RESULTS:
-[[file:/tmp/tmpvyav87rj/tmp_lrmmv46d.png]]
 
