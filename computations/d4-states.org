@@ -214,7 +214,7 @@ Check if two given objects are equal up to shift.
 
 Helper functions to generate the braid words that we want to apply in order to get all objects in the heart.
 #+begin_src sage :results silent
-  W = WeylGroup(ct)
+  W = WeylGroup(CT)
 
   def all_signed_combinations(w):
       """
@@ -242,7 +242,7 @@ Helper functions to generate the braid words that we want to apply in order to g
 #+end_src
 Generate and return all indecomposable sphericals in the standard heart.
 #+begin_src sage :results silent
-  def indecomposable_sphericals_in_heart():
+  def indecomposable_sphericals_in_heart(ct = CT):
       """
       Return a list of all the spherical objects in the standard heart of the 2-CY category associated to the chosen Cartan type.
       This list checks if the generated object at any stage is equal (up to shift) to any previously generated object, and only adds it to the outputs if not already present.
@@ -267,7 +267,7 @@ Generate and return all indecomposable sphericals in the standard heart.
           pruned_braid_words = [x for x in pruned_braid_words if len(x) > l]
           
           for b in lifts_of_length_l:
-              b_of_p1 = composeAll([s[i] for i in b])(p[1])
+              b_of_p1 = composeAll([TWIST[i] for i in b])(PROJ[1])
               if in_heart(b_of_p1):
                   exist_equal_elements = False
                   for x in outputs:
