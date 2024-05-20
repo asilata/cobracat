@@ -82,6 +82,7 @@ A helper function to compute the root class of any given projective complex.
       """
       
       proj_dict = dict([(k,0) for k in PROJ.keys()])
+
       for d in range(obj.minIndex(), obj.maxIndex()+1):
           for x in obj.objects(d):
               proj_key = x._i
@@ -221,10 +222,13 @@ Helper functions to generate the braid words that we want to apply in order to g
       Return a list of all possible signed lifts of a given word w in the Weyl group.
 
       INPUT:
-      - w, a word in the Weyl group, for example [1,2]
+      
+      - w -- a word in the Weyl group, for example [1,2]
 
       OUTPUT:
-      - a list of all possible signed versions of the given word. In the previous example that would be [[1,2], [-1,2], [1,-2], [-1,-2]].
+      
+      A list of all possible signed versions of the given word. In the previous example that would be [[1,2], [-1,2], [1,-2], [-1,-2]].
+      
       """
       current_signed_lifts = [[]]
       current_word = w
@@ -376,13 +380,18 @@ A minimal reflex morphism is one that is reflex, which has no convex-reflex fact
 So we want the property that there are no cycles of minimally reflex morphisms.
 #+begin_src sage :results silent
   def no_min_reflex_cycles(G):
-      reflex_edges = [e for e in G.edges() if e[2] > 1]
+      reflex_edges = {e : list(G.edges()).count(e) for e in G.edges() if e[2] > 1}
+      #[e for e in G.edges() if e[2] > 1]
       min_reflex_edges = []
 
       for e in reflex_edges:
           # Check if e is non-minimal.
-          start, end, weight = e[0], e[1], e[2]
+          start, end, weight, multiplicity = e[0], e[1], e[2], reflex_edges[e]
+          if DEBUG and (multiplicity > 1):
+              print("Edge multiplicity of {} is {}".format(e, multiplicity))
           e_is_minimal_reflex = True
+          num_factorings = 0
+          
           for p in G.all_paths_iterator([start], [end], max_length = 2, use_multiedges = True, report_edges=True, labels=True):
               # If the edge e has a convex/reflex factoring, then a factoring of length 2 is a witness to it.
               if len(p) == 1:
@@ -395,10 +404,14 @@ So we want the property that there are no cycles of minimally reflex morphisms.
                   # Weights don't sum to our weight
                   continue
               else:
+                  num_factorings = num_factorings + 1
                   if DEBUG:
                       print("Found convex-reflex factoring of {} as {}".format(e, p))
-                  e_is_minimal_reflex = False
-                  break
+                  if num_factorings >= multiplicity:
+                      if DEBUG and (multiplicity > 1):
+                          print("Factorings >= edge multiplicity of {}".format(e))
+                      e_is_minimal_reflex = False
+                      break
               
           # If e is minimal reflex, add it to our list.
           if e_is_minimal_reflex:
