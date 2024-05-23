@@ -114,7 +114,7 @@ def _zz_get_name(b):
     else:
         raise ValueError("{} is not a valid basis element!".format(b))
 
-def _zz_right_multiply(basis, x, k=QQ):
+def _zz_right_multiplication_table(basis, x, k=QQ):
     r"""
     Return the multiplication table for right multiplication by the basis element `x`.
     
@@ -212,7 +212,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
         # A list of matrices, where the ith matrix is the matrix of right multiplication
         # by the ith basis element
-        table = [_zz_right_multiply(self._internal_basis, b, k) for b in self._internal_basis]
+        table = [_zz_right_multiplication_table(self._internal_basis, b, k) for b in self._internal_basis]
         names = [_zz_get_name(b) for b in self._internal_basis]
         
         super(ZigZagAlgebra, self).__init__(k, table, names, category=Algebras(k).FiniteDimensional().Graded().WithBasis().Associative())
