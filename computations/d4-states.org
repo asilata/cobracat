@@ -379,12 +379,17 @@ Helper function to check if a graph has the "no-convex-factoring" property.
 This means that there are no two convex morphisms that compose to a reflex morphism.
 Equivalently, that there is no sequence of convex morphisms that composes to give a loop map.
 #+begin_src sage :results silent
+  # Some flags for testing.
+  USE_MULTIEDGES = True
+#+end_src
+
+#+begin_src sage :results silent
   def no_convex_factoring_property(G):
       reflex_edges = [e for e in G.edges() if e[2] > 1]
 
       for e in reflex_edges:
           start, end, weight = e[0], e[1], e[2]
-          for p in G.all_paths_iterator([start], [end], max_length = 2, report_edges=True, use_multiedges = True, labels=True):
+          for p in G.all_paths_iterator([start], [end], max_length = 2, report_edges=True, use_multiedges = USE_MULTIEDGES, labels=True):
               if len(p) == 1:
                   # Path too short
                   continue
@@ -415,7 +420,7 @@ Equivalently, that there is no sequence of convex morphisms that composes to giv
           e_is_minimal_reflex = True
           num_factorings = 0
           
-          for p in G.all_paths_iterator([start], [end], max_length = 2, use_multiedges = True, report_edges=True, labels=True):
+          for p in G.all_paths_iterator([start], [end], max_length = 2, use_multiedges = USE_MULTIEDGES, report_edges=True, labels=True):
               # If the edge e has a convex/reflex factoring, then a factoring of length 2 is a witness to it.
               if len(p) == 1:
                   # Path too short
@@ -471,7 +476,7 @@ This portion of the code is currently also specifict to type D4. It returns all 
   def get_ncfs_and_nmrc(stab, cc):
       hwp = homs_with_phases(stab, cc)
       hwp_edges = [(short_name(x[0]), short_name(x[1]), x[2]) for x in hwp if x[0] != x[1]]
-      G = DiGraph(hwp_edges, multiedges=True)
+      G = DiGraph(hwp_edges, multiedges=USE_MULTIEDGES)
       size6_subgraphs = [G.subgraph(x) for x in itertools.combinations(G.vertices(), 6)]
       print("Checking ncfs.")
       ncfs_6 = [set(H.vertices()) for H in size6_subgraphs if no_convex_factoring_property(H)]
@@ -523,12 +528,11 @@ WARNING: This part of the code is specific to type D4!
     cc7 = {1: 10 + I , 2: -9 + 5*I , 3: 4+3*I , 4: 20}
     cc8 = {1: 9, 2: 4 + 3*I , 3: -4+3*I , 4: -33+I}
 
+    cc9 = {1: 9 + 5*I, 2: 7, 3: -15 + 5*I, 4: 13 + 13*I}
+    cc10 = {1: 9, 2: 7 + 5*I, 3: -15 + 5*I, 4: 13 + 13*I}    
     cc = cc8
     plot_cc(cc)
   #+end_src
-
-#+RESULTS:
-[[file:/tmp/tmpxpturmus/tmp_ta2x3nf5.png]]
 
 * Expansive motions business
 Create variables to represent coordinates for the velocity vectors of the simple roots.
