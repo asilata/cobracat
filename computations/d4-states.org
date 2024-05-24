@@ -1,7 +1,7 @@
 #+property: header-args:sage :tangle "d4-states.sage" :session d4-states :eval never-export :exports both
-#+title: PPTs and states for type D4
+#+title: Pointed pseudo-triangulations and states for type \(D_4\)
 
-* Setup for D4
+* Setup for \(D_4\)
 Load libraries and set \(D_4\) as the Cartan type.
 #+name: d4-dynkin
 #+begin_src sage :results silent
@@ -290,7 +290,7 @@ Generate and return all indecomposable sphericals in the standard heart.
       return outputs
 #+end_src
 
-* Comuputing with stability conditions
+* Computing with stability conditions
 We can write down a central charge on the standard heart by specifying a vector in the upper half plane for each simple root.
 We will do this later.
 For now, we set up functions to compute semistable objects for the standard stability condition with a given central charge.
@@ -404,9 +404,6 @@ Equivalently, that there is no sequence of convex morphisms that composes to giv
       return True      
 #+end_src
 
-#+RESULTS:
-[[file:/tmp/tmpvyav87rj/tmp__90s1nc2.png]]
-
 #+begin_src sage :results silent
   def min_reflex_morphism_subgraph(G):
       reflex_edges = {e : list(G.edges()).count(e) for e in G.edges() if e[2] > 1}
@@ -492,6 +489,95 @@ Construct the flip graph of a set of proposed states.
       return Graph(edges)
 #+end_src
 
+* Expansive motions business
+
+** Expansive inequalities and polytope of expansive motions
+The inequalities to construct the ("unconstrained") expansive polytope are of the form \(\langle z, v \rangle \ge 0\), where \(z\) is a central charge vector and \(v\) is the corresponding velocity vector.
+
+The velocity vector for the simple root \(\alpha_i\) will be represented by the vector \(a_i, b_i\), where \(a_i\) and \(b_i\) are variables.
+More generally, the velocity vector for a root 
+\[\alpha = \sum_i c_i \alpha_i\]
+will be the vector
+\[v_{\alpha} = \sum_i c_i (a_i, b_i).\]
+
+Recall that the central charge of any root \(\alpha\) is some complex number \(z_{\alpha}\).
+To write down a dot product expression \(\langle z_{\alpha}, v_{\alpha}\), we convert the central charge to a vector in \(\mathbb{R}^2\) in the obvious way, and then take its dot product with the vector \(v_{\alpha}\) above.
+The output is a symbolic expression; a linear combination of the variables \(a_i\) and \(b_i\).
+
+** Computations on extremal rays
+Recall that an extremal ray consists of the \(x\) and \(y\) coordinates for each of the velocity vectors.
+
+The following helper function converts an extremal ray into a matrix of velocities, by splitting the list into pieces of size \(2\) and then converting the output into a matrix.
+#+begin_src sage :results silent
+  def ray_to_velocity_matrix(r):
+      return matrix([r[i:i+2] for i in range(0,len(r),2)])
+#+end_src
+
+A matrix of velocities corresponding to an extremal ray specifies how each point moves, so that we get an infinitesimally expansive motion.
+The central charge vectors that remain rigid (do not expand) are exactly the ones whose velocity vector have zero dot product with the corresponding central charge vector.
+The collection of these central charge vectors forms a subset that has a unique infinitesimal expansive motion.
+Each such collection is further divided into rigid components: each rigid component moves together in the unique expansive motion of the extremal ray.
+
+A rigid component within an extremal ray identified by the fact that all elements in the same rigid component have the same ratio of the length of the velocity vector to the length of the central charge vector.
+
+The following function produces a list of rigid components given an extremal ray.
+#+begin_src sage :results silent
+  def rigid_components(ray):
+      velocities = ROOT_MATRIX * ray_to_velocity_matrix(ray)
+      rigid_roots_ratios = [(ray,x.norm()/y.norm())
+                            for (ray,x,y) in zip(POSITIVES,velocities, positive_ccs) if x.dot_product(y) == 0]
+      unique_ratios = set(t[1] for t in rigid_roots_ratios)
+      components = []
+      for ratio in unique_ratios:
+          this_component = []
+          for t in rigid_roots_ratios:
+              if t[1] == ratio:
+                  this_component.append(t[0])
+          components.append(this_component)
+
+      return components
+#+end_src
+
+** Construction of the polytope
+To construct the polytope, we follow the following steps.
+1. Create variables to represent coordinates for the velocity vectors of the simple roots.
+2. Then compute the central charges and (indeterminate) velocities for all the positive roots.
+3. For each root \(\alpha\), consider the inequality \(\langle z_{\alpha}, v_{\alpha}\rangle \geq 0\). Convert these to a form acceptable to sage.
+4. Then construct the polytope \(P\).
+5. Finally, construct the rigid components for each extremal ray, and return \(P\) together with the collection of extremal sets subdivided into rigid components.
+
+#+begin_src sage :results silent
+  def construct_polytope_and_components(cc):
+      simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in INDICES])
+      positive_ccs = [vector(x) for x in ROOT_MATRIX * vector(cc.values())]
+      positive_velocities = ROOT_MATRIX * simple_velocities
+      
+      def eq_to_ieq(expr):
+          return [0] + [expr.coefficient(x) for x in simple_velocities.list()]
+
+      ineqs = [eq_to_ieq(x.dot_product(y)) for (x,y) in zip(positive_velocities, positive_ccs)]
+
+      P = Polyhedron(ieqs = ineqs, base_ring=QQ)
+      
+      def rigid_components(ray):
+          velocities = ROOT_MATRIX * ray_to_velocity_matrix(ray)
+          rigid_roots_ratios = [(ray,x.norm()/y.norm())
+                                for (ray,x,y) in zip(POSITIVES,velocities, positive_ccs) if x.dot_product(y) == 0]
+          unique_ratios = set(t[1] for t in rigid_roots_ratios)
+          components = []
+          for ratio in unique_ratios:
+              this_component = []
+              for t in rigid_roots_ratios:
+                  if t[1] == ratio:
+                      this_component.append(t[0])
+              components.append(this_component)
+          return components
+
+      components = [rigid_components(r) for r in P.ray_generator()]
+
+      return P, components
+#+end_src
+
 * Central charges
 Helper function to plot a central charge.
 #+begin_src sage :results silent
@@ -534,104 +620,8 @@ WARNING: This part of the code is specific to type D4!
     plot_cc(cc)
   #+end_src
 
-* Expansive motions business
-Create variables to represent coordinates for the velocity vectors of the simple roots.
-#+begin_src sage :results silent
-  simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in INDICES])
-#+end_src
-
-Now compute the central charges and (indeterminate) velocities for all the positive roots.
-#+begin_src sage :results silent
-  positive_ccs = [vector(x) for x in ROOT_MATRIX * vector(cc.values())]
-  positive_velocities = ROOT_MATRIX * simple_velocities
-#+end_src
-
-** Expansive inequalities and polytope of expansive motions
-The various inequalities are of the form \(\langle z, v \rangle \ge 0\), where \(z\) is a central charge vector and \(v\) is the corresponding velocity vector.
-We create a list of inequalities (in a form acceptable to sage), and then construct a polyhedron defined by these inequalities over \(\mathbb{Q}\).
-#+begin_src sage :results silent
-  def eq_to_ieq(expr):
-       return [0] + [expr.coefficient(x) for x in simple_velocities.list()]
-
-  ineqs = [eq_to_ieq(x.dot_product(y)) for (x,y) in zip(positive_velocities, positive_ccs)]
-
-  P = Polyhedron(ieqs = ineqs, base_ring=QQ)
-#+end_src
-
-** Computations on extremal rays
-Recall that an extremal ray consists of the \(x\) and \(y\) coordinates for each of the velocity vectors.
-The following function converts an extremal ray into a matrix of velocities, by splitting the list into pieces of size \(2\) and then converting the output into a matrix.
-#+begin_src sage :results silent
-  def ray_to_velocity_matrix(r):
-      return matrix([r[i:i+2] for i in range(0,len(r),2)])
-#+end_src
-
-A matrix of velocities corresponding to an extremal ray specifies how each point moves so that we get an infinitesimally expansive motion.
-The central charge vectors that remain rigid (do not expand) are exactly the ones whose velocity vector have zero dot product with the corresponding central charge vector.
-The collection of these central charge vectors forms (the closure of) a state, namely the appropriate analogue of a pointed pseudo-triangulation without an external edge.
-Among these, some subcollections form rigid components: these are distinguished by the fact that they all have the same ratio of the length of the velocity vector to the length of the central charge vector.
-
-The following function produces a list of rigid components given an extremal ray.
-#+begin_src sage :results silent
-  def rigid_components(ray):
-      velocities = ROOT_MATRIX * ray_to_velocity_matrix(ray)
-      rigid_roots_ratios = [(ray,x.norm()/y.norm())
-                            for (ray,x,y) in zip(POSITIVES,velocities, positive_ccs) if x.dot_product(y) == 0]
-      unique_ratios = set(t[1] for t in rigid_roots_ratios)
-      components = []
-      for ratio in unique_ratios:
-          this_component = []
-          for t in rigid_roots_ratios:
-              if t[1] == ratio:
-                  this_component.append(t[0])
-          components.append(this_component)
-
-      return components
-#+end_src
-
-#+begin_src sage :results silent
-  def construct_polytope_and_components(cc):
-      simple_velocities = matrix([[var('a' + str(i)), var('b' + str(i))] for i in INDICES])
-      positive_ccs = [vector(x) for x in ROOT_MATRIX * vector(cc.values())]
-      positive_velocities = ROOT_MATRIX * simple_velocities
-      def eq_to_ieq(expr):
-          return [0] + [expr.coefficient(x) for x in simple_velocities.list()]
-
-      ineqs = [eq_to_ieq(x.dot_product(y)) for (x,y) in zip(positive_velocities, positive_ccs)]
-
-      P = Polyhedron(ieqs = ineqs, base_ring=QQ)
-      
-      def rigid_components(ray):
-          velocities = ROOT_MATRIX * ray_to_velocity_matrix(ray)
-          rigid_roots_ratios = [(ray,x.norm()/y.norm())
-                                for (ray,x,y) in zip(POSITIVES,velocities, positive_ccs) if x.dot_product(y) == 0]
-          unique_ratios = set(t[1] for t in rigid_roots_ratios)
-          components = []
-          for ratio in unique_ratios:
-              this_component = []
-              for t in rigid_roots_ratios:
-                  if t[1] == ratio:
-                      this_component.append(t[0])
-              components.append(this_component)
-          return components
-
-      components = [rigid_components(r) for r in P.ray_generator()]
-
-      return P, components
-#+end_src
-
-#+RESULTS:
-[[file:/tmp/tmpvyav87rj/tmp_7e859_eu.png]]
-
-** Results
-We compute the rigid components for each of the extremal rays of the polyhedron \(P\).
-#+begin_src sage :exports both :results silent
-  collapsed_components = [rigid_components(r) for r in P.ray_generator()]
-  collapsed_states = [flatten(x) for x in collapsed_components]
-  collapsed_states = [set([short_name_from_root(x) for x in s]) for s in collapsed_states]
-#+end_src
-
-Helper function to do everything at once, and return the states as well as whether the flip graph on them is regular.
+* Results
+Helper function to do everything at once, and return the states as well as check whether the flip graph on them is regular.
 #+begin_src sage :results silent
   def check_cc(heart, cc):
       print("Creating semistable objects.")
