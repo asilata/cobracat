@@ -411,7 +411,7 @@ class ProjectiveComplex(object):
                 new_source = new_objects_dict.get(i,None)
                 new_target = new_objects_dict.get(j,None)
                 assert (new_source is not None and new_target is not None)
-                assert (new_target[0] = new_source[0] + 1)
+                assert (new_target[0] == new_source[0] + 1)
                                 
                 reduced_complex.add_map_at(new_source[0], new_source[1], new_target[1], M[i,j])
                 
