@@ -45,6 +45,7 @@ class ProjectiveZigZagModule(Module):
         TESTS:
 
         sage: load("zigzagalgebra-cartan.sage")
+        sage: load("projective-zigzagmodules-cartan.sage")
         sage: Z = ZigZagAlgebra("A2", QQ)
         sage: P0 = ProjectiveZigZagModule(Z, Z.vertices[0])
         sage: P0p = ProjectiveZigZagModule(Z, Z.vertices[0])
@@ -94,13 +95,29 @@ class ProjectiveZigZagModule(Module):
         return self.__repr__()
         
     def copy(self):
-        return ZigZagModule(self.algebra, self.vertex, self.graded_degree, self._name_prefix)
+        return ProjectiveZigZagModule(self.algebra, self.vertex, self.graded_degree, self._name_prefix)
         
     def graded_shift_by(self, n = 1):
         """
         Return a copy of `self` that is internally degree shifted by n.        
+
+        EXAMPLES:
+
+        sage: load("zigzagalgebra-cartan.sage")
+        sage: load("projective-zigzagmodules-cartan.sage")
+        sage: Z = ZigZagAlgebra("A2", QQ)
+        sage: P0 = ProjectiveZigZagModule(Z, Z.vertices[0])
+        sage: P00 = P0.graded_shift_by(0)
+        sage: P0 == P00
+        True
+        sage: P01 = P0.graded_shift_by(1)
+        sage: P01_another = P0.graded_shift_by(1)
+        sage: P01 == P01_another
+        True
+        sage: P00 == P01
+        False
         """
-        return ZigZagModule(self.algebra, self.vertex, self.graded_degree + n, self._name_prefix)
+        return ProjectiveZigZagModule(self.algebra, self.vertex, self.graded_degree + n, self._name_prefix)
 
     #@cached_method
     def hom(self, Q):
