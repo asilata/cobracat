@@ -1,29 +1,27 @@
 #+property: header-args:sage :tangle "d4-states.sage" :session d4-states :eval never-export :exports both
-#+title: Pointed pseudo-triangulations and states for type \(D_4\)
+#+title: Pointed pseudo-triangulations and states for an arbitrary Cartan type 
 
-* Setup for \(D_4\)
-Load libraries and set \(D_4\) as the Cartan type.
-#+name: d4-dynkin
+* Introduction
+We explain how to set up the calculation of "Harder--Narasimhan states" via homological constraints as well as constraints coming from expansive motions of central charges.
+We write down some specific examples for type \(D_4\).
+
+* General setup
+Load libraries.
 #+begin_src sage :results silent
   import itertools
   load("setup_cartan.sage")
-
-  # Some global constants
-  CT = CartanType("D4")
-  CT.dynkin_diagram().vertices()
 #+end_src
 
-The resulting Dynkin diagram looks like this; note that \(2\) is the central vertex.
-#+begin_example
-    O 4
-    |
-    |
-O---O---O
-1   2   3   
-D4
-#+end_example
+Now we write a function called ~setup_cartan_type~ that sets up the following, given a Cartan type ~ct~.
+This function should usually be run after setting ~CT~ globally to be the Cartan type of interest; otherwise it needs an argument ~ct~.
 
-Now set up the following:
+All functions beyond this point will assume that the globals that this function defines have been set up.
+In other words, while running, we should
+1. first define ~CT~, or pass it to ~setup_cartan_type~
+2. run ~setup_cartan_type~, and only then
+3. run anything else in this file.
+
+The function ~setup_cartan_type~ sets up the following global variables.
 - ~PROJ~ is a dictionary of the indecomposable projectives, indexed by ~INDICES~.
 - ~TWIST~ is a dictionary of the spherical twists and their inverses, indexed by ~INDICES~ as well as ~-INDICES~.
 - ~SIMPLES~ is a family of simple roots indexed by ~INDICES~.
@@ -32,13 +30,13 @@ Now set up the following:
 - ~ROOT_MATRIX~ is a matrix whose rows are indexed by the ~POSITIVES~. The row corresponding to a positive root \(\alpha\) is the vector of coefficients of \(\alpha\) with respect to each simple root in the order of ~INDICES~.
 
   #+begin_src sage :results silent
-    def setup_cartan_type(ct=CT):
+    def setup_cartan_type(ct):
         """
-        Set up global constants for a given CartanType.
+        Set up global constants for a given CartanType, default the globally defined ~CT~.
             
         INPUT:
             
-        - `ct` -- a CartanType, default the globally defined `CT`.
+        - `ct` -- a CartanType
         
         OUTPUT:
         
@@ -586,6 +584,21 @@ Helper function to plot a central charge.
       positive_roots_short = [short_name_from_root(x) for x in POSITIVES]
       return sum([plot(x) + text(y, 1.1*x) for (x,y) in zip(positive_ccs, positive_roots_short)])
 #+end_src
+
+* Results in type \(D_4\)
+#+begin_src sage :results silent
+  CT = CartanType("D4")
+#+end_src
+
+The resulting Dynkin diagram looks like this; note that \(2\) is the central vertex.
+#+begin_example
+    O 4
+    |
+    |
+O---O---O
+1   2   3   
+D4
+#+end_example
 
 Let us input a sample central charge.
 WARNING: This part of the code is specific to type D4!
