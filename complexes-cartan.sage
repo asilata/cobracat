@@ -320,6 +320,73 @@ class ProjectiveComplex(object):
             for (p,q) in Q.maps_at_index(k):
                 maps[k][(p+l,q+w)] = Q.maps_at_index(k)[(p,q)]
         return ProjectiveComplex(self.algebra, objs, maps, names)
+
+    def minimize_using_matrix(self):
+        # We first transform the given complex into a giant matrix, whose rows and columns are indexed by all the objects in the given matrix.
+        # We first store this correspondence.
+        N = sum([len(x) for x in self.objects.values()])
+        objects = [(k, i) for k in self.objects for i in range(0,len(self.objects[k]))]
+        objects_dict = dict(zip(range(0,N), objects))
+        objects_reverse_dict = dict(zip(objects, range(0,N)))
+        maps_dict = {(objects_reverse_dict[(i,a)], objects_reverse_dict[(i+1,b)]) : self.maps[i][(a,b)] for i in self.maps for (a,b) in self.maps[i]}
+        M = matrix(N,N,maps_dict, sparse=True)
+        
+        dropped_objects = set([])
+        def _reduce_at(i,j):
+            '''
+            INPUT:
+
+            - (i,j) -- Coordinates of an invertible matrix entry
+
+            OUTPUT:
+
+            None.  Clear the i-th row and j-th column of M by Gaussian elimination.
+            '''
+            return 
+
+        for i in range(0,N):
+            for j in M.nonzero_positions_in_row(i):
+                object_index = objects_dict(i)
+                if self.objects_at_index(object_index[0])[object_index[1]].is_invertible(M[i,j]):
+                    _reduce_at(i,j) # TODO
+                    dropped_objects.add(i)
+                    dropped_objects.add(j)
+                    break
+
+        # We now create a new complex using the Gaussian eliminated M.
+        # For that, we need to compute the new dictionary
+        new_objects_dict = {}
+
+        homological_index = -Infinity
+        for obj_index in range(0,N):
+            obj = objects_dict[obj_index]
+
+            if obj[0] > homological_index:
+                drop_count = 0
+                homological_index = obj[0]
+
+            if obj_index in dropped_objects:
+                drop_count += 1
+                continue
+
+            new_objects_dict[obj_index] = (obj[0], obj[1]-drop_count)
+
+        reduced_complex = ProjectiveComplex(self.algebra, names=self.names)
+        for obj_index in range(0,N):
+            obj = objects_dict[obj_index]
+            reduced_complex.add_object_at(obj[0], self.objects_at_index(obj[0])[obj[1]])
+            
+        for (i,j) in M.nonzero_positions():
+            if not(i in dropped_objects or j in dropped_objects):
+                new_source = new_objects_dict.get(i,None)
+                new_target = new_objects_dict.get(j,None)
+                assert (new_source is not None and new_target is not None)
+                assert (new_target[0] = new_source[0] + 1)
+                                
+                reduced_complex.add_map_at(new_source[0], new_source[1], new_target[1], M[i,j])
+                
+        return reduced_complex
+        
                       
     def minimize_at(self, index):
         '''
