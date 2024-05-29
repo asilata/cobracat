@@ -326,23 +326,59 @@ class ProjectiveComplex(object):
         M = matrix(N,N,maps_dict, sparse=True)
         
         dropped_objects = set([])
-        def _reduce_at(i,j):
+        def _reduce_at(i,j,inverse):
             '''
             INPUT:
 
-            - (i,j) -- Coordinates of an invertible matrix entry
+            - `i` -- a row coordinate of `M`
+            - `j` -- a column coordinate of `M`
+            - `inverse` -- the inverse (map) of M[i,j]
 
             OUTPUT:
 
             None.  Clear the i-th row and j-th column of M by Gaussian elimination.
             '''
-            return 
+            # For each l != i,j, replace column l (C_l) by C_l - C_j * inverse * M[i,l].
+            # Explicitly, replace M[p,l] by M[p,l] - M[p,j] * inverse * M[i,l]
+            # Additionally, if l = i, then clear the ith column.
+            
+            # For each p != i,j, replace row p (R_p) by R_p - M[p,j] * inverse * R_i
+            # Explicitly, replace M[p,l] by M[p,l] - M[p,j] * inverse * M[i,l]
+            # If p = j, then clear the jth row.
+            
+            # Only do the calculations for those p for which M[p,j] is
+            # non-zero and those l for which M[i,l] is non-zero.
+
+            # Column operations.
+            for p in M.nonzero_positions_in_column(j):
+                for l in M.nonzero_positions_in_row(i):
+                    if l != j:
+                        M[p,l] = M[p,l] - M[p,j] * inverse * M[i,l]
+
+            # Row operations.
+            for l in M.nonzero_positions_in_row(i):
+                for p in M.nonzero_positions_in_column(j):
+                    if p != i:
+                        M[p,l] = M[p,l] - M[p,j] * inverse * M[i,l]
+
+            # Clear the ith column.
+            for p in M.nonzero_positions_in_column(i):
+                M[p,i] = 0
+
+            # Clear the jth row.
+            for l in M.nonzero_positions_in_row(j):
+                M[j,l] = 0
+
+            return
 
         for i in range(0,N):
             for j in M.nonzero_positions_in_row(i):
-                object_index = objects_dict(i)
-                if self.objects_at_index(object_index[0])[object_index[1]].is_invertible(M[i,j]):
-                    _reduce_at(i,j) # TODO
+                source_object_index = objects_dict[i]
+                source_object = self.objects_at_index(source_object_index[0])[source_object_index[1]]
+                
+                if source_object.is_invertible(M[i,j]):
+                    inverse = source_object.invert(M[i,j])                    
+                    _reduce_at(i,j,inverse) # TODO
                     dropped_objects.add(i)
                     dropped_objects.add(j)
                     break
