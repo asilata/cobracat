@@ -285,9 +285,16 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
     def source(self,b):
         """
-        Returns the source vertex of the basis element `b` of `self`.
+        Return the source vertex of the given basis element.
 
-        Assume that `b` is in `self.basis()`.
+        INPUT:
+
+        - `b` -- A basis element of `self`.
+
+        OUTPUT:
+
+        The source vertex of the arrow represented by `b`.  Raise `ValueError` if `b` is not an element of `self.basis()`.
+        
         """
         if b not in self.basis():
             raise ValueError("{} is not a basis element of {}!".format(b,self))
@@ -296,9 +303,15 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
     def target(self,b):
         """
-        Returns the target vertex of the basis element `b` of `self`.
+        Return the target vertex of the given basis element.
 
-        Assume that `b` is in `self.basis()`.
+        INPUT:
+
+        - `b` -- A basis element of `self`.
+
+        OUTPUT:
+
+        The target vertex of the arrow represented by `b`.  Raise `ValueError` if `b` is not an element of `self.basis()`.
         """
         if b not in self.basis():
             raise ValueError("{} is not a basis element of {}!".format(b,self))
@@ -346,8 +359,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         OUTPUT:
 
         - The unique basis element `a` of `self` such that `a * b` and `b * a` are both plus or minus of the loops at the corresponding vertices.
-        
-          `ValueError` if `b` is not in `self.basis()`.
+          Raise `ValueError` if `b` is not in `self.basis()`.
         """
         if b not in self.basis():
             raise ValueError("{} is not a basis element of {}.".format(b,Z))
@@ -360,8 +372,17 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     @cached_method
     def paths_from_to(self,e,f):
         r"""
-        Returns a list of basis elements in the algebra that are paths from the source/target of `e` to the source/target of `f`.
-        We assume that `e` and `f` are primitive idempotents, that is, idempotents in the basis.
+        Returns a list of basis elements that represent paths from the source=target of `e` to the source=target of `f`.
+
+        INPUT:
+
+        - `e` -- a primitive idempotent, that is, an idempotent in `self.basis()`
+        - `f` -- a primitive idempotent, that is, an idempotent in `self.basis()`
+
+        OUTPUT:
+
+        - A list of basis elements each of which represents a path from the source=target of `e` to the source=target of `f`.
+          Raise `ValueError` if `e` or `f` is not an idempotent in `self.basis()`.
         """        
         if e not in self.idempotents:
             raise ValueError("First argument {} is not an idempotent of {}!".format(e,self))
