@@ -40,9 +40,17 @@ class ProjectiveZigZagModule(Module):
         '''
         Initialize `self`.
 
-        `Z` is a ZigZagAlgebra, and v is a vertex of Z. The `graded_degree` is the internal graded degree, which defaults to zero.
-        `name_prefix` is the prefix for the names, (default 'P').
-        The output is the projective module P = Z*ev, where ev is the idempotent corresponding to vertex v in Z.
+        INPUT: 
+
+        - `Z` -- a `ZigZagAlgebra`
+        - `v` --- a vertex of `Z`
+        - `graded_degree` -- integer, the internal graded degree (default 0)
+        - `name_prefix` -- string, a prefix for the names (default 'P')
+
+        OUTPUT:
+
+        - The projective module `P` = `Z * ev`, grade-shifted by `graded_degree`.
+          Here `ev` is the idempotent corresponding to the vertex `v` in `Z`.
         '''
         self.algebra = Z
         self.vertex = v
