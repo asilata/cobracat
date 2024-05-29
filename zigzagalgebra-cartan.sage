@@ -127,7 +127,6 @@ def _zz_right_multiplication_table(basis, x, k=QQ):
 
     # Case 1: x is an idempotent
     if x_deg == 0:
-        print("Checking idempotent {}".format(x))
         for i in range(len(basis)):
             b = basis[i]
             if _zz_target(b) == x_source:
@@ -135,7 +134,6 @@ def _zz_right_multiplication_table(basis, x, k=QQ):
 
     # Case 2: x is an edge (degree-one element) 
     elif x_deg == 1:
-        print("Checking arrow {}".format(x))
         for i in range(len(basis)):
             b = basis[i]
             if _zz_deg(b) == 0 and _zz_target(b) == x_source:
@@ -156,7 +154,6 @@ def _zz_right_multiplication_table(basis, x, k=QQ):
                     mult_matrix[i,j] = -1                    
     # Case 3: x is a loop
     elif x_deg == 2:
-        print("Checking loop {}".format(x))        
         for i in range(len(basis)):
             b = basis[i]
             if _zz_deg(b) > 0 or (_zz_target(b) != x_source):
