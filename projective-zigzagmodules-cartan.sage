@@ -34,7 +34,35 @@ class ProjectiveZigZagModule(Module):
     The indecomposable projective module over a given zigzag algebra, corresponding to a given vertex.
     '''
 
+    # We intern the zig-zag modules.
+    # All created instances are stored here.
+    _instances = {}
+
+    # First check if an instance with the given parameters has been created.
+    # If yes, return that.  Otherwise, create a new one.
+    def __new__(cls, Z, v, graded_degree = 0, name_prefix='P'):
+        r'''
+        TESTS:
+
+        sage: load("zigzagalgebra-cartan.sage")
+        sage: Z = ZigZagAlgebra("A2", QQ)
+        sage: P0 = ProjectiveZigZagModule(Z, Z.vertices[0])
+        sage: P0p = ProjectiveZigZagModule(Z, Z.vertices[0])
+        sage: P0 == P0p
+        True
+        sage: P1 = ProjectiveZigZagModule(Z, Z.vertices[1])
+        sage: P0 == P1
+        False
+        '''
+        if (Z,v,graded_degree,name_prefix) in cls._instances:
+            return cls._instances[(Z,v,graded_degree,name_prefix)]
+        else:
+            instance = super().__new__(cls)
+            cls._instances[(Z,v,graded_degree,name_prefix)] = instance
+            return instance
+        
     Element = ZigZagModuleElement
+
     
     def __init__(self, Z, v, graded_degree = 0, name_prefix='P'):
         '''
