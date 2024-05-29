@@ -218,7 +218,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     def _repr_(self):
         return "Zig-zag algebra of {0} over {1}".format(self.cartan_type, self._base_ring)
 
-    @cached_property
+    @property
     def _basis_correspondence(self):
         """
         Returns a zipped list of the internal representations of the basis elements of `self`
