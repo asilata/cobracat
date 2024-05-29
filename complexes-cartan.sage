@@ -42,18 +42,24 @@ class ProjectiveComplex(object):
     """
     def __init__(self, algebra, objects = {}, maps = {}, names={}):
         r"""
-        Arguments -
-        algebra: Algebra (not necessarily commutative) over which the elements of the complex are modules 
-        objects: A dictionary of type {i: [P]} where i is an integer and P is projective module over the base ring. A projective module can be anything that implements the following methods: 
-        (1) P.is_annihilated_by(r) : Is right multiplication by r the zero map on P?
-        (2) P.is_invertible(r): Is right multiplication by r an invertible map on P?
-        (3) P.invert(r): If right multiplication by r is invertible, return a ring element which acts as its inverse.
-        (4) P.hom(Q): Returns a set of ring elements (monomials), which by right multiplication, define a basis of Hom(P,Q)
-        See the class ProjectiveModuleOverField for an example.
+        INPUT:
+        
+        - `algebra` -- Algebra (not necessarily commutative) over which the elements of the complex are modules 
+        - `objects` -- A dictionary of type `{i: [P]}` where `i` is an integer and `P` is projective module over the base ring.
+            A projective module can be anything that implements the following methods: 
+           1. `P.is_annihilated_by(r)` : Is right multiplication by `r` the zero map on `P`?
+           2. `P.is_invertible(r)`: Is right multiplication by `r` an invertible map on `P`?
+           3. `P.invert(r)`: If right multiplication by `r` is invertible, return a ring element which acts as its inverse.
+           4. `P.hom(Q)`: Returns a set of ring elements (monomials), which by right multiplication, define a basis of `Hom(P,Q)`
+        See the class `ProjectiveModuleOverField` for an example.
 
-        maps: A dictionary of type {i: {(a,b): r}} where i is an integer, (a,b) is a pair of positive integers, and r is an element of algebra. The key i represents the map from the i-th to (i+1)-th index of the complex. The pair (a,b) says that the map is from the a-th object in the list of objects at the i-th index to the b-th object in the list of objects at the (i+1)-th index. The value r says that the map is given by right multiplication by r. Currently, there is no provision to specify more complicated maps. 
+        - `maps` -- A dictionary of type `{i: {(a,b): r}}` where `i` is an integer, `(a,b)` is a pair of positive integers, and `r` is an element of algebra.
+                    The key `i` represents the map from the `i`-th to `(i+1)`-th index of the complex.
+                    The pair `(a,b)` says that the map is from the `a`-th object in the list of objects at the `i`-th index to the `b`-th object in the list of objects at the (i+1)-th index.
+                    The value `r` says that the map is given by right multiplication by `r`.
+                    Currently, there is no provision to specify more complicated maps. 
 
-        names: A dictionary of type {P: n} where P is a projective module and n is a string that acts as a short name for P to put in the string representation of the complex.
+        - `names` -- A dictionary of type `{P: n}` where `P` is a projective module and `n` is a string that acts as a short name for `P` to put in the string representation of the complex.
         """
         self.objects = objects.copy()
         self.maps = maps.copy()
