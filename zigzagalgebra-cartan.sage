@@ -51,7 +51,13 @@ def _zz_basis(ct):
 
     OUTPUT:
 
-    A list of paths that form the standard basis of the zigzag algebra. 
+    A list of paths that form the standard basis of the zigzag algebra.
+
+    EXAMPLES:
+
+        sage: _zz_basis(CartanType("A2"))
+        [(1, 1, 0), (2, 2, 0), (1, 2, 1), (2, 1, 1), (1, 1, 2), (2, 2, 2)]
+
     """
     idempotents = [(i,i,0) for i in ct.index_set()]
     arrows = [(i,j,1) for (i,j,_) in ct.dynkin_diagram().edges()]
