@@ -298,7 +298,6 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         OUTPUT:
 
         The source vertex of the arrow represented by `b`.  Raise `ValueError` if `b` is not an element of `self.basis()`.
-        
         """
         if b not in self.basis():
             raise ValueError("{} is not a basis element of {}!".format(b,self))
@@ -395,23 +394,6 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
 
         paths = [e * x * f for x in self.basis()]
         return [p for p in paths if p != 0]
-            
-    # def isA1Hat(self):
-    #     print("Unimplemented.")
-    #     return None
 
-
-    # def coeff(self, r, monomial):
-    #     '''
-    #     The coefficient of monomial in the expansion of r in the basis. 
-    #     Monomial must be a basis element.
-    #     '''
-    #     i = list(self.basis()).index(monomial)
-    #     return r.monomial_coefficients().get(i, 0)
-
-
-    # def dualPairs(self, e, f):
-    #     auxPairs = [(path, self.calabi_yau_dual(path)) for path in [x * e for x in self.basis()] if path != 0]
-    #     return [(t,v*f) for (t,v) in auxPairs]
     
 

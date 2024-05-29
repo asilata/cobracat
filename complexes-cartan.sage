@@ -89,7 +89,7 @@ class ProjectiveComplex(object):
             if len(objects) == 0:
                 s = s + "0"
             else:
-                s = s + "+".join([self._names[x] if x in self._names.keys() else str(x) for x in objects])
+                s = s + "+".join([self.names[x] if x in self.names.keys() else str(x) for x in objects])
             if i < largest:
                 s = s + " → "
         s = s + " :[" + str(largest) + "]"
@@ -110,22 +110,16 @@ class ProjectiveComplex(object):
         """
         return self.maps.get(i, {}).copy()
 
-    def names(self):
-        r"""
-        Short, readable names for the projective objects in the complex.
-        """
-        return self._names.copy()
-
     def homological_shift_by(self, n = 1):
         r"""
         A new complex obtained by homologically shifting self by [n].
         """
         new_objects = {x-n: self.objects[x] for x in self.objects.keys()}
         new_maps = {x-n: {k: (-1)^n * self.maps[x][k] for k in self.maps[x].keys()} for x in self.maps.keys()}
-        return ProjectiveComplex(self.algebra, new_objects, new_maps, self._names)
+        return ProjectiveComplex(self.algebra, new_objects, new_maps, self.names)
 
     def copy(self):
-        return ProjectiveComplex(self.algebra, self.objects, self.maps, self._names)
+        return ProjectiveComplex(self.algebra, self.objects, self.maps, self.names)
 
     def add_object_at(self, index, obj, name = None):
         r"""
@@ -139,7 +133,7 @@ class ProjectiveComplex(object):
             self.maps[index] = {}
 
         if name != None:
-            self._names[obj] = name
+            self.names[obj] = name
 
         self.min_index = min(index, self.min_index)
         self.max_index = max(index, self.max_index)
@@ -624,63 +618,3 @@ class ProjectiveModuleOverField(object):
             return 1/r
         else:
             raise TypeError("Not invertible.")
-
-class GradedProjectiveModuleOverField(object):
-    ''''
-    The class of projective modules over a field (also known as graded vector spaces).
-    '''
-    # What is a basis?
-    # Basis is supposed to be a dictionary {x:v} where the keys x could be anything, but the values v should be elements of a k-module.
-    # The dictionary {x:v} is supposed to represent the element formal sum v*x.
-    def __init__(self, basefield, dimension, grade = 0, name=None, basis=None):
-        if not basefield.is_field():
-            raise TypeError("Basefield not a field.")
-        if not dimension.is_integral() or dimension < 0:
-            raise TypeError("Invalid dimension.")
-        self._vsp = VectorSpace(basefield,dimension)
-        self._grade = grade
-        if dimension > 1 and basis != None:
-            raise NotImplementedError("Basis only implemented for one dimensional spaces")
-        self._basis = basis
-        if name:
-            self._name = name
-        else:
-            self._name = self._vsp.__str__()
-
-    def __str__(self):
-        return self._name + "<" + str(self._grade) +">"
-
-    def __repr__(self):
-        return self._name + "<" + str(self._grade) +">"
-
-    @cached_method
-    def is_annihilated_by(self, r):
-        return (r == 0)
-
-    @cached_method
-    def grade(self):
-        return self._grade
-
-    @cached_method
-    def basis(self):
-        return self._basis
-
-    @cached_method    
-    def is_invertible(self, r):
-        return (r != 0)
-
-    @cached_method
-    def hom(self, Q):
-        return [1]
-
-    @cached_method    
-    def q_polynomial(self, variables = [var('q')]):
-        return variables[0]^self._grade
-
-    @cached_method    
-    def invert(self, r):
-        if r != 0:
-            return 1/r
-        else:
-            raise TypeError("Not invertible.")
-
