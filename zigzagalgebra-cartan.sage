@@ -121,32 +121,33 @@ def _zz_right_multiplication_table(basis, x, k=QQ):
     Generate the multiplication table for right multiplication of the elements in `basis` by a basis element `x` of the zigzag algebra.
     The element `x` must be in `basis`.
     """
-
     # Initialize an empty transposed matrix, which we fill in.
     mult_matrix = Matrix(k, len(basis), len(basis))
+    x_source, x_target, x_deg = _zz_source(x), _zz_target(x), _zz_deg(x)
 
     # Case 1: x is an idempotent
-    if _zz_deg(x) == 0:
+    if x_deg == 0:
+        print("Checking idempotent {}".format(x))
         for i in range(len(basis)):
             b = basis[i]
-            if _zz_target(b) == _zz_source(x):
-                j = basis.index(b)
-                mult_matrix[i,j] = 1
+            if _zz_target(b) == x_source:
+                mult_matrix[i,i] = 1
 
     # Case 2: x is an edge (degree-one element) 
-    elif _zz_deg(x) == 1:
+    elif x_deg == 1:
+        print("Checking arrow {}".format(x))
         for i in range(len(basis)):
             b = basis[i]
-            if _zz_deg(b) == 0 and _zz_target(b) == _zz_source(x):
+            if _zz_deg(b) == 0 and _zz_target(b) == x_source:
                 # Multiplication with idempotent at source of x is x.
-                j = basis.index(b)
+                j = basis.index(x)
                 mult_matrix[i,j] = 1
             elif (_zz_deg(b) == 1 and
-                  _zz_target(b) == _zz_source(x) and 
-                  _zz_source(b) == _zz_target(x)):
+                  _zz_target(b) == x_source and 
+                  _zz_source(b) == x_target):
                 # Multiplication with the opposite edge produces the loop at the target of x.
                 # CHECK SIGN CONVENTION HERE.
-                j = basis.index((_zz_target(x),2))
+                j = basis.index((x_target, x_target,2))
                 if _zz_source(b) < _zz_target(b):
                     # b is a "forwards" arrow
                     mult_matrix[i,j] = 1
@@ -154,15 +155,16 @@ def _zz_right_multiplication_table(basis, x, k=QQ):
                     # b is a "backwards" arrow
                     mult_matrix[i,j] = -1                    
     # Case 3: x is a loop
-    elif _zz_deg(x) == 2:
+    elif x_deg == 2:
+        print("Checking loop {}".format(x))        
         for i in range(len(basis)):
             b = basis[i]
-            if _zz_deg(b) > 0 or (_zz_target(b) != _zz_source(x)):
+            if _zz_deg(b) > 0 or (_zz_target(b) != x_source):
                 # Multiplication with positive degree elements as well as
-                # idempotents that don't match the endpoint of x is zero.
+                # idempotents that don't match the source of x is zero.
                 pass
             else:
-                # Multiplication with the idempotent with the same endpoint yields x.
+                # Multiplication with the idempotent with the same source and target yields x.
                 j = basis.index(x)
                 mult_matrix[i,j] = 1
     else:
@@ -172,7 +174,6 @@ def _zz_right_multiplication_table(basis, x, k=QQ):
 class ZigZagAlgebraElement(FiniteDimensionalAlgebraElement):
     def __init__(self, A, elt=None, check=True):
         FiniteDimensionalAlgebraElement.__init__(self, A = A, elt = elt, check = check)
-        
 
 class ZigZagAlgebra(FiniteDimensionalAlgebra):
     r"""
@@ -181,7 +182,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     Element = ZigZagAlgebraElement
     
     def __init__(self, ct, k):
-        r'''
+        r"""
         Create a zig-zag algebra.
 
         INPUT:
@@ -194,7 +195,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         The zig-zag algebra of type `ct` over the field `k`.  The zig-zag algebra is
         `Associative`, `Graded`, `FiniteDimensional`, `Algebras(k)`, and `WithBasis`.
         
-        '''
+        """
 
         # For the moment we must input either a genuine CartanType, or a string shorthand
         # such as "A5" or "E8".
@@ -220,7 +221,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     def _repr_(self):
         return "Zig-zag algebra of {0} over {1}".format(self.cartan_type, self._base_ring)
 
-    @property
+    @cached_property
     def _basis_correspondence(self):
         """
         Returns a zipped list of the internal representations of the basis elements of `self`
