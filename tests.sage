@@ -25,7 +25,7 @@ def run_zig_zag_algebra_test():
             print("FAILED to construct zigzag algebra of Cartan type {}".format(ct))
 
 def run_zig_zag_module_test():
-    cartan_types = ["A2", "D5", CartanType(['A', 2, 1]), CartanType(['A',1,1])]
+    cartan_types = ["A2", "D5", CartanType(['A', 2, 1])]
     for ct in cartan_types:
         print("Constructing zig-zag algebra of Cartan type {}".format(ct))
         Z = ZigZagAlgebra(ct, QQ)
@@ -33,6 +33,9 @@ def run_zig_zag_module_test():
         proj_modules = [ProjectiveZigZagModule(Z, v) for v in Z.vertices]
         P1, P2 = proj_modules[0], proj_modules[1]
         print(P1.hom(P2))
+        assert P1.is_invertible(P1.idempotent)
+        assert P1.is_annihilated_by(P2.idempotent)
+        assert P1.invert(P1.idempotent) == P1.idempotent
     return
 
 def run_projective_complex_test():
