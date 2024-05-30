@@ -88,6 +88,10 @@ class ProjectiveZigZagModule(Module):
         self._name_prefix = name_prefix
         Module.__init__(self, Z, category=LeftModules(Z))
 
+    @cached_method
+    def basis(self):
+        return None
+        
     def __repr__(self):
         return self._name_prefix + str(self.vertex) + "<" + str(self.graded_degree) + ">"
 
