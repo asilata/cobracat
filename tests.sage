@@ -1,5 +1,6 @@
 load("zigzagalgebra-cartan.sage")
 load("projective-zigzagmodules-cartan.sage")
+load("complexes-cartan.sage")
 
 def run_zz_algera_internals_test():
     cartan_types = ["A2", "D5", CartanType(['A', 2, 1]), CartanType(['A',1,1])]
@@ -38,6 +39,26 @@ def run_zig_zag_module_test():
         assert P1.invert(P1.idempotent) == P1.idempotent
     return
 
+def minimize_using_matrix_test():
+    ct = "A3"
+    Z = ZigZagAlgebra(ct, QQ)
+    Z.inject_variables()
+    P1 = ProjectiveZigZagModule(Z, 1)
+    P2 = ProjectiveZigZagModule(Z, 2)
+    P3 = ProjectiveZigZagModule(Z, 3)
+    C = ProjectiveComplex(Z)
+    C.add_object_at(0, P1)
+    C.add_object_at(0, P2)
+    C.add_object_at(1, P1)
+    C.add_map_at(0,0,0,e1)
+    C.add_map_at(0,1,0,a21)
+    D = C.minimize_using_matrix()
+    assert D.min_index == 0
+    assert D.max_index == 0
+    assert D.objects[0][0] == P2
+    return C, C.minimize_using_matrix()
+
+    
 def run_projective_complex_test():
     return
 
