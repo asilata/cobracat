@@ -232,6 +232,34 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         """
         return zip(self._internal_basis, self.basis())
 
+    def calabi_yau_dual(self, b):
+        r"""
+        Return the unique Calabi--Yau dual basis element of `b`.
+
+        INPUT:
+
+        - `b`  -- a basis element of `self`.
+
+        OUTPUT:
+
+        - The unique basis element `a` of `self` such that `a * b` and `b * a` are both plus or minus of the loops at the corresponding vertices.
+          Raise `ValueError` if `b` is not in `self.basis()`.
+        """
+        if b not in self.basis():
+            raise ValueError("{} is not a basis element of {}.".format(b,Z))
+        s,t = self.idempotent_by_vertex(self.source(b)), self.idempotent_by_vertex(self.target(b))
+        for c in self.basis():
+            bc = b * t * c * s
+            if bc in self.loops or -bc in self.loops:
+                return c
+
+    @property
+    def cy_duals(self):
+        output = []
+        for b in self.basis():
+            output.append((b, self.calabi_yau_dual(b)))
+        return output        
+
     def _to_internal_repr(self,b):
         """
         Returns the internal representation of a basis element `b` of `self`.
@@ -351,26 +379,14 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         # Return the first (and only) idempotent that has v as a source vertex.
         return [e for e in self.idempotents if self.source(e) == v][0]
 
-    def calabi_yau_dual(self, b):
-        r"""
-        Return the unique Calabi--Yau dual basis element of `b`.
+    def coeff(self, r, monomial):
+        '''
+        The coefficient of monomial in the expansion of r in the basis. 
+        Monomial must be a basis element.
+        '''
+        i = list(self.basis()).index(monomial)
+        return r.monomial_coefficients().get(i, 0)
 
-        INPUT:
-
-        - `b`  -- a basis element of `self`.
-
-        OUTPUT:
-
-        - The unique basis element `a` of `self` such that `a * b` and `b * a` are both plus or minus of the loops at the corresponding vertices.
-          Raise `ValueError` if `b` is not in `self.basis()`.
-        """
-        if b not in self.basis():
-            raise ValueError("{} is not a basis element of {}.".format(b,Z))
-        s,t = self.source(b),self.target(b)
-        for c in self.basis():
-            bc = b * t * c * s
-            if bc in self.loops() or -bc in self.loops():
-                return c
 
     @cached_method
     def paths_from_to(self,e,f):
