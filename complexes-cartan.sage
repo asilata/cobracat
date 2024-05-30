@@ -315,6 +315,14 @@ class ProjectiveComplex(object):
                 maps[k][(p+l,q+w)] = Q.maps_at_index(k)[(p,q)]
         return ProjectiveComplex(self.algebra, objs, maps, names)
 
+    # TODO
+    # There is an obscure bug in the following function. To reproduce:
+    # Reset the copy() function of ProjectiveComplex to make a shallow copy.
+    # Consider the object X = b(p[2]), where b = composeAll([s[1],s[2],s[2],s[2],s[1]]).
+    # Set Y = X.copy().
+    # Then do Y.minimize(). Inspect X to observe several zeros.
+    # Try X.minimize_using_matrix()
+    
     def minimize_using_matrix(self):
         # We first transform the given complex into a giant matrix, whose rows and columns are indexed by all the objects in the given matrix.
         # We first store this correspondence.
