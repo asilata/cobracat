@@ -58,7 +58,17 @@ def minimize_using_matrix_test():
     assert D.objects[0][0] == P2
     return C, C.minimize_using_matrix()
 
-    
+def minimization_profile_setup():
+    Z = ZigZagAlgebra("A2", QQ)
+    p = {}
+    for i in [1,2]:
+        fpi = ProjectiveZigZagModule(Z, i)
+        pi = ProjectiveComplex(Z)
+        pi.add_object_at(0, fpi)
+        p[i] = pi
+    s = {i : (lambda C, i = i: sigma(Z, i, C)) for i in [1,2]}
+    return p,s
+
 def run_projective_complex_test():
     return
 
