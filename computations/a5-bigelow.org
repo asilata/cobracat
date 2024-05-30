@@ -1,0 +1,91 @@
+#+begin_src sage
+  load("../complexes.sage")
+  load("../zigzagalgebra.sage")
+  load("../zigzagmodules.sage")
+  load("../braidactions.sage")
+  load("../HN.sage")
+
+  a5graph = DiGraph({1:{2: 'a'}, 2:{1:'b', 3:'c'}, 3:{2:'d', 4:'e'}, 4:{3:'f', 5:'g'}, 5:{4:'h'}})
+  a5 = make_test(a5graph)
+  R = a5['Z']
+  R.inject_variables()
+  F1 = ZigZagModule(R, 1, name = "P1")
+  F2 = ZigZagModule(R, 2, name = "P2")
+  F3 = ZigZagModule(R, 3, name = "P3")
+  F4 = ZigZagModule(R, 4, name = "P4")
+  F5 = ZigZagModule(R, 5, name = "P5")
+
+  P1 = ProjectiveComplex(R)
+  P1.addObject(0, F1)
+
+  P2 = ProjectiveComplex(R)
+  P2.addObject(0, F2)
+
+  P3 = ProjectiveComplex(R)
+  P3.addObject(0, F3)
+
+  P4 = ProjectiveComplex(R)
+  P4.addObject(0, F4)
+
+  P5 = ProjectiveComplex(R)
+  P5.addObject(0, F5)
+
+  def s(i, C):
+      D = sigma(R, i, C)
+      D.minimize()
+      return D
+
+  def t(i, C):
+      D = sigmaInverse(R, i, C)
+      D.minimize()
+      return D
+
+  def s1(C):
+      return s(1, C)
+
+  def s2(C):
+      return s(2, C)
+
+  def s3(C):
+      return s(3, C)
+
+  def s4(C):
+      return s(4, C)
+
+  def s5(C):
+      return s(5, C)
+
+  def t1(C):
+      return t(1, C)
+
+  def t2(C):
+      return t(2, C)
+
+  def t3(C):
+      return t(3, C)
+
+  def t4(C):
+      return t(4, C)
+
+  def t5(C):
+      return t(5, C)
+#+end_src
+
+#+RESULTS:
+: <string>:189: DeprecationWarning: parameter 'sort' will be set to False by default in the future
+: See http://trac.sagemath.org/22349 for details.
+: Defining e_1, e_2, e_3, e_4, e_5, a, b, c, d, e, f, g, h, ab, ba, dc, fe, hg
+
+Bigelow's example
+#+begin_src sage
+  X = t1(s2(s5(t4(P3))))
+  Y = s1(s1(t2(t5(t5(s4(P3))))))
+  h = hom(X,Y)
+  h.minimize()
+  h
+#+end_src
+
+
+
+#+RESULTS:
+: [-2]: k<-4> → k<-4>+k<-2> → k<-2>+k<0> → k<2>+k<0> → k<2> :[2]

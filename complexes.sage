@@ -138,6 +138,22 @@ class ProjectiveComplex(object):
             answer = answer + variables[0]^(-i) * sum([obj.qPolynomial(restVariables) for obj in self.objects(i)])
         return answer.expand()
 
+    def getLevels(self, i):
+        '''
+        Return a list of the possible levels of objects at index i.
+        '''
+        if i < self.minIndex() or i > self.maxIndex():
+            return None
+        return [ob.twist() - i for ob in self.objects(i)]
+
+    def minLevel(self):
+        mins = [min(self.getLevels(i)) for i in range(self.minIndex(), self.maxIndex() + 1)]
+        return min(mins)
+
+    def maxLevel(self):
+        maxs = [max(self.getLevels(i)) for i in range(self.minIndex(), self.maxIndex() + 1)]
+        return max(maxs)
+
     def show(self, **args):
         D = DiGraph()
         # Add objects

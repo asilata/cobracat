@@ -86,3 +86,71 @@ def t3(C):
     return t(3, C)
 
 heart = [P1, P2, P3]
+
+def generateNextLevel(multipliers, given):
+    '''
+    Given a list of braids as "given", generate the next list by multiplying everything in given by everything in multipliers
+    on the left.
+    The givens is a list of list of keys in "generators", and multipliers is a list of keys in "generators"
+    '''
+    output = []
+    for b in multipliers:
+        output = output + [[b] + g for g in given]
+    return output
+
+def braidsGetOrAdd(n, dct, gens):
+    '''
+    Get keyval n from dct. If there is no such key, add braids of length n by getting/creating braids of length (n-1) and multiplying each one by each gen in gens.
+    '''
+    if n < 1:
+        return None
+    if n in dct.keys():
+        return dct[n]
+    elif n == 1:
+        new = [[g] for g in gens]
+    else:
+        prev = braidsGetOrAdd(n-1, dct, gens)
+        new = generateNextLevel(gens, prev)
+
+    dct[n] = new
+    return new
+
+def allBraidsGetOrAdd(n):
+    return braidsGetOrAdd(n, allBraidsByLen, generators.keys())
+
+def positiveBraidsGetOrAdd(n):
+    return braidsGetOrAdd(n, positiveMonoid, positiveGens)
+
+def negativeBraidsGetOrAdd(n):
+    return braidsGetOrAdd(n, negativeMonoid, negativeGens)
+    
+# def is_mixed(b):
+#     if len(b) <=1:
+#         return False
+#     if b[0] in positiveGens:
+#         fst, rest = positiveGens, negativeGens
+#     else:
+#         fst, rest = negativeGens, positiveGens
+
+#     i = 0
+#     for j in range(0,len(b) + 1):
+#         if b[j] in fst:
+#             i = j
+#         else:
+#             break
+#     if j == len(b):
+#         return True
+#     else:
+#         for 
+
+
+# Test the definition of is_nonexpanding
+# DEBUG = False
+
+# if DEBUG:
+#     assert is_nonexpanding(t3, t3(s2(P1))) == False
+#     assert is_nonexpanding(s3, t3(s2(P1))) == True
+#     assert is_nonexpanding(t2, t3(s2(P1))) == True
+#     assert is_nonexpanding(s2, t3(s2(P1))) == False
+
+
