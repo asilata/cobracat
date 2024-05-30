@@ -300,8 +300,8 @@ class ProjectiveComplex(object):
         '''
         # By convention, the objects of Q go after the objects of self, in order.
         objs, maps = {}, {}
-        names = self.names()
-        names.update(Q.names())
+        names = self.names
+        names.update(Q.names)
         smallest = min([self.min_index,Q.min_index])
         largest = max([self.max_index,Q.max_index])
 
@@ -403,8 +403,9 @@ class ProjectiveComplex(object):
 
         reduced_complex = ProjectiveComplex(self.algebra, names=self.names)
         for obj_index in range(0,N):
-            obj = objects_dict[obj_index]
-            reduced_complex.add_object_at(obj[0], self.objects_at_index(obj[0])[obj[1]])
+            if obj_index not in dropped_objects:
+                obj = objects_dict[obj_index]
+                reduced_complex.add_object_at(obj[0], self.objects_at_index(obj[0])[obj[1]])
             
         for (i,j) in M.nonzero_positions():
             if not(i in dropped_objects or j in dropped_objects):
