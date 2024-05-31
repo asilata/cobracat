@@ -56,7 +56,7 @@ def minimize_using_matrix_test():
     assert D.min_index == 0
     assert D.max_index == 0
     assert D.objects[0][0] == P2
-    return C, C.minimize_using_matrix()
+    return C, D
 
 def minimization_profile_setup():
     Z = ZigZagAlgebra("A2", QQ)
