@@ -323,7 +323,7 @@ class ProjectiveComplex(object):
     # Then do Y.minimize(). Inspect X to observe several zeros.
     # Try X.minimize_using_matrix()
     
-    def minimize_using_matrix(self):
+    def minimize_using_matrix(self, with_qis=False):
         # We first transform the given complex into a giant matrix, whose rows and columns are indexed by all the objects in the given matrix.
         # We first store this correspondence.
         N = sum([len(x) for x in self.objects.values()])
@@ -332,7 +332,16 @@ class ProjectiveComplex(object):
         objects_reverse_dict = dict(zip(objects, range(0,N)))
         maps_dict = {(objects_reverse_dict[(i,a)], objects_reverse_dict[(i+1,b)]) : self.maps[i][(a,b)] for i in self.maps for (a,b) in self.maps[i]}
         M = matrix(N,N,maps_dict, sparse=True)
-        
+
+        # P will become the change of basis matrix later.
+        # Why can't we define the identity matrix over the zigzag algebra?
+        # Bug with error "ValueError: inconsistent number of rows: should be x but got y".
+        # P = identity_matrix(self.algebra._base_ring, N, sparse=True) if with_qis else None
+        if with_qis:
+            P = matrix({(i,i):self.algebra(1) for i in range(N)}, sparse=True)
+        else:
+            P = None
+
         dropped_objects = set([])
         def _reduce_at(i,j,inverse):
             '''
@@ -348,27 +357,43 @@ class ProjectiveComplex(object):
             '''
             # For each l != i,j, replace column l (C_l) by C_l - C_j * inverse * M[i,l].
             # Explicitly, replace M[p,l] by M[p,l] - M[p,j] * inverse * M[i,l]
-            # Additionally, if l = i, then clear the ith column.
+            # Also clear the jth row. (This is the the corresponding inverse row operation.)
             
             # For each p != i,j, replace row p (R_p) by R_p - M[p,j] * inverse * R_i
             # Explicitly, replace M[p,l] by M[p,l] - M[p,j] * inverse * M[i,l]
-            # If p = j, then clear the jth row.
+            # Also clear the ith column. (This is the the corresponding inverse column operation.)
             
             # Only do the calculations for those p for which M[p,j] is
             # non-zero and those l for which M[i,l] is non-zero.
 
             # Column operations.
-            for p in M.nonzero_positions_in_column(j):
-                for l in M.nonzero_positions_in_row(i):
-                    if l != j:
-                        M[p,l] = M[p,l] - M[p,j] * inverse * M[i,l]
+            for l in M.nonzero_positions_in_row(i):
+                weight_l = inverse * M[i,l]
+                if l != j:                
+                    for p in M.nonzero_positions_in_column(j):
+                        M[p,l] = M[p,l] - M[p,j] * weight_l
+                        
+                    # Update P if required.
+                    # Setting C[j,l] = - weight_l, we want to compute (I_N - C) * P.
+                    # So replace P[j,-] by P[j,-] + \Sigma_l P[l,-] * weight_l
+                    if P:
+                        for p in P.nonzero_positions_in_row(l):
+                            P[j,p] = P[j,p] + P[l,p] * weight_l
 
             # Row operations.
-            for l in M.nonzero_positions_in_row(i):
-                for p in M.nonzero_positions_in_column(j):
-                    if p != i:
-                        M[p,l] = M[p,l] - M[p,j] * inverse * M[i,l]
-
+            for p in M.nonzero_positions_in_column(j):
+                weight_p = M[p,j] * inverse
+                if p != i:                
+                    for l in M.nonzero_positions_in_row(i):
+                        M[p,l] = M[p,l] - weight_p * M[i,l]
+                        
+                    # Update P if required.
+                    # Setting R[p,i] = - weight_p, we want to compute (I_N + R) * P.
+                    # So, replace P[p,-] by P[p,-] - weight_p * P[i,-]
+                    if P:
+                        for l in P.nonzero_positions_in_row(i):
+                            P[p,l] = P[p,l] - weight_p * P[i,l]
+            
             # Clear the ith column.
             for p in M.nonzero_positions_in_column(i):
                 M[p,i] = 0
@@ -392,7 +417,7 @@ class ProjectiveComplex(object):
                     break
 
         # We now create a new complex using the Gaussian eliminated M.
-        # For that, we need to compute the new dictionary
+        # For that, we need to compute the new dictionary.
         new_objects_dict = {}
 
         homological_index = -Infinity
@@ -423,7 +448,9 @@ class ProjectiveComplex(object):
                 assert (new_target[0] == new_source[0] + 1)
                                 
                 reduced_complex.add_map_at(new_source[0], new_source[1], new_target[1], M[i,j])
-                
+
+        # TODO use generated P to create chain map which is a qis, and return it optionally.
+        
         return reduced_complex
         
                       
