@@ -451,6 +451,9 @@ class ProjectiveComplex(object):
                                 
                 reduced_complex.add_map_at(new_source[0], new_source[1], new_target[1], M[i,j])
 
+        # Finally, clean up reduced_complex
+        reduced_complex.cleanup()
+
         #Use generated P to create chain map which is a qis, and return it optionally.
         if P:
             qis = {new_obj[0]:{(new_obj[1], old_obj[1]): P[i,j] for j in P.nonzero_positions_in_row(i) if (old_obj := objects_dict.get(j,None))}

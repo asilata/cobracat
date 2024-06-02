@@ -1,4 +1,4 @@
-def sigma(Z, i, C):
+def sigma(Z, i, C, minimize=False):
     '''
     The spherical twist corresponding to the i-th projective module of
     the ZigZagAlgebra Z.
@@ -17,7 +17,10 @@ def sigma(Z, i, C):
     #     Pi = ZigZagModule(Z, i, twist = 0, name="P" + str(i))
     Pi = ProjectiveZigZagModule(Z, i, graded_degree = 0, name_prefix = "P")
 
-    # We now form a complex Q whose objects are shifts of copies of Pi 
+    # TODO the following code assumes that C is "clean"; that is, that
+    # C.cleanup() does not change it. Make more robust to remove this assumption.
+    
+    # We now form a complex Q whose objects are shifts of copies of Pi
     QObjects = {}
     mapsQtoC = {}
     EXFs = {}
@@ -67,8 +70,10 @@ def sigma(Z, i, C):
         for (i,k) in QObjects[place].keys():
             M[place][(keyDict[place][(i,k)], i)] = mapsQtoC[place][(i,k)]
 
-    return cone(Q, C, M).homological_shift_by(1)
-    
+    c = cone(Q, C, M).homological_shift_by(1)
+    if minimize:
+        c = c.minimize_using_matrix()
+    return c
 
 def sigmaInverse(Z, i, C):
     '''The inverse spherical twist corresponding to the i-th projective
@@ -138,7 +143,10 @@ def sigmaInverse(Z, i, C):
         for (i,k) in QObjects[place].keys():
             M[place][(i, keyDict[place][(i,k)])] = mapsCtoQ[place][(i,k)]
 
-    return cone(C, Q, M)
+    c = cone(C,Q,M)
+    if minimize:
+        c = c.minimize_using_matrix()
+    return c
 
 from functools import reduce
 def composeAll(list_of_functions):
