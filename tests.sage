@@ -1,6 +1,8 @@
+load("zigzagalgebra_element.pyx")
 load("zigzagalgebra-cartan.sage")
 load("projective-zigzagmodules-cartan.sage")
 load("complexes-cartan.sage")
+load("braidactions-cartan.sage")
 
 def run_zz_algebra_profile(N=1000):
     import random
@@ -65,7 +67,7 @@ def minimize_using_matrix_test(k=QQ):
     assert D.objects[0][0] == P2
     return C, D
 
-def minimization_profile_setup(k=QQ):
+def minimization_profile_setup(k=QQ, minimize=False):
     Z = ZigZagAlgebra("A2", k)
     p = {}
     for i in [1,2]:
@@ -73,7 +75,7 @@ def minimization_profile_setup(k=QQ):
         pi = ProjectiveComplex(Z)
         pi.add_object_at(0, fpi)
         p[i] = pi
-    s = {i : (lambda C, i = i: sigma(Z, i, C)) for i in [1,2]}
+    s = {i : (lambda C, i = i: sigma(Z, i, C, minimize=minimize)) for i in [1,2]}
     return p,s
 
 def run_projective_complex_test():
