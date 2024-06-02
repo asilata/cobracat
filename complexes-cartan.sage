@@ -456,8 +456,16 @@ class ProjectiveComplex(object):
 
         #Use generated P to create chain map which is a qis, and return it optionally.
         if P:
-            qis = {new_obj[0]:{(new_obj[1], old_obj[1]): P[i,j] for j in P.nonzero_positions_in_row(i) if (old_obj := objects_dict.get(j,None))}
-                   for i in range(0,N) if (new_obj := new_objects_dict.get(i,None))}
+            qis = {}
+            for i in range(0,N):
+                if i in dropped_objects:
+                    continue
+                qis[i] = {}
+                new_obj = new_objects_dict.get(i,None)
+                for j in P.nonzero_positions_in_row(i):
+                    old_obj = objects_dict.get(j, None)
+                    assert new_obj[0] == old_obj[0]
+                    qis[i][(new_obj[1], old_obj[1])] = P[i,j]
             return reduced_complex, qis
         else:
             return reduced_complex
