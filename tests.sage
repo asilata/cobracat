@@ -2,6 +2,13 @@ load("zigzagalgebra-cartan.sage")
 load("projective-zigzagmodules-cartan.sage")
 load("complexes-cartan.sage")
 
+def run_zz_algebra_profile(N=1000):
+    import random
+    Z = ZigZagAlgebra("A2",QQ)
+    B = Z.basis()
+    [ random.choice(B)*random.choice(B)  for i in range(N)]
+    
+
 def run_zz_algera_internals_test():
     cartan_types = ["A2", "D5", CartanType(['A', 2, 1]), CartanType(['A',1,1])]
     for ct in cartan_types:
