@@ -31,7 +31,6 @@ AUTHORS:
 
 from functools import cached_property
 from itertools import product
-from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_element import FiniteDimensionalAlgebraElement
 
 def _zz_basis(ct):
     r"""
@@ -173,10 +172,6 @@ def _zz_right_multiplication_table(basis, x, k=QQ):
     else:
         raise ValueError("{} is not a basis element of the zigzag algebra!".format(x))
     return mult_matrix
-
-class ZigZagAlgebraElement(FiniteDimensionalAlgebraElement):
-    def __init__(self, A, elt=None, check=True):
-        FiniteDimensionalAlgebraElement.__init__(self, A = A, elt = elt, check = check)
 
 class ZigZagAlgebra(FiniteDimensionalAlgebra):
     r"""
