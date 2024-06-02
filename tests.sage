@@ -46,9 +46,9 @@ def run_zig_zag_module_test():
         assert P1.invert(P1.idempotent) == P1.idempotent
     return
 
-def minimize_using_matrix_test():
+def minimize_using_matrix_test(k=QQ):
     ct = "A3"
-    Z = ZigZagAlgebra(ct, QQ)
+    Z = ZigZagAlgebra(ct, k)
     Z.inject_variables()
     P1 = ProjectiveZigZagModule(Z, 1)
     P2 = ProjectiveZigZagModule(Z, 2)
@@ -65,8 +65,8 @@ def minimize_using_matrix_test():
     assert D.objects[0][0] == P2
     return C, D
 
-def minimization_profile_setup():
-    Z = ZigZagAlgebra("A2", QQ)
+def minimization_profile_setup(k=QQ):
+    Z = ZigZagAlgebra("A2", k)
     p = {}
     for i in [1,2]:
         fpi = ProjectiveZigZagModule(Z, i)
