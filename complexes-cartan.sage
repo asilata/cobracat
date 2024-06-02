@@ -115,7 +115,9 @@ class ProjectiveComplex(object):
         A new complex obtained by homologically shifting self by [n].
         """
         new_objects = {x-n: self.objects[x] for x in self.objects.keys()}
-        new_maps = {x-n: {k: (-1)^n * self.maps[x][k] for k in self.maps[x].keys()} for x in self.maps.keys()}
+        # Sage thinks that (-1)^(-k) is a rational number :( so we decided to bit hack instead.
+        # The expression (1 - (n % 2) * 2) evaluates to (-1)^n.
+        new_maps = {x-n: {k: (1 - (n % 2) * 2) * self.maps[x][k] for k in self.maps[x].keys()} for x in self.maps.keys()}        
         return ProjectiveComplex(self.algebra, new_objects, new_maps, self.names)
 
     def copy(self):
