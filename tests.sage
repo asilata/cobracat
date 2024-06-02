@@ -61,11 +61,12 @@ def minimize_using_matrix_test(k=QQ):
     C.add_object_at(1, P1)
     C.add_map_at(0,0,0,e1)
     C.add_map_at(0,1,0,a21)
-    D = C.minimize_using_matrix()
+    D, P = C.minimize_using_matrix(with_qis=True)
     assert D.min_index == 0
     assert D.max_index == 0
     assert D.objects[0][0] == P2
-    return C, D
+    assert is_chain_map(D,C,P)
+    return C, D, P
 
 def minimization_profile_setup(k=QQ, minimize=False):
     Z = ZigZagAlgebra("A2", k)
