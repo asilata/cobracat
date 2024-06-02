@@ -446,14 +446,18 @@ class ProjectiveComplex(object):
             if not(i in dropped_objects or j in dropped_objects):
                 new_source = new_objects_dict.get(i,None)
                 new_target = new_objects_dict.get(j,None)
-                assert (new_source is not None and new_target is not None)
+                assert (new_source and new_target)
                 assert (new_target[0] == new_source[0] + 1)
                                 
                 reduced_complex.add_map_at(new_source[0], new_source[1], new_target[1], M[i,j])
 
-        # TODO use generated P to create chain map which is a qis, and return it optionally.
-        
-        return reduced_complex
+        #Use generated P to create chain map which is a qis, and return it optionally.
+        if P:
+            qis = {new_obj[0]:{(new_obj[1], old_obj[1]): P[i,j] for j in P.nonzero_positions_in_row(i) if (old_obj := objects_dict.get(j,None))}
+                   for i in range(0,N) if (new_obj := new_objects_dict.get(i,None))}
+            return reduced_complex, qis
+        else:
+            return reduced_complex
         
                       
     def minimize_at(self, index):
