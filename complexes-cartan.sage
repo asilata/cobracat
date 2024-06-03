@@ -539,6 +539,161 @@ class ProjectiveComplex(object):
         self.cleanup()
         return 
 
+    def hom(self, Q, degree = 0, name="k"):
+        r"""
+        The complex `hom(self, Q)` of degree `degree` (default: 0).
+        
+        INPUT:
+
+        - `Q` -- an object of class `ProjectiveComplex`
+        - `degree` -- an integer
+        - `name` -- a name for the base field
+        
+        OUTPUT:
+
+        - `H` -- a `ProjectiveComplex` of graded modules over `k`
+        - `B` -- a dictionary `{i:{b: M}}` where `M` is a map of complexes from `self` tensor `H[i][b]` to `Q` shifted by `degree`.
+                 This may not be a chain map, but a map at every homological degree.  
+        """
+        Z = self.algebra
+        Z_basis = list(Z.basis())
+        
+        Q = Q.homological_shift_by(degree)
+
+        # Let P = self.
+
+        
+        #######################################
+        #    Objects of the double complex    # 
+        #######################################
+        
+        # Its entry at (i,j) is Hom(P[i],Q[j]) = + Hom(P[i][a], Q[j][b])
+        # Hom(P[i][a],Q[j][b]) is in turn a direct sum of (monomial) maps, which are indexed by elements of the base ring.
+        # So double_complex_objects[(i,j)] is a list containing entries of the form (a, b, index_m), where a and b are as
+        # above, and index_m is the index of a monomial map from P[i][a] to Q[j][b].
+
+        double_complex_objects = {}
+        for i in self.objects:
+            pi = self.objects[i]
+            for j in Q.objects:
+                qj = Q.objects[j]
+                double_complex_objects[(i,j)] = [(a,b,Z_basis.index(m)) for a in range(len(pi)) for b in range(len(qj)) for m in pi[a].hom(qj[b])]
+
+        ##############################
+        # Maps of the double complex #
+        ##############################
+
+        # There are two kinds of differentials: horizontal and vertical (using row,column syntax like a matrix).
+        
+        # For the horizontal one: (i,j) --> (i,j+1)
+        # The object at (i,j) is Hom(P[i], Q[j]) = [(a,b,index_m)], a list ranging over all monomial maps m: P[i][a] --> Q[j][b].
+        # Consider induced_map, which is the composition P[i][a] --> Q[j][b] --> Q[j+1][d] where the first map is m and the second map is the differential of Q.
+        
+        # The object at (i,j+1) is Hom(P[i], Q[j+1]) = [(c,d,index_m2)], a list ranging over all monomial maps P[i][c] --> Q[j+1][d].
+        # For a map m2: P[i][a] --> Q[j+1][d], let coeff2 be the coefficient of m2 in induced_map.
+        # Therefore set double_complex_maps_horizontal[(i,j)][((a,b,index_m), (a, d, index_m2))] = coeff_m2.
+        double_complex_maps_horizontal = {}
+
+        for (i,j) in double_complex_objects:
+            for (a,b,index_m) in double_complex_objects[(i,j)]:
+                source = self.objects[i][a]
+                for (c,d) in Q.maps.get(j,{}):
+                    if c != b:
+                        continue
+                    differential = Q.maps[j][(b,d)]
+                    target = Q.objects[j+1][d]
+                    induced_map = source.idempotent *  Z_basis[index_m] * differential * target.idempotent # Goes from P[i][a] -> Q[j+1][d]
+                    
+                    # Write the induced map in terms of the basis of P[i][a].hom(Q[j+1][d])
+                    induced_map_monomial_coeffs = induced_map.monomial_coefficients()
+
+                    for m2 in source.hom(target):
+                        index_m2 = Z_basis.index(m2)
+                        coeffm2 = induced_map_monomial_coeffs[index_m2]
+                        if coeffm2 != 0:
+                            double_complex_maps_horizontal[(i,j)][((a,b,index_m), (a,d,index_m2))] = coeffm2
+
+                
+        # For the vertical one: (i,j) --> (i-1,j)
+        # The object at (i,j) is Hom(P[i], Q[j]) = [(a,b,index_m)], a list ranging over all monomial maps m: P[i][a] --> Q[j][b].
+        # Consider induced_map, which is the composition P[i-1][c] --> P[i][a] --> Q[j][b] where the first map is a sign times the differential of P, and the second map is m.
+        # The sign is (-1)^(i-j-1).
+        
+        # The object at (i-1,j) is Hom(P[i-1], Q[j]) = [(c,d,index_m2)], a list ranging over all monomial maps P[i-1][c] --> Q[j][d]
+        # For a map m2: P[i-1][c] --> Q[j][b], let coeff2 be the coefficient of m2 in induced_map.
+        # Therefore set double_complex_maps_vertical[(i,j)][((a,b,index_m), (c,b,index_m2))] = coeff_m2
+
+        double_complex_maps_vertical = {}
+
+        for (i,j) in double_complex_objects:
+            for (a,b,index_m) in double_complex_objects[(i,j)]:
+                target = Q.objects[j][b]
+                for (c,d) in self.maps.get(i-1,{}):
+                    if d != a:
+                        continue
+                    differential = self.maps[i-1][(c,a)]
+                    source = self.objects[i-1][c]
+                    induced_map = (-1)**((i-j) % 2) * source.idempotent * differential * Z_basis[index_m]  * target.idempotent # Goes from P[i-1][c] -> Q[j][b]
+                    
+                    # Write the induced map in terms of the basis of P[i-1,c].hom(Q[j][b])
+                    induced_map_monomial_coeffs = induced_map.monomial_coefficients()
+
+                    for m2 in source.hom(target):
+                        index_m2 = Z_basis.index(m2)                        
+                        coeffm2 = induced_map_monomial_coeffs[index_m2]
+                        if coeffm2 != 0:
+                            double_complex_maps_vertical[(i,j)][(a,b,index_m), (c,b,index_m2)] = coeffm2
+
+
+        ###############################
+        # Flatten to a single complex #
+        ###############################
+
+        # Add objects to the flattened complex.
+
+        k = Z.base_ring()
+        hom_complex = ProjectiveComplex(algebra=k)
+        renumbering_dictionary = {}
+        for (i,j) in double_complex_objects:
+            if j-i not in renumbering_dictionary:
+                renumbering_dictionary[j-i] = []
+            
+            for (a,b,index_m) in double_complex_objects[i,j]:
+                renumbering_dictionary[j-i].append((i,j,a,b,index_m))
+                # Add to hom_complex.objects[j-i] a graded
+                # one-dimensional k-vector space k<d> corresponding to
+                # the map m: P[i][a] -> Q[j][b], where
+                # d = Q[j][b].graded_degree - P[i][a].graded_degree - Z.deg(m)
+                d = Q.objects[j][b].graded_degree - self.objects[i][a].graded_degree - Z.deg(Z_basis[index_m])
+                # TODO: Using Z.deg(...) is a hack.  Not all algebras have a .deg method.
+                # Ideally, P.hom(Q) should give a graded basis, and d should come from there.
+                k_d = GradedProjectiveModuleOverField(k, 1, d, name=name)
+                hom_complex.add_object_at(j-i, k_d)
+
+        # Add horizontal maps
+        for (i,j) in double_complex_maps_horizontal:
+            dcmh_ij = double_complex_maps_horizontal[(i,j)]
+            for ((a,b,index_m),(c,d,index_m2)) in dcmh_ij:
+                assert a == c
+                # Insert a map at hom_complex.maps[j-i] from the right
+                # index to the right index.
+                index_source = renumbering_dictionary[j-i].index((i,j,a,b,index_m))
+                index_target = renumbering_dictionary[j+1-i].index((i,j+1,c,d,index_m2))
+                hom_complex.add_map_at(j-i, index_source, index_target, dcmh_ij[(a,b,index_m), (c,d,index_m2)])
+
+        # Add vertical maps
+        for (i,j) in double_complex_maps_vertical:
+            dcmv_ij = double_complex_maps_vertical[(i,j)]
+            for ((a,b,index_m),(c,d,index_m2)) in dcmv_ij:
+                assert b == d
+                # Insert a map at hom_complex.maps[j-i] from the right
+                # index to the right index.
+                index_source = renumbering_dictionary[j-i].index((i,j,a,b,index_m))
+                index_target = renumbering_dictionary[j+1-i].index((i-1,j,c,d,index_m2))
+                hom_complex.add_map_at(j-i, index_source, index_target, dcmv_ij[(a,b,index_m), (c,d,index_m2)])
+                
+        return hom_complex
+    
 # The hom complex
 def hom(P, Q, degree=0):
     Z = P.algebra
@@ -584,7 +739,6 @@ def hom(P, Q, degree=0):
             doubleComplexObjects[(i,j)] = [(a,b) for a in range(0,len(P.objects.get(i,[]))) for b in range(0,len(Q.objects.get(j,[])))]
 
     doubleComplexMaps = {}
-    # Here is the diagram of what is happening:
     # There are two kinds of differentials: horizontal and vertical (using row,column syntax like a matrix).
 
     # For the horizontal one: (i,j) --> (i,j+1)
@@ -598,7 +752,7 @@ def hom(P, Q, degree=0):
     # The object at (i,j) is Hom(P[i], Q[j]) = + Hom(P[i][a], Q[j][b]) = + <m[i,a,j,b]>
     # The object at (i-1,j) is Hom(P[i-1], Q[j]) = + Hom(P[i-1][c], Q[j][d]) = + <m[i-1,c,j,d]>
     # The induced map goes from + m[i,a,j,b] -> + m[i-1,c,j,d]
-    # and it is equal to x -> x * P.maps[i-1][b]
+    # and it is equal to x -> x * P.maps[i-1][b] (up to a sign)
 
     for (i,j) in doubleComplexObjects.keys():
         for (a,b) in doubleComplexObjects.get((i,j),[]):
