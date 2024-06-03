@@ -365,6 +365,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         '''
         return [x for x in self.basis() if self.deg(x) == 2]
 
+    @cached_method
     def idempotent_by_vertex(self, v):
         """
         Returns the idempotent of `self` corresponding to vertex `v`.
@@ -374,6 +375,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         # Return the first (and only) idempotent that has v as a source vertex.
         return [e for e in self.idempotents if self.source(e) == v][0]
 
+    @cached_method
     def coeff(self, r, monomial):
         '''
         The coefficient of monomial in the expansion of r in the basis. 
@@ -381,7 +383,6 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         '''
         i = list(self.basis()).index(monomial)
         return r.monomial_coefficients().get(i, 0)
-
 
     @cached_method
     def paths_from_to(self,e,f):
