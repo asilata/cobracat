@@ -544,27 +544,38 @@ class ProjectiveComplex(object):
     def hom(self, Q, degree = 0, name="k", with_homs=False):
         r"""
         The complex `hom(self, Q)` of degree `degree` (default: 0).
+
+        Return the minimized hom complex `H` of maps from `P` to `Q`.
+        The object at the ith place of `H` is a direct sum of shifted copies of k.
+        Each copy of `k` represents a chain map from `P` to `Q`.
+        
+        If `with_homs` is true, then we also return `B`, a dictionary
+        indexed by objects of `H`. The ith entry of B is a dictionary
+        indexed by all objects at position i of `H`. The element
+        B[i][a] is the chain map represented by shifted copy of k that
+        lives at H.objects[i][a].
         
         INPUT:
 
         - `Q` -- an object of class `ProjectiveComplex`
         - `degree` -- an integer
         - `name` -- a name for the base field
+        - `with_homs` -- a boolean, signifying whether we want to
+          return the actual chain maps from `self` to Q.
         
         OUTPUT:
 
+        Either `(H,B)` (if `with_homs` is True), or `H` (if `with_homs` is False).
         - `H` -- a `ProjectiveComplex` of graded modules over `k`
-        - `B` -- a dictionary `{i:{b: M}}` where `M` is a map of complexes from `self` tensor `H[i][b]` to `Q` shifted by `degree`.
-                 This may not be a chain map, but a map at every homological degree.  
+        - `B` -- a dictionary `{i:{b: M}}` where `M` is a chain map from `self` tensor `H[i][b]` to `Q` shifted by `degree`.
         """
         Z = self.algebra
         Z_basis = list(Z.basis())
         
         Q = Q.homological_shift_by(degree)
 
-        # Let P = self.
+        # In all explanations that follow, let P = self.
 
-        
         #######################################
         #    Objects of the double complex    # 
         #######################################
