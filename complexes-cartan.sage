@@ -229,11 +229,11 @@ class ProjectiveComplex(object):
         '''
         # Remove maps
         for i in self.maps:
-            for k in self.maps[i]:
+            for k in list(self.maps[i].keys()):
                 if self.maps[i][k] == 0:
                     self.maps[i].pop(k)
         # Remove objects
-        for i in self.objects:
+        for i in list(self.objects.keys()):
             if self.objects[i] == []:
                 self.objects.pop(i)
 
