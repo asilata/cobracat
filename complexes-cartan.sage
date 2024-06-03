@@ -541,7 +541,7 @@ class ProjectiveComplex(object):
         self.cleanup()
         return 
 
-    def hom(self, Q, degree = 0, name="k"):
+    def hom(self, Q, degree = 0, name="k", with_homs=False):
         r"""
         The complex `hom(self, Q)` of degree `degree` (default: 0).
         
@@ -701,7 +701,31 @@ class ProjectiveComplex(object):
                 index_target = renumbering_dictionary[j+1-i].index((i-1,j,c,d,index_m2))
                 hom_complex.add_map_at(j-i, index_source, index_target, dcmv_ij[(a,b,index_m), (c,d,index_m2)])
                 
-        return hom_complex
+        #
+        if with_homs:
+            B = {}
+            hom_complex_reduced, qis = hom_complex.minimize_using_matrix(with_qis=True)
+            for j_minus_i in hom_complex_reduced.objects:
+                # B[i] is a dictionary of type
+                # {index_reduced_hom: chain-map from self to Q represented by reduced_hom} 
+
+                B[j_minus_i] = {}
+                for (index_reduced_hom, index_original_hom) in qis[j_minus_i]:
+                    if index_reduced_hom not in B[j_minus_i]:
+                        B[j_minus_i][index_reduced_hom] = {}
+
+                    reduced_hom = B[j_minus_i][index_reduced_hom]
+                    coefficient = qis[j_minus_i][(index_reduced_hom, index_original_hom)]
+                    (i,j,a,b,index_m) = renumbering_dictionary[j_minus_i][index_original_hom]
+                    assert j_minus_i == j - i
+
+                    if i not in reduced_hom:
+                        reduced_hom[i] = {}
+
+                    reduced_hom[i][(a,b)] = reduced_hom[i].get((a,b),0) + coefficient * Z_basis[index_m]
+            return hom_complex_reduced, B
+        else:
+            return hom_complex.minimize_using_matrix(with_qis = False)
     
 # The hom complex
 def hom(P, Q, degree=0):
