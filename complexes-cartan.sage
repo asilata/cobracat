@@ -589,6 +589,22 @@ def hom(P, Q, degree=0):
             doubleComplexObjects[(i,j)] = [(a,b) for a in range(0,len(P.objects_at_index(i))) for b in range(0,len(Q.objects_at_index(j)))]
 
     doubleComplexMaps = {}
+    # Here is the diagram of what is happening:
+    # There are two kinds of differentials: horizontal and vertical (using row,column syntax like a matrix).
+
+    # For the horizontal one: (i,j) --> (i,j+1)
+    # The object at (i,j) is Hom(P[i], Q[j]) = + Hom(P[i][a], Q[j][b]) = + <m[i,a,j,b]>
+    # where m[i,a,j,b] is the list of ring elements that form a basis of homs from P[i][a] to Q[j][b] by right multiplication.
+    # The object at (i,j+1) is Hom(P[i], Q[j+1]) = + Hom(P[i][c], Q[j+1][d]) = + <m[i,c,j+1,d]>
+    # The induced map goes from + m[i,a,j,b] -> + m[i,c,j+1,d]
+    # and it is equal to x -> x * Q.maps[j][b]
+
+    # For the vertical one: (i,j) --> (i-1,j)
+    # The object at (i,j) is Hom(P[i], Q[j]) = + Hom(P[i][a], Q[j][b]) = + <m[i,a,j,b]>
+    # The object at (i-1,j) is Hom(P[i-1], Q[j]) = + Hom(P[i-1][c], Q[j][d]) = + <m[i-1,c,j,d]>
+    # The induced map goes from + m[i,a,j,b] -> + m[i-1,c,j,d]
+    # and it is equal to x -> x * P.maps[i-1][b]
+
     for (i,j) in doubleComplexObjects.keys():
         for (a,b) in doubleComplexObjects.get((i,j),[]):
             for (c,d) in doubleComplexObjects.get((i,j+1),[]):
