@@ -568,7 +568,8 @@ class ProjectiveComplex(object):
 
         Either `(H,B)` (if `with_homs` is True), or `H` (if `with_homs` is False).
         - `H` -- a `ProjectiveComplex` of graded modules over `k`
-        - `B` -- a dictionary `{i:{b: M}}` where `M` is a chain map from `self` tensor `H[i][b]` to `Q` shifted by `degree`.
+        - `B` -- a dictionary `{i:{b: M}}` where `M` is a chain map
+          from `self` tensor `H[i][b]` to `Q` shifted by `degree`.
         """
         Z = self.algebra
         Z_basis = list(Z.basis())

@@ -79,6 +79,17 @@ def minimization_profile_setup(k=QQ, minimize=False):
     s = {i : (lambda C, i = i: sigma(Z, i, C, minimize=minimize)) for i in [1,2]}
     return p,s
 
+def sigma_new_setup(k=QQ, minimize=False):
+    Z = ZigZagAlgebra("A2", k)
+    p = {}
+    for i in [1,2]:
+        fpi = ProjectiveZigZagModule(Z, i)
+        pi = ProjectiveComplex(Z)
+        pi.add_object_at(0, fpi)
+        p[i] = pi
+    s = {i : (lambda C, i = i: sigma_new(C, i, Z, minimize=minimize)) for i in [1,2]}
+    return p,s
+
 def run_projective_complex_test():
     return
 
