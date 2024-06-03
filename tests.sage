@@ -88,7 +88,9 @@ def sigma_new_setup(k=QQ, minimize=False):
         pi.add_object_at(0, fpi)
         p[i] = pi
     s = {i : (lambda C, i = i: sigma_new(C, i, Z, minimize=minimize)) for i in [1,2]}
+    s |= {-i : (lambda C, i = i: sigma_inverse_new(C, i, Z, minimize=minimize)) for i in [1,2]}
     return p,s
+
 
 def run_projective_complex_test():
     return
