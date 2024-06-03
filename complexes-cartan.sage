@@ -316,7 +316,7 @@ class ProjectiveComplex(object):
         # We first transform the given complex into a giant matrix, whose rows and columns are indexed by all the objects in the given matrix.
         # We first store this correspondence.
         N = sum([len(x) for x in self.objects.values()])
-        objects = [(k, i) for k in self.objects for i in range(0,len(self.objects[k]))]
+        objects = [(k, i) for k in sorted(self.objects) for i in range(0,len(self.objects[k]))]
         objects_dict = dict(zip(range(0,N), objects))
         objects_reverse_dict = dict(zip(objects, range(0,N)))
         maps_dict = {(objects_reverse_dict[(i,a)], objects_reverse_dict[(i+1,b)]) : self.maps[i][(a,b)] for i in self.maps for (a,b) in self.maps[i]}
@@ -409,6 +409,7 @@ class ProjectiveComplex(object):
         # For that, we need to compute the new dictionary.
         new_objects_dict = {}
 
+        # Assume that the entries of objects_dict are lexicographically sorted.
         homological_index = -Infinity
         for obj_index in range(0,N):
             obj = objects_dict[obj_index]
