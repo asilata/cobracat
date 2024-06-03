@@ -228,18 +228,18 @@ class ProjectiveComplex(object):
         Remove spurious matrix entries (zeros) and spurious object lists (empty lists).
         '''
         # Remove maps
-        for i in list(self.maps.keys()):
-            for k in list(self.maps[i].keys()):
+        for i in self.maps:
+            for k in self.maps[i]:
                 if self.maps[i][k] == 0:
                     self.maps[i].pop(k)
         # Remove objects
-        for i in list(self.objects.keys()):
+        for i in self.objects:
             if self.objects[i] == []:
                 self.objects.pop(i)
 
-        if len(self.objects.keys()) > 0:
-            self.min_index = min(self.objects.keys())
-            self.max_index = max(self.objects.keys())
+        if len(self.objects) > 0:
+            self.min_index = min(self.objects)
+            self.max_index = max(self.objects)
         else:
             self.min_index = 0
             self.max_index = 0
@@ -250,7 +250,6 @@ class ProjectiveComplex(object):
         '''
         for i in range(self.min_index, self.max_index):
             self.minimize_at(i)
-        
 
     def add_map_at(self, index, i, j, scalar):
         '''
