@@ -178,13 +178,13 @@ class GradedProjectiveModuleOverField(object):
     # What is a basis?
     # Basis is supposed to be a dictionary {x:v} where the keys x could be anything, but the values v should be elements of a k-module.
     # The dictionary {x:v} is supposed to represent the element formal sum v*x.
-    def __init__(self, basefield, dimension, grade = 0, name=None, basis=None):
+    def __init__(self, basefield, dimension, graded_degree = 0, name=None, basis=None):
         if not basefield.is_field():
             raise TypeError("Basefield not a field.")
         if not dimension.is_integral() or dimension < 0:
             raise TypeError("Invalid dimension.")
         self._vsp = VectorSpace(basefield,dimension)
-        self._grade = grade
+        self.graded_degree = graded_degree
         if dimension > 1 and basis != None:
             raise NotImplementedError("Basis only implemented for one dimensional spaces")
         self._basis = basis
@@ -194,18 +194,14 @@ class GradedProjectiveModuleOverField(object):
             self._name = self._vsp.__str__()
 
     def __str__(self):
-        return self._name + "<" + str(self._grade) +">"
+        return self._name + "<" + str(self.graded_degree) +">"
 
     def __repr__(self):
-        return self._name + "<" + str(self._grade) +">"
+        return self._name + "<" + str(self.graded_degree) +">"
 
     @cached_method
     def is_annihilated_by(self, r):
         return (r == 0)
-
-    @cached_method
-    def grade(self):
-        return self._grade
 
     @cached_method
     def basis(self):
@@ -221,7 +217,7 @@ class GradedProjectiveModuleOverField(object):
 
     @cached_method    
     def q_polynomial(self, variables = [var('q')]):
-        return variables[0]^self._grade
+        return variables[0]^self.graded_degree
 
     @cached_method    
     def invert(self, r):
