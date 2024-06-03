@@ -68,7 +68,7 @@ def minimize_using_matrix_test(k=QQ):
     assert is_chain_map(D,C,P)
     return C, D, P
 
-def minimization_profile_setup(k=QQ, minimize=False):
+def braid_actions_setup(k=QQ, minimize=False):
     Z = ZigZagAlgebra("A2", k)
     p = {}
     for i in [1,2]:
@@ -76,21 +76,9 @@ def minimization_profile_setup(k=QQ, minimize=False):
         pi = ProjectiveComplex(Z)
         pi.add_object_at(0, fpi)
         p[i] = pi
-    s = {i : (lambda C, i = i: sigma(Z, i, C, minimize=minimize)) for i in [1,2]}
+    s = {i : (lambda C, i = i: sigma(C, i, Z, minimize=minimize)) for i in [1,2]}
+    s |= {-i : (lambda C, i = i: sigma_inverse(C, i, Z, minimize=minimize)) for i in [1,2]}
     return p,s
-
-def sigma_new_setup(k=QQ, minimize=False):
-    Z = ZigZagAlgebra("A2", k)
-    p = {}
-    for i in [1,2]:
-        fpi = ProjectiveZigZagModule(Z, i)
-        pi = ProjectiveComplex(Z)
-        pi.add_object_at(0, fpi)
-        p[i] = pi
-    s = {i : (lambda C, i = i: sigma_new(C, i, Z, minimize=minimize)) for i in [1,2]}
-    s |= {-i : (lambda C, i = i: sigma_inverse_new(C, i, Z, minimize=minimize)) for i in [1,2]}
-    return p,s
-
 
 def run_projective_complex_test():
     return
