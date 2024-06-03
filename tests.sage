@@ -82,6 +82,42 @@ def minimization_profile_setup(k=QQ, minimize=False):
 def run_projective_complex_test():
     return
 
+def hom_complex_test():
+    Z = ZigZagAlgebra("A2", k=QQ)
+    p = {}
+    for i in [1,2]:
+        fpi = ProjectiveZigZagModule(Z, i)
+        pi = ProjectiveComplex(Z)
+        pi.add_object_at(0, fpi)
+        p[i] = pi
+    h1 = p[1].hom(p[2])
+    assert h1.min_index == 0
+    assert h1.max_index == 0
+    assert len(h1.objects[0]) == 1
+    assert h1.objects[0][0].grade() == -1
+
+    h2 = p[1].hom(p[1])    
+    assert h2.min_index == 0
+    assert h2.max_index == 0
+    assert len(h2.objects[0]) == 2
+    assert set([x.grade() for x in h2.objects[0]]) == set([0,-2])
+    
+    return
+
+def hom_complex_test_with_homs():
+    p,s = minimization_profile_setup(minimize=True)
+    X = s[1](s[1](p[2]))
+    Y = p[2]
+    hxy, mxy = X.hom(Y, with_homs=True)
+    hyx, myx = Y.hom(X, with_homs=True)
+    assert hxy.min_index == 0
+    assert hxy.max_index == 2
+    assert hyx.min_index == -2
+    assert hyx.max_index == 0
+    assert set(mxy.keys()) == set([2,0])
+    assert set(myx.keys()) == set([-2, 0])
+    return
+
 def run_braid_actions_test():
     return
 
