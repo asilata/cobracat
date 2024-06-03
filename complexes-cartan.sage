@@ -597,6 +597,10 @@ class ProjectiveComplex(object):
         double_complex_maps_horizontal = {}
 
         for (i,j) in double_complex_objects:
+            # TODO unsure if this is the best place to add this entry in.
+            if (i,j) not in double_complex_maps_horizontal:
+                double_complex_maps_horizontal[(i,j)] = {}
+                
             for (a,b,index_m) in double_complex_objects[(i,j)]:
                 source = self.objects[i][a]
                 for (c,d) in Q.maps.get(j,{}):
@@ -628,6 +632,9 @@ class ProjectiveComplex(object):
         double_complex_maps_vertical = {}
 
         for (i,j) in double_complex_objects:
+            if (i,j) not in double_complex_maps_vertical:
+                double_complex_maps_vertical[(i,j)] = {}
+                
             for (a,b,index_m) in double_complex_objects[(i,j)]:
                 target = Q.objects[j][b]
                 for (c,d) in self.maps.get(i-1,{}):
