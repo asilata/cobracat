@@ -1,3 +1,5 @@
+from functools import reduce
+
 def sigma(Z, i, C, minimize=False):
     '''
     The spherical twist corresponding to the i-th projective module of
@@ -148,6 +150,5 @@ def sigmaInverse(Z, i, C):
         c = c.minimize_using_matrix()
     return c
 
-from functools import reduce
 def composeAll(list_of_functions):
     return reduce (lambda x,y : lambda t : x(y(t)), list_of_functions, lambda x: x)
