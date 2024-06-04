@@ -3,18 +3,23 @@
 ** Overview
 We implement braid group actions on the homotopy category of complexes of projective modules over the zigzag algebra of any simple undirected graph, that is an undirected graph without multiple edges.
 
-This is what the various files do; references for the mathematical content in this code can be found in the subsection [[*References][References]] below.
+We now explain what the various files do.
+References for the mathematical content in this code can be found in the subsection titled "References".
 
 *** zigzagalgebra.sage
 
 Constructs the zigzag algebra of a (doubled) quiver by running ~ZigZagAlgebra(ct)~, where the argument ~ct~ can be any of the following.
-1. An abstract symmetric Cartan matrix, by passing a Sage ~matrix~ to the constructor as the argument ~ct~.
-2. A named ~CartanType~ in Sage, which could be something like ~CartanType(['A', 3])~ for type \(A_3\), or ~CartanType(['D', 5])~ for type \(D_5\), or ~CartanType(['A', 3, 1])~ for type \(\widetilde{A_3}\), the affine \(A_3\) type.
-3. A string shorthand for a named CartanType, such as ~"A3"~ or ~"D5"~.
+1. An abstract symmetric Cartan matrix, which is a Sage ~matrix~ whose diagonal entries are 2, and off-diagonal entries are either 0 or negative integers.
+2. A named ~CartanType~ in Sage, which could be something like ~CartanType(['A', 3])~ for type A3, or ~CartanType(['D', 5])~ for type D5, or ~CartanType(['A', 3, 1])~ for type affine \(A_3\).
+3. A string shorthand for a named ~CartanType~, such as ~'A3'~ or ~'D5'~.
 4. An object of class ~CartanMatrix~.
 
 At the moment, we do not support Dynkin diagrams with multiple edges.
-This means that we only support Cartan matrices whose off-diagonal entries are either \(-1\) or \(0\).
+This means that we only support Cartan matrices whose off-diagonal entries are either -1 or 0.
+
+*** zigzagalgebra_element.pyx
+
+Constructs elements of a zigzag algebra. For now mostly a stub that inherits from the Sage class ~FiniteDimensionalAlgebraElement~.
 
 *** projective-zigzagmodules.sage
 
@@ -40,9 +45,10 @@ Here are some references.
 3. The more general quiver version of this action was developed in the paper /Quivers, Floer cohomology, and braid group actions/ by Khovanov and Seidel.
 4. We now use a signed version of the zigzag algebra, as described in Section 6 (specifically, Definition 6.4) of the paper /A Thurston compactification of the space of stability conditions/ by the authors and Anthony Licata ([[https://arxiv.org/abs/2011.07908][arXiv:2011.07908]]).
 5. An accessible introduction to braid group actions on these quiver categories can be found in Section 1 of the article /Notes on link homology/ by Asaeda and Khovanov ([[https://arxiv.org/abs/0804.1279][arXiv:0804.1279]]).
-    Note, however, that the braid actions are described here in terms of tensoring by certain complexes of bimodules, and this construction is somewhat special to zigzag algebras of quivers.
-   In the code, we choose to implement these using the more general setup of spherical twists, namely by constructing cones of certain universal evaluation maps; this construction is described, e.g., in the paper of Seidel and Thomas mentioned above.
-6. Gaussian elimination of obviously null-homotopic complexes is explained, e.g., in Lemma 4.2 of the paper /Fast Khovanov homology computations/ by Dror Bar-Natan ([[https://arxiv.org/abs/math/0606318][arXiv:0606318]]).
+    Note, however, that the braid actions are described here in terms of tensoring by complexes of bimodules, and this construction is somewhat special to zigzag algebras of quivers.
+   In the code, we choose to implement braid actions using the more general setup of spherical twists, namely by constructing cones of universal evaluation maps.
+   This construction is described, e.g., in the paper of Seidel and Thomas mentioned above.
+6. Gaussian elimination of complexes that are obviously null-homotopic is explained, e.g., in Lemma 4.2 of the paper /Fast Khovanov homology computations/ by Dror Bar-Natan ([[https://arxiv.org/abs/math/0606318][arXiv:0606318]]).
 
 ** Acknowledgements
 We are greatly indebted to Anthony Licata, with whom this project began, and who is a long-time collaborator of the authors on the mathematics behind this code.
