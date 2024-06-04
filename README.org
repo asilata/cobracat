@@ -1,21 +1,50 @@
 * Cobracat: Computation of Braid Actions on Categories 
 
-We implement braid group actions on the homotopy category of complexes of projective modules over the zig-zag algebra as defined in the article "Notes on link homology" by Asaeda and Khovanov.
+** Overview
+We implement braid group actions on the homotopy category of complexes of projective modules over the zigzag algebra of any simple undirected graph, that is an undirected graph without multiple edges.
 
-This is what the various files do.
+This is what the various files do; references for the mathematical content in this code can be found in the subsection [[*References][References]] below.
 
-** complexes.sage
+*** zigzagalgebra.sage
 
-Defines the sage class for complexes of projective modules over a possibly non-commutative but finite dimensional (finite length) algebra over a field.
+Constructs the zigzag algebra of a (doubled) quiver by running ~ZigZagAlgebra(ct)~, where the argument ~ct~ can be any of the following.
+1. An abstract symmetric Cartan matrix, by passing a Sage ~matrix~ to the constructor as the argument ~ct~.
+2. A named ~CartanType~ in Sage, which could be something like ~CartanType(['A', 3])~ for type \(A_3\), or ~CartanType(['D', 5])~ for type \(D_5\), or ~CartanType(['A', 3, 1])~ for type \(\widetilde{A_3}\), the affine \(A_3\) type.
+3. A string shorthand for a named CartanType, such as ~"A3"~ or ~"D5"~.
+4. An object of class ~CartanMatrix~.
 
-** zigzagalgebra.sage
+At the moment, we do not support Dynkin diagrams with multiple edges.
+This means that we only support Cartan matrices whose off-diagonal entries are either \(-1\) or \(0\).
 
-Defines the zig-zag algebra of a (doubled) quiver.
+*** projective-zigzagmodules.sage
 
-** zigzagmodules.sage
+Constructs indecomposable projective left modules over a zigzag algebra.
 
-Defines projective modules over the zig-zag algebra.
+*** complexes.sage
 
-** braidactions.sage
+Constructs complexes of projective modules over a possibly non-commutative but finite-dimensional algebra over a field.
+These should be thought of as objects of the homotopy category of complexes.
+In particular, we implement a method for Gaussian elimination of null-homotopic complexes.
 
-Implements spherical twists by the standard projective modules over the zig-zag algebra.  
+*** braidactions.sage
+
+Implements spherical twists by the standard projective modules over the zigzag algebra.  
+
+*** TODO HN.sage
+Implements Harder--Narasimhan filtrations of spherical objects under a given Bridgeland stability condition (coming soon).
+
+*** References
+Here are some references.
+1. Zigzag algebras originate in the paper /A category for the adjoint representation/ by Huerfano and Khovanov ([[https://arxiv.org/abs/math/0002060][arXiv:0002060]]). The relevant content is in Section 3.
+2. The categorical braid group action implemented here originates in the paper /Braid group actions on derived categories of coherent sheaves/ by Seidel and Thomas.
+3. The more general quiver version of this action was developed in the paper /Quivers, Floer cohomology, and braid group actions/ by Khovanov and Seidel.
+4. We now use a signed version of the zigzag algebra, as described in Section 6 (specifically, Definition 6.4) of the paper /A Thurston compactification of the space of stability conditions/ by the authors and Anthony Licata ([[https://arxiv.org/abs/2011.07908][arXiv:2011.07908]]).
+5. An accessible introduction to braid group actions on these quiver categories can be found in Section 1 of the article /Notes on link homology/ by Asaeda and Khovanov ([[https://arxiv.org/abs/0804.1279][arXiv:0804.1279]]).
+    Note, however, that the braid actions are described here in terms of tensoring by certain complexes of bimodules, and this construction is somewhat special to zigzag algebras of quivers.
+   In the code, we choose to implement these using the more general setup of spherical twists, namely by constructing cones of certain universal evaluation maps; this construction is described, e.g., in the paper of Seidel and Thomas mentioned above.
+6. Gaussian elimination of obviously null-homotopic complexes is explained, e.g., in Lemma 4.2 of the paper /Fast Khovanov homology computations/ by Dror Bar-Natan ([[https://arxiv.org/abs/math/0606318][arXiv:0606318]]).
+
+** Acknowledgements
+We are greatly indebted to Anthony Licata, with whom this project began, and who is a long-time collaborator of the authors on the mathematics behind this code.
+His remarkable facility with calculating these braid actions was both extremely inspiring and extremely valuable --- we mostly started writing this code because we were too slow to keep up with him!
+We are grateful to Hoel Queffelec for countless useful conversations and for suggesting critical bugfixes and improvements.
