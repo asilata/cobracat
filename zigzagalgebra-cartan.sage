@@ -179,14 +179,14 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
     """
     Element = ZigZagAlgebraElement
     
-    def __init__(self, ct, k):
+    def __init__(self, ct, k=QQ):
         r"""
         Create a zig-zag algebra.
 
         INPUT:
 
         - `ct` -- CartanType
-        - `k` -- Field
+        - `k` -- Field, default `QQ`
 
         OUTPUT:
 
