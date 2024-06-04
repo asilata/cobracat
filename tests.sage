@@ -1,8 +1,8 @@
 load("zigzagalgebra_element.pyx")
-load("zigzagalgebra-cartan.sage")
-load("projective-zigzagmodules-cartan.sage")
-load("complexes-cartan.sage")
-load("braidactions-cartan.sage")
+load("zigzagalgebra.sage")
+load("projective-zigzagmodules.sage")
+load("complexes.sage")
+load("braidactions.sage")
 
 def run_zz_algebra_profile(N=1000):
     import random
