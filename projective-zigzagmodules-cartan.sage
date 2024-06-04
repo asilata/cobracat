@@ -47,11 +47,11 @@ class ProjectiveZigZagModule(Module):
         sage: load("zigzagalgebra-cartan.sage")
         sage: load("projective-zigzagmodules-cartan.sage")
         sage: Z = ZigZagAlgebra("A2", QQ)
-        sage: P0 = ProjectiveZigZagModule(Z, Z.vertices[0])
-        sage: P0p = ProjectiveZigZagModule(Z, Z.vertices[0])
+        sage: P0 = ProjectiveZigZagModule(Z, Z.index_set[0])
+        sage: P0p = ProjectiveZigZagModule(Z, Z.index_set[0])
         sage: P0 == P0p
         True
-        sage: P1 = ProjectiveZigZagModule(Z, Z.vertices[1])
+        sage: P1 = ProjectiveZigZagModule(Z, Z.index_set[1])
         sage: P0 == P1
         False
         '''
@@ -110,7 +110,7 @@ class ProjectiveZigZagModule(Module):
         sage: load("zigzagalgebra-cartan.sage")
         sage: load("projective-zigzagmodules-cartan.sage")
         sage: Z = ZigZagAlgebra("A2", QQ)
-        sage: P0 = ProjectiveZigZagModule(Z, Z.vertices[0])
+        sage: P0 = ProjectiveZigZagModule(Z, Z.index_set[0])
         sage: P00 = P0.graded_shift_by(0)
         sage: P0 == P00
         True

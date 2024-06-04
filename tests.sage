@@ -40,7 +40,7 @@ def run_zig_zag_module_test():
         print("Constructing zig-zag algebra of Cartan type {}".format(ct))
         Z = ZigZagAlgebra(ct, QQ)
         print(Z)
-        proj_modules = [ProjectiveZigZagModule(Z, v) for v in Z.vertices]
+        proj_modules = [ProjectiveZigZagModule(Z, v) for v in Z.index_set]
         P1, P2 = proj_modules[0], proj_modules[1]
         print(P1.hom(P2))
         assert P1.is_invertible(P1.idempotent)
@@ -68,16 +68,17 @@ def minimize_using_matrix_test(k=QQ):
     assert is_chain_map(D,C,P)
     return C, D, P
 
-def braid_actions_setup(k=QQ, minimize=False):
-    Z = ZigZagAlgebra("A2", k)
+def braid_actions_setup(ct="A2",k=QQ, minimize=False):
+    Z = ZigZagAlgebra(ct, k)
+    ct = Z.cartan_type
     p = {}
-    for i in [1,2]:
+    for i in ct.index_set():
         fpi = ProjectiveZigZagModule(Z, i)
         pi = ProjectiveComplex(Z)
         pi.add_object_at(0, fpi)
         p[i] = pi
-    s = {i : (lambda C, i = i: sigma(C, i, Z, minimize=minimize)) for i in [1,2]}
-    s |= {-i : (lambda C, i = i: sigma_inverse(C, i, Z, minimize=minimize)) for i in [1,2]}
+    s = {i : (lambda C, i = i: sigma(C, i, Z, minimize=minimize)) for i in ct.index_set()}
+    s |= {-i : (lambda C, i = i: sigma_inverse(C, i, Z, minimize=minimize)) for i in ct.index_set()}
     return p,s
 
 def run_projective_complex_test():
