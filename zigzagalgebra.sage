@@ -216,7 +216,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
             ct = CartanType(ct)
 
         self.cartan_type = ct
-        self.index_set = index_set
+        self.index_set = ct.index_set()
             
         self.cartan_matrix = self.cartan_type.cartan_matrix()
             
