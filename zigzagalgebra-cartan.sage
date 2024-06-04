@@ -31,6 +31,7 @@ AUTHORS:
 
 from functools import cached_property
 from itertools import product
+from sage.structure.element import is_Matrix
 
 def _zz_basis(ct):
     r"""
@@ -42,7 +43,7 @@ def _zz_basis(ct):
     `(i,j,d)`, where `i` is its source vertex, `j` is its target
     vertex, and `d` is its degree.
     
-    We assume (for now) that the given Cartan Type is simply laced.
+    We assume (for now) that the Dynkin diagram of the given Cartan type does not have multiple edges.
     
     INPUT:
 
@@ -173,20 +174,24 @@ def _zz_right_multiplication_table(basis, x, k=QQ):
         raise ValueError("{} is not a basis element of the zigzag algebra!".format(x))
     return mult_matrix
 
+def _ct_has_multiple_edges(ct):
+    return not all([all([y >= 0 or y == -1 for y in r]) for r in ct.cartan_matrix()])
+
 class ZigZagAlgebra(FiniteDimensionalAlgebra):
     r"""
     The zig-zag algebra over a field associated to a Cartan type.
     """
     Element = ZigZagAlgebraElement
     
-    def __init__(self, ct, k=QQ):
+    def __init__(self, ct, k=QQ, index_set=None):
         r"""
         Create a zig-zag algebra.
 
         INPUT:
 
-        - `ct` -- CartanType
+        - `ct` -- A matrix, a `CartanMatrix`, a `CartanType`, or a shorthand such as "A5" or "D4". A shorthand input as a list (e.g. ['A', 5, 1]) is not supported.
         - `k` -- Field, default `QQ`
+        - `index_set` -- a tuple to reindex the vertices of the Dynkin diagram, default `None`.
 
         OUTPUT:
 
@@ -195,15 +200,32 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         
         """
 
-        # For the moment we must input either a genuine CartanType, or a string shorthand
-        # such as "A5" or "E8".
-        # For some reason Sage does not seem to accept list inputs such as ['A', 5,1].
-        self.cartan_type = CartanType(ct)
-        if not self.cartan_type.is_simply_laced():
-            # For the moment we only implement simply laced Cartan types.
-            raise ValueError("Given Cartan Type must be simply laced.")
+        if is_Matrix(ct):
+            if index_set is None:
+                index_set = range(1,ct.nrows()+1)
+            ct = CartanMatrix(ct, index_set)
+            
+        if isinstance(ct, sage.combinat.root_system.cartan_matrix.CartanMatrix):
+            if index_set is None:
+                index_set = range(1,ct.cartan_matrix().nrows()+1)
+            if len(index_set) != ct.cartan_matrix().nrows():
+                raise ValueError("Size of index set {} does not match size of Cartan matrix!".format(index_set))
+            ct = DynkinDiagram(ct, index_set=index_set)
+            
+        elif not isinstance(ct, sage.combinat.root_system.cartan_type.CartanType_abstract):
+            ct = CartanType(ct)
+
+        self.cartan_type = ct
+        self.index_set = index_set
+            
+        self.cartan_matrix = self.cartan_type.cartan_matrix()
+            
+        if not self.cartan_matrix.is_symmetric():
+            raise ValueError("Cartan matrix not symmetric: {}".format(self.cartan_matrix))
         
-        self.vertices = self.cartan_type.index_set()
+        if _ct_has_multiple_edges(self.cartan_type):
+            raise NotImplementedError("ZigZagAlgebra not implemented for Dynkin diagrams with multiple edges.")
+            
         self._base_ring = k
 
         # An internal representation for the basis of `self`, as specified in the helper methods `_zz_basis()`defined previously.
@@ -370,7 +392,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         """
         Returns the idempotent of `self` corresponding to vertex `v`.
         """
-        if v not in self.vertices:
+        if v not in self.index_set:
             raise ValueError("{} is not a vertex of {}!".format(v,self))
         # Return the first (and only) idempotent that has v as a source vertex.
         return [e for e in self.idempotents if self.source(e) == v][0]
