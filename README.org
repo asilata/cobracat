@@ -11,7 +11,7 @@ References for the mathematical content in this code can be found in the subsect
 Constructs the zigzag algebra of a (doubled) quiver by running ~ZigZagAlgebra(ct)~, where the argument ~ct~ can be any of the following.
 1. An abstract symmetric Cartan matrix, which is a Sage ~matrix~ whose diagonal entries are 2, and off-diagonal entries are either 0 or negative integers.
 2. A named ~CartanType~ in Sage, which could be something like ~CartanType(['A', 3])~ for type A3, or ~CartanType(['D', 5])~ for type D5, or ~CartanType(['A', 3, 1])~ for type affine \(A_3\).
-3. A string shorthand for a named ~CartanType~, such as ~'A3'~ or ~'D5'~.
+3. A string shorthand for a named ~CartanType~, such as ='A3'= or ='D5'=.
 4. An object of class ~CartanMatrix~.
 
 At the moment, we do not support Dynkin diagrams with multiple edges.
