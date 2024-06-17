@@ -298,7 +298,7 @@ class ProjectiveComplex(object):
             objs[i] = self.objects.get(i,[]) + Q.objects.get(i,[])
 
         for k in range(smallest, largest):
-            maps[k] = self.maps.get(k,{})
+            maps[k] = self.maps.get(k,{}).copy()
             l,w = len(self.objects.get(k,[])), len(self.objects.get(k+1,[]))
             for (p,q) in Q.maps.get(k,{}):
                 maps[k][(p+l,q+w)] = Q.maps.get(k,{})[(p,q)]
