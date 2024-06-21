@@ -365,7 +365,7 @@ class ProjectiveComplex(object):
                     # Update P if required.
                     # Setting C[j,l] = - weight_l, we want to compute (I_N - C) * P.
                     # So replace P[j,-] by P[j,-] + \Sigma_l P[l,-] * weight_l
-                    if P:
+                    if P is not None:
                         for p in P.nonzero_positions_in_row(l):
                             P[j,p] = P[j,p] + P[l,p] * weight_l
 
@@ -379,7 +379,7 @@ class ProjectiveComplex(object):
                     # Update P if required.
                     # Setting R[p,i] = - weight_p, we want to compute (I_N + R) * P.
                     # So, replace P[p,-] by P[p,-] - weight_p * P[i,-]
-                    if P:
+                    if P is not None:
                         for l in P.nonzero_positions_in_row(i):
                             P[p,l] = P[p,l] - weight_p * P[i,l]
             
@@ -443,7 +443,7 @@ class ProjectiveComplex(object):
         reduced_complex.cleanup()
 
         #Use generated P to create chain map which is a qis, and return it optionally.
-        if P:
+        if P is not None:
             qis = {}
             for i in range(0,N):
                 if i in dropped_objects:
