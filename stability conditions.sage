@@ -207,3 +207,107 @@ def braid_lift(root,charge,ct):
             result *= perm_elem ** dictor[j][i]
         output[j] = result
     return output
+
+def stab_obj(root,charge,ct,minimize=False):
+    r"""
+    Given a root, it gives the associated braid lift to the root.
+    This code currently only works for Cartan Types A_n
+    
+    INPUT:
+    
+    root -- root vector
+    charge -- a list (of length = no of simple roots) containing the central charge of the simple roots (basis elements)
+    ct -- Cartan Type
+    minimize -- takes T/F values. determines whether a not the complex is to be minimized using Gaussian elimination.
+    
+    OUTPUT:
+    
+    a dictionary where the values are the stable objects under the specified stability conditions
+    
+    NOTE: there may be more than one stable object since we are considering a generic stability condition
+    
+    EXAMPLES:
+    
+        sage:stab_obj((1,1,0),[I,3+I,1-I],'A3',False)
+        {1: [0]: P1<0>   P1<0>+P1<2> :[1]}
+        
+        sage:stab_obj((1,1,0),[I,3+I,1-I],'A3',True)
+        {1: [1]: P1<2> :[1]}
+        
+        sage:stab_obj((1,1,1,0),[I,3+I,1-I,-2],'A4',False)
+        {1: [0]: P1<0>   P1<0>+P1<2>   P1<2>+P1<4> :[2]}
+        
+        sage:stab_obj((1,1,1,0),[I,3+I,1-I,-2],'A4',True)
+        {1: [2]: P1<4> :[2]}
+        
+        sage:stab_obj((1,1,1),[1,1,1],'A3',False)
+        {1: [-1]: 0   P1<2>+P1<0>+P1<0>   P1<0>+P1<2> :[1],
+         2: [-1]: P1<0>+P1<-2>   P1<0>+P1<-2>+P1<0> :[0],
+         3: [-2]: P1<-2>+P1<-4>   P1<0>+P1<-2>   P1<0> :[0],
+         4: [0]: P1<0>   P1<0>+P1<2>   P1<2>+P1<4> :[2]}
+         
+         sage:stab_obj((1,1,1),[1,1,1],'A3',True)
+         {1: [0]: P1<0> :[0],
+          2: [0]: P1<0> :[0],
+          3: [-2]: P1<-4> :[-2],
+          4: [2]: P1<4> :[2]}
+         
+    """
+    W = WeylGroup(ct,prefix="s",implementation="permutation")
+    simp_refl=W.gens()
+    word,red_word=reduced_word(root,ct)
+    cent_charge=central_charge(charge,ct)
+    root_seq=root_sequence(root,ct)
+    p,s=braid_actions_setup(ct,QQ,minimize)
+    
+    tracker=[0]*len(root_seq)
+    
+    for i, x in enumerate(root_seq):
+        arg_x = arg(cent_charge[str(x)])
+        arg_root = arg(cent_charge[str(root)])
+        
+        if arg_x < arg_root:
+            tracker[i] = -1
+        elif arg_x > arg_root:
+            tracker[i] = 1
+        else:
+            tracker[i] = 0
+            
+    tracker[-1]=1
+    counter = sum(1 for x in tracker if x == 0)
+    leng=len(red_word)
+    
+    dictor={}
+    list=['']*leng
+    for j in range(1,2**counter+1):
+        dictor[j]=list[:]
+        
+    k=-1
+    for i in range(leng):
+        if tracker[i]==0:
+            for j in range(1,2**counter+1):
+                if bin(j)[k]=='b':
+                    (dictor[j])[i]=0
+                else:
+                    (dictor[j])[i]=int(bin(j)[k])
+        k=k-1
+        if tracker[i]==1: 
+            for j in range(1,2**counter+1):
+                (dictor[j])[i]=1
+        if tracker[i]==-1: 
+            for j in range(1,2**counter+1):
+                (dictor[j])[i]=-1
+    for j in range(1, 2 ** counter + 1):
+        for i in range(leng):
+            dictor[j][i] = -1 if dictor[j][i] == 0 else dictor[j][i]
+            
+    obj=p[red_word[-1]+1];obj
+    leng=len(dictor[1])
+    stab_obj={}
+    for j in dictor.keys():
+        stab_obj[j]=obj
+    for i in range(leng-1):
+        for j in dictor.keys():
+            stab_obj[j]=s[dictor[j][-i-2]](stab_obj[j])
+    stab_obj
+    return stab_obj
