@@ -1,3 +1,9 @@
+load("zigzagalgebra_element.pyx")
+load("zigzagalgebra.sage")
+load("projective-zigzagmodules.sage")
+load("complexes.sage")
+load("braidactions.sage")
+
 from sage.combinat.root_system.weyl_group import WeylGroup
 def reduced_word(root,ct):
     r"""
