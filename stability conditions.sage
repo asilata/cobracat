@@ -216,15 +216,14 @@ def braid_lift(root,charge,ct):
 
 def stab_obj(root,charge,ct,minimize=False):
     r"""
-    Given a root, it gives the associated braid lift to the root.
-    This code currently only works for Cartan Types A_n
+    Given a root and a central charge, the code outputs the corresponding stable object(s) under the specified stability conditions
     
     INPUT:
     
     root -- root vector
     charge -- a list (of length = no of simple roots) containing the central charge of the simple roots (basis elements)
     ct -- Cartan Type
-    minimize -- takes T/F values. determines whether a not the complex is to be minimized using Gaussian elimination.
+    minimize -- takes T/F values. determines whether or not the complex(stable object) is to be minimized using Gaussian elimination.
     
     OUTPUT:
     
