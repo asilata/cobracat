@@ -307,12 +307,10 @@ def stab_obj(root,charge,ct,minimize=False):
             dictor[j][i] = -1 if dictor[j][i] == 0 else dictor[j][i]
             
     obj=p[red_word[-1]+1];obj
-    leng=len(dictor[1])
     stab_obj={}
     for j in dictor.keys():
         stab_obj[j]=obj
     for i in range(leng-1):
         for j in dictor.keys():
-            stab_obj[j]=s[dictor[j][-i-2]](stab_obj[j])
-    stab_obj
+            stab_obj[j]=s[(red_word[-i-2]+1)*dictor[j][-i-2]](stab_obj[j])
     return stab_obj
