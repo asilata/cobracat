@@ -83,7 +83,7 @@ def central_charge(charge,ct):
 
 def root_sequence(root,ct):
     r"""
-    Given a root, it calculates the root sequence of the associated word.
+    Given a root, it calculates a root sequence of the associated word.
     
     INPUT:
     
@@ -92,7 +92,7 @@ def root_sequence(root,ct):
     
     OUTPUT:
     
-    the root sequence as a list of roots
+    A root sequence as a list of roots
     
     EXAMPLES:
     
@@ -129,7 +129,7 @@ def braid_lift(root,charge,ct):
     
     OUTPUT:
     
-    a dictionary where the key:value pari correspond to the i^th generator of the braid group and its respective power
+    a dictionary where the key:value pair correspond to the i^th generator of the braid group and its respective power
     
     EXAMPLES:
     
