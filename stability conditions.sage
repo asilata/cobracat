@@ -25,10 +25,10 @@ def reduced_word(root,ct):
     
     EXAMPLES:
     
-        sage: reduced_word_new((1,1,1),A3)
-        ('s3*s2*alpha1', [2, 1,0])
+        sage: reduced_word((1,1,1),'A3')
+        ('s3*s2*alpha1', [2, 1, 0])
         
-        sage: reduced_word_new((1,0),A2)
+        sage: reduced_word((1,0),'A2')
         ('1*alpha1', [0])
     
     """
@@ -97,7 +97,7 @@ def root_sequence(root,ct):
     EXAMPLES:
     
         sage:root_sequence((1,1,1),'A3')
-        [(0, 0, 1), (0, 1, 1), (1, 1, 0)]
+        [(0, 0, 1), (0, 1, 1), (1, 1, 1)]
     
     """
     word,red_word=reduced_word(root,ct)
@@ -137,13 +137,13 @@ def braid_lift(root,charge,ct):
         {1: a1^-1*a0*a1}
         
         sage:braid_lift((1,1,1,0),[I,3+I,1-I,-2],'A4')
-        {1: a2^-1*a1^-1*a0*a1^-1*a2}
+        {1: a2^-1*a1^-1*a0*a1*a2}
         
         sage:braid_lift((1,1,1),[1,1,1],'A3')
-        {1: a2*a1^-1*a0*a1^-1*a2,
-         2: a2^-1*a1*a0*a1*a2,
-         3: a2*a1*a0*a1*a2,
-         4: a2^-1*a1^-1*a0*a1^-1*a2}
+        {1: a2*a1^-1*a0*a1*a2^-1,
+         2: a2^-1*a1*a0*a1^-1*a2,
+         3: a2*a1*a0*a1^-1*a2^-1,
+         4: a2^-1*a1^-1*a0*a1*a2}
          
     """
     W = WeylGroup(ct,prefix="s",implementation="permutation")
@@ -202,9 +202,9 @@ def braid_lift(root,charge,ct):
         perm.append(x)
     for j in range(1,2**counter+1):
         c=dictor[j][:]
-        c.reverse
-        for x in c[1:]:
-            dictor[j].append(x)
+        rev = [c[i] for i in range(len(c) - 1, -1, -1)]
+        for x in rev[1:]:
+            dictor[j].append(-x)
             
     output={}
     for j in range(1, 2 ** counter + 1):
@@ -236,18 +236,11 @@ def stab_obj(root,charge,ct,minimize=False):
         sage:stab_obj((1,1,0),[I,3+I,1-I],'A3',False)
         {1: [0]: P1<0> → P2<1> :[1]}
         
-        stab_obj((-1,-1,-1),[1,1,1],'A3',True)
-        {1: [1]: P1<2> → P2<3> → P3<4> :[3]}
-
-        stab_obj((-1,-1,-1),[1,1,1],'A3',False)
-        {1: [0]: P1<0> → P1<0>+P1<2> → P2<3> → P3<4> :[3]}
-        
         sage:stab_obj((1,1,1,0),[I,3+I,1-I,-2],'A4',False)
         {1: [0]: P1<0> → P2<1> → P3<2> :[2]}
         
-         
          sage:stab_obj((1,1,1),[1,1,1],'A3',True)
-         {1: [0]: P3<0>+P1<0> → P2<1> :[1],
+         {1: [-1]: 0 → P3<0>+P1<0> → P2<1> :[1],
          2: [-1]: P2<-1> → P1<0>+P3<0> :[0],
          3: [-2]: P3<-2> → P2<-1> → P1<0> :[0],
          4: [0]: P1<0> → P2<1> → P3<2> :[2]}
