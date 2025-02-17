@@ -1,3 +1,24 @@
+r"""
+Semi-stable objects under given stability conditions
+
+Given a root in the root system associated to some Cartan type, and a stability condition (enough to mention the central charge on the simple roots), we calculate the semi-stable object(s) under the given stability condition.
+
+AUTHORS:
+
+- Tanisha Talekar (2025-02-17): initial version
+
+"""
+
+# ****************************************************************************
+#       Copyright (C) 2025 Tanisha Talekar <tanishatalekar23@iisertvm.ac.in> 
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#                  https://www.gnu.org/licenses/
+# ****************************************************************************
+
 load("zigzagalgebra_element.pyx")
 load("zigzagalgebra.sage")
 load("projective-zigzagmodules.sage")
@@ -7,12 +28,12 @@ load("braidactions.sage")
 from sage.combinat.root_system.weyl_group import WeylGroup
 def reduced_word(root,ct):
     r"""
-    Return the reduced word for a given root.
+    Returns the reduced word for a given root.
     
     Every root 'alpha' can be written as a word 'w' acting on a simple root alpha_i, i.e. alpha = w(alpha_i), for some i. 
     Here roots are written in terms of vectors, where alpha_i = e_i in R^n, n=rank(ct).
     
-    Raises a type error if the inputted vector is not a root of the associated WeylGroup of the cartan type
+    Raises a type error if the inputted vector is not a root of the root system of the cartan type
     
     INPUT:
     
@@ -40,7 +61,7 @@ def reduced_word(root,ct):
             is_root=True
             break
     if is_root==False:
-        raise TypeError("Inputed vector is not a root of the root system of the associated Weyl Group.")
+        raise TypeError("Inputed vector is not a root of the root system of the associated Cartan type.")
     max_len=float('inf')
     for j in W.index_set():
         for w in W:
@@ -54,7 +75,7 @@ def reduced_word(root,ct):
 
 def central_charge(charge,ct):
     r"""
-    Assigns a central charge to each root of the root system, given the values of central charge for the simple roots.
+    Given the values of central charge for the simple roots, assigns a central charge to each root of the root system, .
     
     INPUT:
     
@@ -63,7 +84,7 @@ def central_charge(charge,ct):
     
     OUTPUT:
     
-    returns a dictionary with keys:values as root:central charge respectively.
+    returns a dictionary where the keys are the roots and the values are the central charge of the roots.
     
     EXAMPLES:
         sage: central_charge([1,1],'A2')
@@ -129,7 +150,7 @@ def braid_lift(root,charge,ct):
     
     OUTPUT:
     
-    a dictionary where the key:value pair correspond to the i^th generator of the braid group and its respective power
+    a dictionary of the braid lift(s) assoicated to the root
     
     EXAMPLES:
     
