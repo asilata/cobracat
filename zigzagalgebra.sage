@@ -205,12 +205,12 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
                 index_set = range(1,ct.nrows()+1)
             ct = CartanMatrix(ct, index_set)
             
-        if isinstance(ct, sage.combinat.root_system.cartan_matrix.CartanMatrix):
-            if index_set is None:
-                index_set = range(1,ct.cartan_matrix().nrows()+1)
-            if len(index_set) != ct.cartan_matrix().nrows():
-                raise ValueError("Size of index set {} does not match size of Cartan matrix!".format(index_set))
-            ct = DynkinDiagram(ct, index_set=index_set)
+        # if isinstance(ct, sage.combinat.root_system.cartan_matrix.CartanMatrix):
+        #     if index_set is None:
+        #         index_set = range(1,ct.cartan_matrix().nrows()+1)
+        #     if len(index_set) != ct.cartan_matrix().nrows():
+        #         raise ValueError("Size of index set {} does not match size of Cartan matrix!".format(index_set))
+        #     ct = DynkinDiagram(ct, index_set=index_set)
             
         elif not isinstance(ct, sage.combinat.root_system.cartan_type.CartanType_abstract):
             ct = CartanType(ct)
