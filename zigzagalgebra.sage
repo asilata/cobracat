@@ -31,7 +31,6 @@ AUTHORS:
 
 from functools import cached_property
 from itertools import product
-from sage.structure.element import is_Matrix
 
 def _zz_basis(ct):
     r"""
@@ -200,7 +199,7 @@ class ZigZagAlgebra(FiniteDimensionalAlgebra):
         
         """
 
-        if is_Matrix(ct):
+        if isinstance(ct, sage.structure.element.Matrix):
             if index_set is None:
                 index_set = range(1,ct.nrows()+1)
             ct = CartanMatrix(ct, index_set)
