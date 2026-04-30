@@ -594,6 +594,7 @@ class ProjectiveComplex(object):
                 qj = Q.objects[j]
                 double_complex_objects[(i,j)] = [(a,b,Z_basis.index(m)) for a in range(len(pi)) for b in range(len(qj)) for m in pi[a].hom(qj[b])]
 
+
         ##############################
         # Maps of the double complex #
         ##############################
@@ -628,11 +629,11 @@ class ProjectiveComplex(object):
 
                     for m2 in source.hom(target):
                         index_m2 = Z_basis.index(m2)
-                        coeffm2 = induced_map_monomial_coeffs[index_m2]
+                        coeffm2 = induced_map_monomial_coeffs.get(index_m2,0)
                         if coeffm2 != 0:
                             double_complex_maps_horizontal[(i,j)][((a,b,index_m), (a,d,index_m2))] = coeffm2
 
-                
+
         # For the vertical one: (i,j) --> (i-1,j)
         # The object at (i,j) is Hom(P[i], Q[j]) = [(a,b,index_m)], a list ranging over all monomial maps m: P[i][a] --> Q[j][b].
         # Consider induced_map, which is the composition P[i-1][c] --> P[i][a] --> Q[j][b] where the first map is a sign times the differential of P, and the second map is m.
@@ -662,9 +663,10 @@ class ProjectiveComplex(object):
 
                     for m2 in source.hom(target):
                         index_m2 = Z_basis.index(m2)                        
-                        coeffm2 = induced_map_monomial_coeffs[index_m2]
+                        coeffm2 = induced_map_monomial_coeffs.get(index_m2, 0)
                         if coeffm2 != 0:
                             double_complex_maps_vertical[(i,j)][(a,b,index_m), (c,b,index_m2)] = coeffm2
+
 
 
         ###############################
@@ -715,6 +717,7 @@ class ProjectiveComplex(object):
                 hom_complex.add_map_at(j-i, index_source, index_target, dcmv_ij[(a,b,index_m), (c,d,index_m2)])
                 
         #
+                        
         if with_homs:
             B = {}
             hom_complex_reduced, qis = hom_complex.minimize_using_matrix(with_qis=True)
@@ -736,6 +739,7 @@ class ProjectiveComplex(object):
                         reduced_hom[i] = {}
 
                     reduced_hom[i][(a,b)] = reduced_hom[i].get((a,b),0) + coefficient * Z_basis[index_m]
+
             return hom_complex_reduced, B
         else:
             return hom_complex.minimize_using_matrix(with_qis = False)
@@ -810,3 +814,5 @@ class ProjectiveModuleOverField(object):
             return 1/r
         else:
             raise TypeError("Not invertible.")
+
+        
