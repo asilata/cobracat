@@ -105,7 +105,15 @@ class ProjectiveComplex(object):
     def __repr__(self):
         return str(self)
 
-    def homological_shift_by(self, n = 1):
+    def graded_shift(self, n=1):
+        r"""
+        A new complex obtained by applying a grading shift of <n> to each object of self.
+        """
+        new_objects = {x: [y.graded_shift(n) for y in self[x]] for x in self.objects}
+        new_maps = self.maps.copy()
+        return ProjectiveComplex(self.algebra, new_objects, new_maps, self.names)
+
+    def homological_shift(self, n = 1):
         r"""
         A new complex obtained by homologically shifting self by [n].
         """
@@ -588,7 +596,7 @@ class ProjectiveComplex(object):
         Z = self.algebra
         Z_basis = list(Z.basis())
         
-        Q = Q.homological_shift_by(degree)
+        Q = Q.homological_shift(degree)
 
         # In all explanations that follow, let P = self.
 
@@ -676,7 +684,7 @@ class ProjectiveComplex(object):
 
                     for m2 in source.hom(target):
                         index_m2 = Z_basis.index(m2)                        
-                        coeffm2 = induced_map_monomial_coeffs[index_m2]
+                        coeffm2 = induced_map_monomial_coeffs.get(index_m2,0)
                         if coeffm2 != 0:
                             double_complex_maps_vertical[(i,j)][(a,b,index_m), (c,b,index_m2)] = coeffm2
 
@@ -763,7 +771,7 @@ def cone(P, Q, M):
         if not is_chain_map(P, Q, M):
             raise TypeError("Not a chain map. Cannot make a cone.")
 
-    D = P.direct_sum(Q.homological_shift_by(-1))
+    D = P.direct_sum(Q.homological_shift(-1))
     for index in M.keys():
         for (i,j) in M.get(index,{}):
             D.add_map_at(index, i, j+len(P[index+1]), M[index][(i,j)])

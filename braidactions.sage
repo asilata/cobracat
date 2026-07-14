@@ -23,7 +23,7 @@ def sigma(C, i, Z, minimize=False):
     A = ProjectiveComplex(algebra=Z)
     for j in H.objects:
         for k_d in H.objects[j]:
-            A.add_object_at(j, Pi.graded_shift_by(k_d.graded_degree))
+            A.add_object_at(j, Pi.graded_shift(k_d.graded_degree))
 
     # Construct the chain map from A to C.
     # This is constructed using `chain_map_data`.
@@ -48,7 +48,7 @@ def sigma(C, i, Z, minimize=False):
             for (c,b) in chain_map_a[0]:
                 M[homological_index][(a,b)] = chain_map_a[0][(c,b)]
                 
-    answer = cone(A, C, M).homological_shift_by(1)
+    answer = cone(A, C, M).homological_shift(1)
     if minimize:
         return answer.minimize_using_matrix()
     else:
@@ -77,7 +77,7 @@ def sigma_inverse(C, i, Z, minimize=False):
     for j in Hdual.objects:
         for a in range(len(Hdual.objects[j])):
             k_d = Hdual.objects[j][a]
-            A.add_object_at(-j, Pi.graded_shift_by(-k_d.graded_degree))
+            A.add_object_at(-j, Pi.graded_shift(-k_d.graded_degree))
 
     # Construct the chain map from C to A
     # This is constructed using `chain_map_data`
