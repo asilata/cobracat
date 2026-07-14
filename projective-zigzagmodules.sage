@@ -101,7 +101,7 @@ class ProjectiveZigZagModule(Module):
     def copy(self):
         return ProjectiveZigZagModule(self.algebra, self.vertex, self.graded_degree, self._name_prefix)
         
-    def graded_shift_by(self, n = 1):
+    def graded_shift(self, n = 1):
         """
         Return a copy of `self` that is internally degree shifted by n.        
 
@@ -111,11 +111,11 @@ class ProjectiveZigZagModule(Module):
         sage: load("projective-zigzagmodules-cartan.sage")
         sage: Z = ZigZagAlgebra("A2", QQ)
         sage: P0 = ProjectiveZigZagModule(Z, Z.index_set[0])
-        sage: P00 = P0.graded_shift_by(0)
+        sage: P00 = P0.graded_shift(0)
         sage: P0 == P00
         True
-        sage: P01 = P0.graded_shift_by(1)
-        sage: P01_another = P0.graded_shift_by(1)
+        sage: P01 = P0.graded_shift(1)
+        sage: P01_another = P0.graded_shift(1)
         sage: P01 == P01_another
         True
         sage: P00 == P01
