@@ -76,6 +76,13 @@ class ProjectiveComplex(object):
             if not self.is_chain_complex():
                 print("Warning: This is not a chain complex!")
 
+    def __getitem__(self, index):
+        """
+        Magic method for indexing a complex by an integer.
+        It returns the list of objects at the given index, returning the empty list if there is no such key
+        """
+        return self.objects.get(index, [])
+
     def __str__(self):
         ks = self.objects.keys()
         if len(ks) == 0:
@@ -85,7 +92,7 @@ class ProjectiveComplex(object):
         s = "[" + str(smallest) + "]: "
 
         for i in range(smallest,largest + 1):
-            objects = self.objects.get(i,[])
+            objects = self[i]
             if len(objects) == 0:
                 s = s + "0"
             else:
@@ -102,7 +109,7 @@ class ProjectiveComplex(object):
         r"""
         A new complex obtained by homologically shifting self by [n].
         """
-        new_objects = {x-n: self.objects[x] for x in self.objects.keys()}
+        new_objects = {x-n: self[x] for x in self.objects}
         # Sage thinks that (-1)^(-k) is a rational number :( so we decided to bit hack instead.
         # The expression (1 - (n % 2) * 2) evaluates to (-1)^n.
         new_maps = {x-n: {k: (1 - (n % 2) * 2) * self.maps[x][k] for k in self.maps[x].keys()} for x in self.maps.keys()}        
@@ -117,7 +124,7 @@ class ProjectiveComplex(object):
         """
         if index not in self.objects:
             self.objects[index] = []
-        self.objects[index].append(obj)
+        self[index].append(obj)
 
         if index not in self.maps:
             self.maps[index] = {}
@@ -134,7 +141,7 @@ class ProjectiveComplex(object):
         self.minimize()
         for i in range(self.min_index, self.max_index+1):
             rest_variables = lazy_list(variables[i+1] for i in count())
-            answer = answer + variables[0]^(-i) * sum([obj.q_polynomial(rest_variables) for obj in self.objects.get(i,[])])
+            answer = answer + variables[0]^(-i) * sum([obj.q_polynomial(rest_variables) for obj in self[i]])
         return answer.expand()
 
     # def getLevels(self, i):
@@ -143,7 +150,7 @@ class ProjectiveComplex(object):
     #     '''
     #     if i < self.min_index or i > self.max_index:
     #         return None
-    #     return [ob.twist() - i for ob in self.objects.get(i,[])]
+    #     return [ob.twist() - i for ob in self[i]]
 
     # def minLevel(self):
     #     mins = [min(self.getLevels(i)) for i in range(self.min_index, self.max_index + 1)]
@@ -161,7 +168,7 @@ class ProjectiveComplex(object):
         level_sets = {}
         for i in range(self.min_index, self.max_index+1):
             heights[i] = []
-            obj = self.objects.get(i,[])
+            obj = self[i]
             for j in range(0,len(obj)):
                 ob = obj[j]
                 obj_names[(i,j)] = "{0}({1},{2})".format(str(ob),i,j)
@@ -234,7 +241,7 @@ class ProjectiveComplex(object):
                     self.maps[i].pop(k)
         # Remove objects
         for i in list(self.objects.keys()):
-            if self.objects[i] == []:
+            if self[i] == []:
                 self.objects.pop(i)
 
         if len(self.objects) > 0:
@@ -251,14 +258,21 @@ class ProjectiveComplex(object):
         for i in range(self.min_index, self.max_index):
             self.minimize_at(i)
 
+    def is_zero(self):
+        """
+        Return True if self is the zero object.
+        """
+        self.minimize()
+        return self.objects == {}
+
     def add_map_at(self, index, i, j, scalar):
         '''
         Add a map from the i-th object at index to the j-th object at index+1 given by right multiplication by scalar.
         '''
         # All actions are right actions!
-        if i < 0 or i >= len(self.objects.get(index,[])):
+        if i < 0 or i >= len(self[index]):
             raise IndexError("Index out of bounds")
-        if j < 0 or j >= len(self.objects.get(index+1,[])):
+        if j < 0 or j >= len(self[index+1]):
             raise IndexError("Index out of bounds")
         
         if index not in self.maps:
@@ -277,7 +291,7 @@ class ProjectiveComplex(object):
 
         for i in range(self.min_index, self.max_index-1):
             for k, v in (matrices[i] * matrices[i+1]).dict().items():
-                if not self.objects.get(i,[])[k[0]].is_annihilated_by(v):
+                if not self[i][k[0]].is_annihilated_by(v):
                     print("Differential squared not zero at " + str(i) + ".")
                 return False
 
@@ -295,11 +309,11 @@ class ProjectiveComplex(object):
         largest = max([self.max_index,Q.max_index])
 
         for i in range(smallest, largest + 1):
-            objs[i] = self.objects.get(i,[]) + Q.objects.get(i,[])
+            objs[i] = self[i] + Q[i]
 
         for k in range(smallest, largest):
             maps[k] = self.maps.get(k,{}).copy()
-            l,w = len(self.objects.get(k,[])), len(self.objects.get(k+1,[]))
+            l,w = len(self[k]), len(self[k+1])
             for (p,q) in Q.maps.get(k,{}):
                 maps[k][(p+l,q+w)] = Q.maps.get(k,{})[(p,q)]
         return ProjectiveComplex(self.algebra, objs, maps, names)
@@ -316,7 +330,7 @@ class ProjectiveComplex(object):
         # We first transform the given complex into a giant matrix, whose rows and columns are indexed by all the objects in the given matrix.
         # We first store this correspondence.
         N = sum([len(x) for x in self.objects.values()])
-        objects = [(k, i) for k in sorted(self.objects) for i in range(0,len(self.objects[k]))]
+        objects = [(k, i) for k in sorted(self.objects) for i in range(0,len(self[k]))]
         objects_dict = dict(zip(range(0,N), objects))
         objects_reverse_dict = dict(zip(objects, range(0,N)))
         maps_dict = {(objects_reverse_dict[(i,a)], objects_reverse_dict[(i+1,b)]) : self.maps[i][(a,b)] for i in self.maps for (a,b) in self.maps[i]}
@@ -396,7 +410,7 @@ class ProjectiveComplex(object):
         for i in range(0,N):
             for j in M.nonzero_positions_in_row(i):
                 source_object_index = objects_dict[i]
-                source_object = self.objects.get(source_object_index[0],[])[source_object_index[1]]
+                source_object = self[source_object_index[0]][source_object_index[1]]
                 
                 if source_object.is_invertible(M[i,j]):
                     inverse = source_object.invert(M[i,j])                    
@@ -428,7 +442,7 @@ class ProjectiveComplex(object):
         for obj_index in range(0,N):
             if obj_index not in dropped_objects:
                 obj = objects_dict[obj_index]
-                reduced_complex.add_object_at(obj[0], self.objects.get(obj[0],[])[obj[1]])
+                reduced_complex.add_object_at(obj[0], self[obj[0]][obj[1]])
             
         for (i,j) in M.nonzero_positions():
             if not(i in dropped_objects or j in dropped_objects):
@@ -474,7 +488,7 @@ class ProjectiveComplex(object):
         # fij is the isomorphism between them.
         def _findIso(index):
             maps = self.maps.get(index,{})
-            objects = self.objects.get(index,[])
+            objects = self[index]
             zero = self.algebra(0)
             for (i,j) in maps:
                 fij = maps.get((i,j), zero)
@@ -492,10 +506,10 @@ class ProjectiveComplex(object):
 
             # Change the maps from index to index+1
             newMapsIndex = {}
-            alphaInverse = self.objects.get(index,[])[source].invert(alpha)
-            sourceBasis = self.objects.get(index,[])[source].basis()
-            for i in range(0, len(self.objects.get(index,[]))):
-                for j in range(0, len(self.objects.get(index+1,[]))):
+            alphaInverse = self[index][source].invert(alpha)
+            sourceBasis = self[index][source].basis()
+            for i in range(0, len(self[index])):
+                for j in range(0, len(self[index+1])):
                     # Update any maps from i to j by adding the correction factor, unless (i,j) = (source, target).
                     if (i,j) == (source, target):
                         changeij = 0
@@ -506,7 +520,7 @@ class ProjectiveComplex(object):
                 # For each object at index except for the source, update the basis if any
                 # to reflect the splitting.
                 if sourceBasis != None and i != source:
-                    iBasis = self.objects.get(index,[])[i].basis()
+                    iBasis = self[index][i].basis()
                     if iBasis != None:
                         change = self.maps.get(index,{}).get((i,target), 0) * alphaInverse
                         for elt in sourceBasis:
@@ -519,21 +533,21 @@ class ProjectiveComplex(object):
             # At this point, our complex is a direct sum of F (source) -> F (target)
             # and another complex C.
             # We simply drop the source and the target
-            self.objects[index].pop(source)
-            self.objects[index+1].pop(target)
+            self[index].pop(source)
+            self[index+1].pop(target)
 
 
             # We now re-index as needed
-            matrixAtIndex = matrix(len(self.objects.get(index,[]))+1, len(self.objects.get(index+1,[]))+1, self.maps.get(index,{}))
+            matrixAtIndex = matrix(len(self[index])+1, len(self[index+1])+1, self.maps.get(index,{}))
             newMatrixAtIndex = matrixAtIndex.delete_rows([source]).delete_columns([target])
             self.maps[index] = newMatrixAtIndex.dict()
 
-            matrixAtIndexMinus1 = matrix(len(self.objects.get(index-1,[])), len(self.objects.get(index,[]))+1, self.maps.get(index-1,{}))
+            matrixAtIndexMinus1 = matrix(len(self[index-1]), len(self[index])+1, self.maps.get(index-1,{}))
             if matrixAtIndexMinus1.ncols() > 0:
                 newMatrixAtIndexMinus1 = matrixAtIndexMinus1.delete_columns([source])
                 self.maps[index-1] = newMatrixAtIndexMinus1.dict()
 
-            matrixAtIndexPlus1 = matrix(len(self.objects.get(index+1,[]))+1, len(self.objects.get(index+2,[])) ,self.maps.get(index+1,{}))
+            matrixAtIndexPlus1 = matrix(len(self[index+1])+1, len(self[index+2]) ,self.maps.get(index+1,{}))
             if matrixAtIndexPlus1.nrows() > 0:
                 newMatrixAtIndexPlus1 = matrixAtIndexPlus1.delete_rows([target])
                 self.maps[index+1] = newMatrixAtIndexPlus1.dict()
@@ -554,7 +568,7 @@ class ProjectiveComplex(object):
         indexed by objects of `H`. The ith entry of B is a dictionary
         indexed by all objects at position i of `H`. The element
         B[i][a] is the chain map represented by shifted copy of k that
-        lives at H.objects[i][a].
+        lives at H[i][a].
         
         INPUT:
 
@@ -589,9 +603,9 @@ class ProjectiveComplex(object):
 
         double_complex_objects = {}
         for i in self.objects:
-            pi = self.objects[i]
+            pi = self[i]
             for j in Q.objects:
-                qj = Q.objects[j]
+                qj = Q[j]
                 double_complex_objects[(i,j)] = [(a,b,Z_basis.index(m)) for a in range(len(pi)) for b in range(len(qj)) for m in pi[a].hom(qj[b])]
 
         ##############################
@@ -615,12 +629,12 @@ class ProjectiveComplex(object):
                 double_complex_maps_horizontal[(i,j)] = {}
                 
             for (a,b,index_m) in double_complex_objects[(i,j)]:
-                source = self.objects[i][a]
+                source = self[i][a]
                 for (c,d) in Q.maps.get(j,{}):
                     if c != b:
                         continue
                     differential = Q.maps[j][(b,d)]
-                    target = Q.objects[j+1][d]
+                    target = Q[j+1][d]
                     induced_map = source.idempotent *  Z_basis[index_m] * differential * target.idempotent # Goes from P[i][a] -> Q[j+1][d]
                     
                     # Write the induced map in terms of the basis of P[i][a].hom(Q[j+1][d])
@@ -628,7 +642,7 @@ class ProjectiveComplex(object):
 
                     for m2 in source.hom(target):
                         index_m2 = Z_basis.index(m2)
-                        coeffm2 = induced_map_monomial_coeffs[index_m2]
+                        coeffm2 = induced_map_monomial_coeffs.get(index_m2,0)
                         if coeffm2 != 0:
                             double_complex_maps_horizontal[(i,j)][((a,b,index_m), (a,d,index_m2))] = coeffm2
 
@@ -649,12 +663,12 @@ class ProjectiveComplex(object):
                 double_complex_maps_vertical[(i,j)] = {}
                 
             for (a,b,index_m) in double_complex_objects[(i,j)]:
-                target = Q.objects[j][b]
+                target = Q[j][b]
                 for (c,d) in self.maps.get(i-1,{}):
                     if d != a:
                         continue
                     differential = self.maps[i-1][(c,a)]
-                    source = self.objects[i-1][c]
+                    source = self[i-1][c]
                     induced_map = (-1)**((i-j) % 2) * source.idempotent * differential * Z_basis[index_m]  * target.idempotent # Goes from P[i-1][c] -> Q[j][b]
                     
                     # Write the induced map in terms of the basis of P[i-1,c].hom(Q[j][b])
@@ -682,11 +696,11 @@ class ProjectiveComplex(object):
             
             for (a,b,index_m) in double_complex_objects[i,j]:
                 renumbering_dictionary[j-i].append((i,j,a,b,index_m))
-                # Add to hom_complex.objects[j-i] a graded
+                # Add to hom_complex[j-i] a graded
                 # one-dimensional k-vector space k<d> corresponding to
                 # the map m: P[i][a] -> Q[j][b], where
                 # d = Q[j][b].graded_degree - P[i][a].graded_degree - Z.deg(m)
-                d = Q.objects[j][b].graded_degree - self.objects[i][a].graded_degree - Z.deg(Z_basis[index_m])
+                d = Q[j][b].graded_degree - self[i][a].graded_degree - Z.deg(Z_basis[index_m])
                 # TODO: Using Z.deg(...) is a hack.  Not all algebras have a .deg method.
                 # Ideally, P.hom(Q) should give a graded basis, and d should come from there.
                 k_d = GradedProjectiveModuleOverField(k, 1, d, name=name)
@@ -752,7 +766,7 @@ def cone(P, Q, M):
     D = P.direct_sum(Q.homological_shift_by(-1))
     for index in M.keys():
         for (i,j) in M.get(index,{}):
-            D.add_map_at(index, i, j+len(P.objects.get(index+1,[])), M[index][(i,j)])
+            D.add_map_at(index, i, j+len(P[index+1]), M[index][(i,j)])
 
     return D
     
@@ -766,12 +780,12 @@ def is_chain_map(P, Q, M):
     min_index = min(P.min_index, Q.min_index)
     max_index = max(P.max_index, Q.max_index)
     for i in range(min_index, max_index):
-        dPi = matrix(len(P.objects.get(i,[])), len(P.objects.get(i+1,[])), P.maps.get(i,{}))
-        dQi = matrix(len(Q.objects.get(i,[])), len(Q.objects.get(i+1,[])), Q.maps.get(i,{}))
-        Mi = matrix(len(P.objects.get(i,[])), len(Q.objects.get(i,[])), M.get(i,{}))
-        Mip1 = matrix(len(P.objects.get(i+1,[])), len(Q.objects.get(i+1,[])), M.get(i+1,{}))
+        dPi = matrix(len(P[i]), len(P[i+1]), P.maps.get(i,{}))
+        dQi = matrix(len(Q[i]), len(Q[i+1]), Q.maps.get(i,{}))
+        Mi = matrix(len(P[i]), len(Q[i]), M.get(i,{}))
+        Mip1 = matrix(len(P[i+1]), len(Q[i+1]), M.get(i+1,{}))
         for k, v in (dPi*Mip1 - Mi*dQi).dict().items():
-            if not P.objects.get(i,[])[k[0]].is_annihilated_by(v):
+            if not P[i][k[0]].is_annihilated_by(v):
                 return False
     return True
     
