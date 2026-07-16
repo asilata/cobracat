@@ -481,6 +481,26 @@ class ProjectiveComplex(object):
             return reduced_complex, qis
         else:
             return reduced_complex
+
+    def braid_action(self, braid_word):
+        r"""
+        Return the action of the given braid word on self.
+
+        INPUT:
+        - `braid_word` : a word given as a list with elements of the form (i,s), where i is an index and s is a sign (+/-1).
+
+        OUTPUT:
+        The result of applying the letters of the given word from right to left to self.
+        """
+        output = self
+        for i,s in reversed(braid_word):
+            if s == 1:
+                output = sigma(output, i, self.algebra, minimize=True)
+            elif s == -1:
+                output = sigma_inverse(output, i ,self.algebra, minimize=True)
+            else:
+                raise ValueError("{} is not an allowed sign in the braid word {}!".format(s,braid_word))
+        return output
         
                       
     def minimize_at(self, index):
@@ -777,7 +797,7 @@ def cone(P, Q, M):
             D.add_map_at(index, i, j+len(P[index+1]), M[index][(i,j)])
 
     return D
-    
+
 
 def is_chain_map(P, Q, M):
     '''
@@ -832,3 +852,68 @@ class ProjectiveModuleOverField(object):
             return 1/r
         else:
             raise TypeError("Not invertible.")
+
+
+
+def sigma_inverse(C, i, Z, minimize=False):
+    r"""
+    The inverse spherical twist corresponding to the ith projective module of the zig-zag algebra Z.
+
+    More explicitly, let H be the dual of the complex Hom(C, Pi).
+    We have a universal co-evaluation map from C to H tensor Pi.
+    We construct this chain map, and then return its cone.
+    """
+    e = Z.idempotent_by_vertex(i)
+    Pi = ProjectiveZigZagModule(Z, i, graded_degree=0, name_prefix="P")
+    Pi_complex = ProjectiveComplex(Z)
+    Pi_complex.add_object_at(0, Pi)
+    
+    Hdual, chain_map_data = C.hom(Pi_complex, with_homs=True)
+    # Assume that Hdual is already minimized.
+
+    # Construct the complex H tensor Pi
+    # All objects of this complex are copies of Pi with homological and degree shifts.
+    # This complex has no differentials internally, because Hdual has no differentials.
+    A = ProjectiveComplex(algebra=Z)
+    for j in Hdual.objects:
+        for a in range(len(Hdual.objects[j])):
+            k_d = Hdual.objects[j][a]
+            A.add_object_at(-j, Pi.graded_shift(-k_d.graded_degree))
+
+    # Construct the chain map from C to A
+    # This is constructed using `chain_map_data`
+    M = {}
+    for homological_index in Hdual.objects:
+        if -homological_index not in M:
+            M[-homological_index] = {}
+        for a in range(len(Hdual.objects[homological_index])):
+            chain_map_a = chain_map_data[homological_index][a]
+
+            # Let d be the internal degree of this map.
+            # The source of chain_map_a is C
+            # The target of chain_map_a is Pi<d>[homological_index]
+            # So, if we let k<-d>, living in homological degree
+            # homological_index, be the summand corresponding to this
+            # map, then the co-evaluation map should be
+            # chain_map_a: C -> k<d> tensor Pi
+            # the target living in homological degree -homological_index.
+            
+            # This assertion assumes that chain_map_a does not have spurious zero entries.
+            assert -homological_index in chain_map_a and len(chain_map_a) == 1
+            
+            # Furthermore, chain_map_a[-homological_index] only
+            # contains entries of the form (c, 0) signifying a map
+            # from the cth object of C to the 0th and only object of
+            # Pi[homological_index].
+            assert all([b == 0 for (_,b) in chain_map_a[-homological_index]])
+
+            # For each (c,0) in chain_map_a[-homological_index], add the map
+            # chain_map_a[-homological_index][(c,0)] to M
+            for (c,b) in chain_map_a[-homological_index]:
+                M[-homological_index][(c,a)] = chain_map_a[-homological_index][(c,b)]
+                
+    answer = cone(C, A, M)
+    if minimize:
+        return answer.minimize_using_matrix()
+    else:
+        return answer        
