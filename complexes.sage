@@ -152,6 +152,12 @@ class ProjectiveComplex(object):
             answer = answer + variables[0]^(-i) * sum([obj.q_polynomial(rest_variables) for obj in self[i]])
         return answer.expand()
 
+    def grothendieck(self):
+        output = 0
+        for i in self.objects:
+            output = output + (-1)**i * sum([x.grothendieck() for x in self[i]])
+        return output
+
     # def getLevels(self, i):
     #     '''
     #     Return a list of the possible levels of objects at index i.

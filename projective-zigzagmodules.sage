@@ -44,8 +44,8 @@ class ProjectiveZigZagModule(Module):
         r'''
         TESTS:
 
-        sage: load("zigzagalgebra-cartan.sage")
-        sage: load("projective-zigzagmodules-cartan.sage")
+        sage: load("zigzagalgebra.sage")
+        sage: load("projective-zigzagmodules.sage")
         sage: Z = ZigZagAlgebra("A2", QQ)
         sage: P0 = ProjectiveZigZagModule(Z, Z.index_set[0])
         sage: P0p = ProjectiveZigZagModule(Z, Z.index_set[0])
@@ -170,6 +170,13 @@ class ProjectiveZigZagModule(Module):
             multiple = c/d
             return d/c * self.idempotent
         
+    def grothendieck(self):
+        """
+        Returns the class in the Grothendieck group of self. The output is a root in the root space of the CartanType corresponding to the zigzag algebra.
+        """
+        ct = self.algebra.cartan_type
+        simples = RootSystem(ct).root_space().simple_roots()
+        return (-1)**self.graded_degree * simples[self.vertex]
 
 class GradedProjectiveModuleOverField(object):
     ''''
