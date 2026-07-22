@@ -4,13 +4,25 @@ load("projective-zigzagmodules.sage")
 load("complexes.sage")
 load("braidactions.sage")
 
+def braid_actions_setup(ct="A2",k=QQ, minimize=True):
+    Z = ZigZagAlgebra(ct, k)
+    ct = Z.cartan_type
+    p = {}
+    for i in ct.index_set():
+        fpi = ProjectiveZigZagModule(Z, i)
+        pi = ProjectiveComplex(Z)
+        pi.add_object_at(0, fpi)
+        p[i] = pi
+    s = {i : (lambda C, i = i: sigma(C, i, Z, minimize=minimize)) for i in ct.index_set()}
+    s |= {-i : (lambda C, i = i: sigma_inverse(C, i, Z, minimize=minimize)) for i in ct.index_set()}
+    return p,s
+
 def run_zz_algebra_profile(N=1000):
     import random
     Z = ZigZagAlgebra("A2",QQ)
     B = Z.basis()
     [ random.choice(B)*random.choice(B)  for i in range(N)]
     
-
 def run_zz_algera_internals_test():
     cartan_types = ["A2", "D5", CartanType(['A', 2, 1]), CartanType(['A',1,1])]
     for ct in cartan_types:
@@ -67,19 +79,6 @@ def minimize_using_matrix_test(k=QQ):
     assert D.objects[0][0] == P2
     assert is_chain_map(D,C,P)
     return C, D, P
-
-def braid_actions_setup(ct="A2",k=QQ, minimize=False):
-    Z = ZigZagAlgebra(ct, k)
-    ct = Z.cartan_type
-    p = {}
-    for i in ct.index_set():
-        fpi = ProjectiveZigZagModule(Z, i)
-        pi = ProjectiveComplex(Z)
-        pi.add_object_at(0, fpi)
-        p[i] = pi
-    s = {i : (lambda C, i = i: sigma(C, i, Z, minimize=minimize)) for i in ct.index_set()}
-    s |= {-i : (lambda C, i = i: sigma_inverse(C, i, Z, minimize=minimize)) for i in ct.index_set()}
-    return p,s
 
 def run_projective_complex_test():
     return
