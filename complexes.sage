@@ -678,7 +678,8 @@ class ProjectiveComplex(object):
                     # Write the induced map in terms of the basis of P[i][a].hom(Q[j+1][d])
                     induced_map_monomial_coeffs = induced_map.monomial_coefficients()
 
-                    for m2 in source.hom(target):
+                    sht = source.hom(target)
+                    for m2 in sht:
                         index_m2 = Z_basis.index(m2)
                         coeffm2 = induced_map_monomial_coeffs.get(index_m2,0)
                         if coeffm2 != 0:
@@ -712,7 +713,8 @@ class ProjectiveComplex(object):
                     # Write the induced map in terms of the basis of P[i-1,c].hom(Q[j][b])
                     induced_map_monomial_coeffs = induced_map.monomial_coefficients()
 
-                    for m2 in source.hom(target):
+                    sht = source.hom(target)
+                    for m2 in sht:
                         index_m2 = Z_basis.index(m2)                        
                         coeffm2 = induced_map_monomial_coeffs.get(index_m2,0)
                         if coeffm2 != 0:

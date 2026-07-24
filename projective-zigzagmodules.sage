@@ -123,7 +123,7 @@ class ProjectiveZigZagModule(Module):
         """
         return ProjectiveZigZagModule(self.algebra, self.vertex, self.graded_degree + n, self._name_prefix)
 
-    #@cached_method
+    @cached_method
     def hom(self, Q):
         """
         Return a list of elements of the zigzag algebra that send `self` to Q on right multiplication.
@@ -133,7 +133,7 @@ class ProjectiveZigZagModule(Module):
         return [e*x*f for x in self.algebra.basis() if e*x*f != 0]
 
     # # Here the module is supposed to be the left R-module Re, but the map is right multiplication by r.
-    # @cached_method
+    @cached_method
     def is_annihilated_by(self, r):
         r"""
         Returns True if right multiplication by `r` is the zero map on `self`.

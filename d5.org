@@ -43,15 +43,11 @@
 #+begin_src sage
   P1 = sc[alpha[1]][0]
   P12 = P1.braid_action([[2,1]])
-  h = P12.hom(P12,unreduced=True, collapsed_grading=True)
-  find_top(P12,sc)
+  hn_support(P12)
 #+end_src
 
 #+RESULTS:
-: ([-1]: P4<-1> → P1<0>+P3<0> → P2<1> :[1], {0: {(0, 0): e1}})
-
-
-: ([-1]: P1<-1> :[-1], {0: {(0, 0): e1}})
+: {alpha[1]: 1, alpha[2]: 1}
 
 #+begin_src sage
   def parse_chatbot_object(d):
@@ -75,6 +71,7 @@
 :  alpha[1] + alpha[2]: 1,
 :  alpha[3] + alpha[5]: 1,
 :  alpha[2]: 1}
+
 
 #+begin_src sage
   hn_support(parse_chatbot_object({"t_vector": [1, 1, 1, 7, 18, 27, 1, 3, 3], "mass": 62, "seed_projective": 4, "word_length": 21, "word": [[2, 1], [3, 1], [1, -1], [0, 1], [2, -1], [4, 1], [2, -1], [0, -1], [1, 1], [0, 1], [1, 1], [2, -1], [3, -1], [4, -1], [2, -1], [0, 1], [1, 1], [2, -1], [2, -1], [3, -1], [2, 1]]}))
@@ -113,34 +110,51 @@
     The morphism h is one such morphism.
     """
 
-    stab = flatten([x[1] for x in ssc.phase_order()])
+    stab = list(reversed(flatten([x[1] for x in ssc.phase_order()])))
     
-    highest_t_deg_found = -Infinity
-    highest_object_found = None
-    highest_hom_found = None
-
-    for stable in stab:
-        rawHoms = stable.hom(obj, unreduced=True, collapsed_grading=True)
-        for i in range(rawHoms.max_index, rawHoms.min_index-1,-1):
-            betti = len(rawHoms[i]) - matrix(rawHoms.maps.get(i,{})).rank() - matrix(rawHoms.maps.get(i-1,{})).rank()
-            if betti > 0 and i >= highest_t_deg_found:
-                highest_t_deg_found = i
-                highest_object_found = stable
+    top_shift = -Infinity
+    top_object = None
+    bottom_shift = +Infinity
     
-    top = highest_object_found
-    (h, hom_data)= top.hom(obj, with_homs=True)
+    rawHoms = {}
+    for i in range(0, len(stab)):
+      stable = stab[i]
+      rawHoms[i] = stable.hom(obj, unreduced=True, collapsed_grading=True)
+      if -rawHoms[i].min_index > top_shift:
+          top_shift = -rawHoms[i].min_index
+          top_object = i
+      if -rawHoms[i].max_index < bottom_shift:
+        bottom_shift = -rawHoms[i].max_index
 
-    highest_t_deg_found = -Infinity
-    highest_object_found = None
-    highest_hom_found = None
+    
+    while True:
+      betti = len(rawHoms[top_object][-top_shift]) - matrix(rawHoms[top_object].maps.get(-top_shift,{})).rank() - matrix(rawHoms[top_object].maps.get(-top_shift-1,{})).rank()
+
+      if betti > 0:
+        break
+      
+      if top_shift < bottom_shift:
+        raise ValueError(f"Could not find top of {obj}")
+
+      if top_object < len(stab)-1:
+        top_object = top_object + 1
+      else:
+        top_object = 0
+        top_shift = top_shift - 1
+
+
+    (h, hom_data)= stab[top_object].hom(obj, with_homs=True)
     for i in range(h.min_index, h.max_index+1):
-        for j in range(0, len(h[i])):
-            if h[i][j].graded_degree - i >= highest_t_deg_found:
-                highest_t_deg_found = h[i][j].graded_degree - i
-                highest_object_found = top.graded_shift(h[i][j].graded_degree).homological_shift(-i)
-                highest_hom_found = {x+i : hom_data[i][j][x] for x in hom_data[i][j]}
+      for j in range(0, len(h[i])):
+        if h[i][j].graded_degree - i == top_shift:
+          highest_object_found = stab[top_object].graded_shift(h[i][j].graded_degree).homological_shift(-i)
+          highest_hom_found = {x+i : hom_data[i][j][x] for x in hom_data[i][j]}
                     
-    return (highest_object_found, highest_hom_found)
+          return (highest_object_found, highest_hom_found)
+
+    raise ValueError("Could not find top!")
 #+end_src
 
 #+RESULTS:
+
+
