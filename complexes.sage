@@ -590,7 +590,7 @@ class ProjectiveComplex(object):
         self.cleanup()
         return 
 
-    def hom(self, Q, degree = 0, name="k", with_homs=False):
+    def hom(self, Q, degree = 0, name="k", with_homs=False, unreduced=False, collapsed_grading=False):
         r"""
         The complex `hom(self, Q)` of degree `degree` (default: 0).
 
@@ -619,6 +619,9 @@ class ProjectiveComplex(object):
         - `B` -- a dictionary `{i:{b: M}}` where `M` is a chain map
           from `self` tensor `H[i][b]` to `Q` shifted by `degree`.
         """
+        if collapsed_grading and (not unreduced):
+            raise NotImplementedError("Reduce with collapsed grading.")
+
         Z = self.algebra
         Z_basis = list(Z.basis())
         
@@ -727,20 +730,26 @@ class ProjectiveComplex(object):
         hom_complex = ProjectiveComplex(algebra=k)
         renumbering_dictionary = {}
         for (i,j) in double_complex_objects:
-            if j-i not in renumbering_dictionary:
-                renumbering_dictionary[j-i] = []
-            
             for (a,b,index_m) in double_complex_objects[i,j]:
-                renumbering_dictionary[j-i].append((i,j,a,b,index_m))
                 # Add to hom_complex[j-i] a graded
                 # one-dimensional k-vector space k<d> corresponding to
                 # the map m: P[i][a] -> Q[j][b], where
                 # d = Q[j][b].graded_degree - P[i][a].graded_degree - Z.deg(m)
                 d = Q[j][b].graded_degree - self[i][a].graded_degree - Z.deg(Z_basis[index_m])
-                # TODO: Using Z.deg(...) is a hack.  Not all algebras have a .deg method.
-                # Ideally, P.hom(Q) should give a graded basis, and d should come from there.
-                k_d = GradedProjectiveModuleOverField(k, 1, d, name=name)
-                hom_complex.add_object_at(j-i, k_d)
+                    # TODO: Using Z.deg(...) is a hack.  Not all algebras have a .deg method.
+                    # Ideally, P.hom(Q) should give a graded basis, and d should come from there.
+                if not collapsed_grading:
+                    k_d = GradedProjectiveModuleOverField(k, 1, d, name=name)
+                    hom_complex.add_object_at(j-i, k_d)
+                    if j-i not in renumbering_dictionary:
+                        renumbering_dictionary[j-i] = []
+                    renumbering_dictionary[j-i].append((i,j,a,b,index_m))
+                else:
+                    k_0 = GradedProjectiveModuleOverField(k, 1, 0, name=name)
+                    hom_complex.add_object_at(j-i-d, k_0)
+                    if j-i-d  not in renumbering_dictionary:
+                        renumbering_dictionary[j-i-d] = []
+                    renumbering_dictionary[j-i-d].append((i,j,a,b,index_m))
 
         # Add horizontal maps
         for (i,j) in double_complex_maps_horizontal:
@@ -749,10 +758,17 @@ class ProjectiveComplex(object):
                 assert a == c
                 # Insert a map at hom_complex.maps[j-i] from the right
                 # index to the right index.
-                index_source = renumbering_dictionary[j-i].index((i,j,a,b,index_m))
-                index_target = renumbering_dictionary[j+1-i].index((i,j+1,c,d,index_m2))
-                hom_complex.add_map_at(j-i, index_source, index_target, dcmh_ij[(a,b,index_m), (c,d,index_m2)])
-
+                if not collapsed_grading:
+                    index_source = renumbering_dictionary[j-i].index((i,j,a,b,index_m))
+                    index_target = renumbering_dictionary[j+1-i].index((i,j+1,c,d,index_m2))
+                    hom_complex.add_map_at(j-i, index_source, index_target, dcmh_ij[(a,b,index_m), (c,d,index_m2)])
+                else:
+                    d_source = Q[j][b].graded_degree - self[i][a].graded_degree - Z.deg(Z_basis[index_m])
+                    d_target = Q[j+1][d].graded_degree - self[i][c].graded_degree - Z.deg(Z_basis[index_m2])
+                    index_source = renumbering_dictionary[j-i-d_source].index((i,j,a,b,index_m))
+                    index_target = renumbering_dictionary[j+1-i-d_target].index((i,j+1,c,d,index_m2))
+                    hom_complex.add_map_at(j-i-d_source, index_source, index_target, dcmh_ij[(a,b,index_m), (c,d,index_m2)])
+                
         # Add vertical maps
         for (i,j) in double_complex_maps_vertical:
             dcmv_ij = double_complex_maps_vertical[(i,j)]
@@ -760,12 +776,20 @@ class ProjectiveComplex(object):
                 assert b == d
                 # Insert a map at hom_complex.maps[j-i] from the right
                 # index to the right index.
-                index_source = renumbering_dictionary[j-i].index((i,j,a,b,index_m))
-                index_target = renumbering_dictionary[j+1-i].index((i-1,j,c,d,index_m2))
-                hom_complex.add_map_at(j-i, index_source, index_target, dcmv_ij[(a,b,index_m), (c,d,index_m2)])
-                
-        #
-                        
+                if not collapsed_grading:
+                    index_source = renumbering_dictionary[j-i].index((i,j,a,b,index_m))
+                    index_target = renumbering_dictionary[j+1-i].index((i-1,j,c,d,index_m2))
+                    hom_complex.add_map_at(j-i, index_source, index_target, dcmv_ij[(a,b,index_m), (c,d,index_m2)])
+                else:
+                    d_source = Q[j][b].graded_degree - self[i][a].graded_degree - Z.deg(Z_basis[index_m])
+                    d_target = Q[j][d].graded_degree - self[i-1][c].graded_degree - Z.deg(Z_basis[index_m2])
+                    index_source = renumbering_dictionary[j-i-d_source].index((i,j,a,b,index_m))
+                    index_target = renumbering_dictionary[j+1-i-d_target].index((i-1,j,c,d,index_m2))
+                    hom_complex.add_map_at(j-i-d_source, index_source, index_target, dcmv_ij[(a,b,index_m), (c,d,index_m2)])
+
+        if unreduced:
+            return hom_complex
+
         if with_homs:
             B = {}
             hom_complex_reduced, qis = hom_complex.minimize_using_matrix(with_qis=True)

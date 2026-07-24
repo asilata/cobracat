@@ -1,0 +1,146 @@
+#+begin_src sage 
+  load("stability-conditions.sage")
+
+  cc = CentralCharge("D5", (-9 + 4*I, 9 + 5*I, -8 + 5*I, -3 + 4*I, 9 + 2*I))
+  sc = StandardStabilityCondition(cc)
+  alpha = cc.simple_roots
+  positive_root_names = {alpha[1]: "e0",
+                         alpha[2]: "e1",
+                         alpha[3]: "e2",
+                         alpha[4]: "e3",
+                         alpha[5]: "e4",
+                         alpha[1] + alpha[2]: "e01",
+                         alpha[2] + alpha[3]: "e12",
+                         alpha[3] + alpha[4]: "e23",
+                         alpha[3] + alpha[5]: "e24",
+                         alpha[1] + alpha[2] + alpha[3]: "e012",
+                         alpha[2] + alpha[3] + alpha[4]: "e123",
+                         alpha[2] + alpha[3] + alpha[5]: "e124",
+                         alpha[3] + alpha[4] + alpha[5]: "e234",
+                         alpha[1] + alpha[2] + alpha[3] + alpha[4]: "e0123",
+                         alpha[1] + alpha[2] + alpha[3] + alpha[5]: "e0124",
+                         alpha[2] + alpha[3] + alpha[4] + alpha[5]: "e1234",
+                         alpha[1] + alpha[2] + alpha[3] + alpha[4] + alpha[5]: "e01234",
+                         alpha[2] + 2*alpha[3] + alpha[4] + alpha[5]: "e12234",
+                         alpha[1] + alpha[2] + 2*alpha[3] + alpha[4] + alpha[5]: "e012234",
+                         alpha[1] + 2*alpha[2] + 2*alpha[3] + alpha[4] + alpha[5]: "e0112234"}
+  def hn_support(obj):
+      factors = hn_factors(obj, sc)
+      support = {}
+      for f in factors:
+          root = f.grothendieck()
+          if root not in cc.positive_roots:
+              root = - root
+
+          assert root in cc.positive_roots
+
+          support[root] = support.get(root,0) + 1
+      return support
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  P1 = sc[alpha[1]][0]
+  P12 = P1.braid_action([[2,1]])
+  h = P12.hom(P12,unreduced=True, collapsed_grading=True)
+  find_top(P12,sc)
+#+end_src
+
+#+RESULTS:
+: ([-1]: P4<-1> → P1<0>+P3<0> → P2<1> :[1], {0: {(0, 0): e1}})
+
+
+: ([-1]: P1<-1> :[-1], {0: {(0, 0): e1}})
+
+#+begin_src sage
+  def parse_chatbot_object(d):
+      word = list(reversed([[x[0]+1,x[1]] for x in d["word"]]))
+      base_object = sc[alpha[d["seed_projective"]+1]][0]
+      return base_object.braid_action(word)
+#+end_src
+#+RESULTS:
+
+#+begin_src sage
+  hn_support(parse_chatbot_object({"t_vector": [1, 1, 1, 1, 3, 2, 1, 3, 3], "mass": 16, "seed_projective": 4, "word_length": 18, "word": [[2, 1], [3, 1], [1, -1], [0, 1], [2, -1], [4, 1], [2, -1], [0, -1], [1, 1], [0, 1], [1, 1], [2, -1], [3, -1], [4, -1], [2, -1], [0, 1], [3, -1], [3, -1]]}))
+#+end_src
+
+#+RESULTS:
+: {alpha[3] + alpha[4]: 2,
+:  alpha[5]: 3,
+:  alpha[3]: 3,
+:  alpha[4]: 3,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1,
+:  alpha[1]: 1,
+:  alpha[1] + alpha[2]: 1,
+:  alpha[3] + alpha[5]: 1,
+:  alpha[2]: 1}
+
+#+begin_src sage
+  hn_support(parse_chatbot_object({"t_vector": [1, 1, 1, 7, 18, 27, 1, 3, 3], "mass": 62, "seed_projective": 4, "word_length": 21, "word": [[2, 1], [3, 1], [1, -1], [0, 1], [2, -1], [4, 1], [2, -1], [0, -1], [1, 1], [0, 1], [1, 1], [2, -1], [3, -1], [4, -1], [2, -1], [0, 1], [1, 1], [2, -1], [2, -1], [3, -1], [2, 1]]}))
+#+end_src
+
+#+RESULTS:
+: {alpha[3] + alpha[4]: 27,
+:  alpha[3]: 18,
+:  alpha[2]: 7,
+:  alpha[5]: 3,
+:  alpha[4]: 3,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1,
+:  alpha[1]: 1,
+:  alpha[1] + alpha[2]: 1,
+:  alpha[3] + alpha[5]: 1}
+
+#+begin_src sage
+  hn_support(parse_chatbot_object({"t_vector": [175, 1, 1, 131, 95, 51, 34, 3, 26], "mass": 517, "seed_projective": 4, "word_length": 62, "word": [[2, 1], [3, 1], [1, -1], [0, 1], [2, -1], [4, 1], [2, -1], [0, -1], [1, 1], [0, 1], [1, 1], [2, -1], [3, -1], [4, -1], [2, -1], [0, 1], [1, 1], [0, -1], [1, 1], [0, 1], [2, -1], [3, -1], [2, 1], [1, 1], [0, -1], [0, 1], [3, -1], [1, 1], [4, 1], [0, -1], [1, -1], [2, -1], [4, 1], [2, 1], [1, 1], [0, 1], [0, 1], [0, -1], [1, -1], [0, 1], [0, -1], [1, -1], [0, 1], [2, -1], [4, -1], [2, 1], [2, -1], [4, 1], [2, 1], [0, -1], [1, 1], [0, 1], [0, -1], [1, 1], [0, 1], [0, -1], [0, -1], [2, -1], [4, -1], [2, 1], [4, 1], [0, -1]]}))
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  def find_top(obj, ssc):
+    """
+    Compute the top HN piece of the given object with respect to the stability condition being considered.
+
+    INPUT:
+
+    - `obj` : a ProjectiveComplex
+    - `stab`: a sequence of objects ordered by increasing phase.
+
+    OUTPUT:
+
+    A tuple (x, h) where x is a stable object of the highest phase that has a non-trivial morphism to obj.
+    The morphism h is one such morphism.
+    """
+
+    stab = flatten([x[1] for x in ssc.phase_order()])
+    
+    highest_t_deg_found = -Infinity
+    highest_object_found = None
+    highest_hom_found = None
+
+    for stable in stab:
+        rawHoms = stable.hom(obj, unreduced=True, collapsed_grading=True)
+        for i in range(rawHoms.max_index, rawHoms.min_index-1,-1):
+            betti = len(rawHoms[i]) - matrix(rawHoms.maps.get(i,{})).rank() - matrix(rawHoms.maps.get(i-1,{})).rank()
+            if betti > 0 and i >= highest_t_deg_found:
+                highest_t_deg_found = i
+                highest_object_found = stable
+    
+    top = highest_object_found
+    (h, hom_data)= top.hom(obj, with_homs=True)
+
+    highest_t_deg_found = -Infinity
+    highest_object_found = None
+    highest_hom_found = None
+    for i in range(h.min_index, h.max_index+1):
+        for j in range(0, len(h[i])):
+            if h[i][j].graded_degree - i >= highest_t_deg_found:
+                highest_t_deg_found = h[i][j].graded_degree - i
+                highest_object_found = top.graded_shift(h[i][j].graded_degree).homological_shift(-i)
+                highest_hom_found = {x+i : hom_data[i][j][x] for x in hom_data[i][j]}
+                    
+    return (highest_object_found, highest_hom_found)
+#+end_src
+
+#+RESULTS:
