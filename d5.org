@@ -1,0 +1,336 @@
+#+begin_src sage 
+  load("stability-conditions.sage")
+
+  cc = CentralCharge("D5", (-9 + 4*I, 9 + 5*I, -8 + 5*I, -3 + 4*I, 9 + 2*I))
+  sc = StandardStabilityCondition(cc)
+  alpha = cc.simple_roots
+  positive_root_names = { "e0" : alpha[1],
+                          "e1" : alpha[2],
+                          "e2" : alpha[3],
+                          "e3" : alpha[4],
+                          "e4" : alpha[5],
+                          "e01" : alpha[1] + alpha[2],
+                          "e12" : alpha[2] + alpha[3],
+                          "e23" : alpha[3] + alpha[4],
+                          "e24" : alpha[3] + alpha[5],
+                          "e012" : alpha[1] + alpha[2] + alpha[3],
+                          "e123" : alpha[2] + alpha[3] + alpha[4],
+                          "e124" : alpha[2] + alpha[3] + alpha[5],
+                          "e234" : alpha[3] + alpha[4] + alpha[5],
+                          "e0123" : alpha[1] + alpha[2] + alpha[3] + alpha[4],
+                          "e0124" : alpha[1] + alpha[2] + alpha[3] + alpha[5],
+                          "e1234" : alpha[2] + alpha[3] + alpha[4] + alpha[5],
+                          "e01234" : alpha[1] + alpha[2] + alpha[3] + alpha[4] + alpha[5],
+                          "e12234" : alpha[2] + 2*alpha[3] + alpha[4] + alpha[5],
+                          "e012234" : alpha[1] + alpha[2] + 2*alpha[3] + alpha[4] + alpha[5],
+                          "e0112234" : alpha[1] + 2*alpha[2] + 2*alpha[3] + alpha[4] + alpha[5]}
+  def hn_support(obj):
+      factors = hn_factors(obj, sc)
+      support = {}
+      for f in factors:
+          root = f.grothendieck()
+          if root not in cc.positive_roots:
+              root = - root
+
+          assert root in cc.positive_roots
+
+          support[root] = support.get(root,0) + 1
+      return support
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  sc.phase_order()
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[(alpha[5], [[0]: P5<0> :[0]]),
+ (alpha[2], [[0]: P2<0> :[0]]),
+ (alpha[2] + alpha[3] + alpha[5], [[-1]: P3<-1> → P5<0>+P2<0> :[0]]),
+ (alpha[2] + alpha[3] + alpha[4] + alpha[5],
+  [[-2]: P4<-2> → P3<-1> → P5<0>+P2<0> :[0]]),
+ (alpha[3] + alpha[5], [[-1]: P3<-1> → P5<0> :[0]]),
+ (alpha[2] + alpha[3], [[0]: P3<0> → P2<1> :[1]]),
+ (alpha[1] + alpha[2] + alpha[3] + alpha[5],
+  [[-3]: P1<-3> → P2<-2> → P3<-1> → P5<0> :[0]]),
+ (alpha[1] + alpha[2], [[-1]: P1<-1> → P2<0> :[0]]),
+ (alpha[1] + 2*alpha[2] + 2*alpha[3] + alpha[4] + alpha[5],
+  [[-2]: P4<-2> → P3<-1>+P3<-1>+P1<-1> → P5<0>+P2<0>+P2<0> :[0]]),
+ (alpha[2] + 2*alpha[3] + alpha[4] + alpha[5],
+  [[-2]: P4<-2> → P3<-1>+P3<-1> → P5<0>+P2<0> :[0]]),
+ (alpha[1] + alpha[2] + alpha[3] + alpha[4] + alpha[5],
+  [[-2]: P4<-2> → P1<-1>+P3<-1> → P5<0>+P2<0> :[0]]),
+ (alpha[2] + alpha[3] + alpha[4], [[0]: P4<0> → P3<1> → P2<2> :[2]]),
+ (alpha[3] + alpha[4] + alpha[5], [[-2]: P4<-2> → P3<-1> → P5<0> :[0]]),
+ (alpha[1] + alpha[2] + 2*alpha[3] + alpha[4] + alpha[5],
+  [[-3]: P1<-3>+P3<-3> → P2<-2>+P4<-2> → P3<-1> → P5<0> :[0]]),
+ (alpha[1] + alpha[2] + alpha[3], [[0]: P1<0>+P3<0> → P2<1> :[1]]),
+ (alpha[1] + alpha[2] + alpha[3] + alpha[4],
+  [[0]: P4<0> → P1<1>+P3<1> → P2<2> :[2]]),
+ (alpha[4], [[0]: P4<0> :[0]]),
+ (alpha[3] + alpha[4], [[-1]: P3<-1> → P4<0> :[0]]),
+ (alpha[3], [[0]: P3<0> :[0]]),
+ (alpha[1], [[0]: P1<0> :[0]])]
+#+end_example
+
+#+begin_src sage
+  def parse_chatbot_object(d):
+      word = list(reversed([[x[0]+1,x[1]] for x in d["word"]]))
+      base_object = sc[alpha[d["seed_projective"]+1]][0]
+      return base_object.braid_action(word)
+
+  def is_chatbot_correct(d):
+      support = hn_support(parse_chatbot_object(d))
+      return [support.get(positive_root_names[i], 0) for i in ["e0", "e01", "e0124", "e1", "e2", "e23", "e24", "e3", "e4"]] == d["t_vector"]
+#+end_src
+#+RESULTS:
+
+#+begin_src sage
+  parse_chatbot_object({"t_vector": [1, 1, 1, 1, 3, 2, 1, 3, 3], "mass": 16, "seed_projective": 4, "word_length": 18, "word": [[2, 1], [3, 1], [1, -1], [0, 1], [2, -1], [4, 1], [2, -1], [0, -1], [1, 1], [0, 1], [1, 1], [2, -1], [3, -1], [4, -1], [2, -1], [0, 1], [3, -1], [3, -1]]})
+#+end_src
+
+#+RESULTS:
+: [-2]: P2<-2> → P1<-1>+P1<-1>+P3<-1> → P1<1>+P5<0>+P2<0>+P4<0>+P5<0> → P2<2>+P3<1>+P3<1> → P3<3>+P4<2> → P4<4>+P4<4>+P5<4>+P5<4> → P5<6>+P3<5>+P3<5> → P3<7> → P4<8> :[6]
+
+#+begin_src sage
+  load("d5_objects.sage")
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sage
+  x = parse_chatbot_object(objects[0])
+  print(hn_factors(x,sc))
+#+end_src
+
+#+begin_src sage
+  x1 = x.braid_action([[2,1],[2,1],[2,1],[2,1]])
+  print(hn_support(x1))
+#+end_src
+
+#+RESULTS:
+: {alpha[3] + alpha[4]: 2, alpha[2]: 25, alpha[5]: 3, alpha[3]: 3, alpha[4]: 3, alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1, alpha[1]: 1, alpha[1] + alpha[2]: 1, alpha[3] + alpha[5]: 1}
+
+#+begin_src sage
+  x2 = x.braid_action([[3,1],[3,1],[3,1]])
+  print(hn_support(x2))
+#+end_src
+
+#+RESULTS:
+: {alpha[3] + alpha[4]: 5, alpha[5]: 1, alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1, alpha[3] + alpha[5]: 3, alpha[1]: 1, alpha[3]: 7, alpha[1] + alpha[2]: 1, alpha[2]: 1}
+
+
+#+begin_src sage
+  x3 = x.braid_action([[3,-1],[3,-1],[3,-1]])
+  print(hn_support(x3))
+#+end_src
+
+#+RESULTS:
+: {alpha[3]: 18, alpha[3] + alpha[4]: 2, alpha[5]: 3, alpha[4]: 3, alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1, alpha[1]: 1, alpha[1] + alpha[2]: 1, alpha[3] + alpha[5]: 1, alpha[2]: 1}
+
+#+begin_src sage
+  x4 = x.braid_action([[4,-1],[4,-1],[4,-1],[4,-1]])
+  print(hn_support(x4))
+#+end_src
+
+#+RESULTS:
+: {alpha[4]: 7, alpha[3] + alpha[4]: 2, alpha[5]: 3, alpha[3]: 3, alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1, alpha[1]: 1, alpha[1] + alpha[2]: 1, alpha[3] + alpha[5]: 1, alpha[2]: 1}
+
+#+begin_src sage
+  x5 = x.braid_action([[4,1],[4,1],[4,1],[4,1]])
+  print(hn_support(x5))
+#+end_src
+
+#+RESULTS:
+: {alpha[3]: 4, alpha[4]: 6, alpha[5]: 3, alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1, alpha[1]: 1, alpha[3] + alpha[4]: 1, alpha[1] + alpha[2]: 1, alpha[3] + alpha[5]: 1, alpha[2]: 1}
+
+#+begin_src sage
+  x6 = x.braid_action([[1,1],[2,1],[3,1],[5,1],[5,1],[5,1],[3,-1],[2,-1],[1,-1]])
+  hn_support(x6)
+#+end_src
+
+#+RESULTS:
+: {alpha[3] + alpha[4]: 2,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 22,
+:  alpha[5]: 3,
+:  alpha[3]: 3,
+:  alpha[4]: 3,
+:  alpha[1]: 1,
+:  alpha[1] + alpha[2]: 1,
+:  alpha[3] + alpha[5]: 1,
+:  alpha[2]: 1}
+
+#+begin_src sage
+  x7 = x.braid_action([[5,1],[5,1],[5,1],[5,1]])
+  hn_support(x7)
+#+end_src
+
+#+RESULTS:
+: {alpha[3] + alpha[4]: 2,
+:  alpha[5]: 15,
+:  alpha[3]: 3,
+:  alpha[4]: 3,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1,
+:  alpha[1]: 1,
+:  alpha[1] + alpha[2]: 1,
+:  alpha[3] + alpha[5]: 1,
+:  alpha[2]: 1}
+
+#+begin_src sage
+  x8 = x.braid_action([[1,1],[1,1],[1,1],[1,1]])
+  hn_support(x8)
+#+end_src
+
+#+RESULTS:
+: {alpha[3] + alpha[4]: 2,
+:  alpha[5]: 3,
+:  alpha[3]: 3,
+:  alpha[4]: 3,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1,
+:  alpha[1]: 5,
+:  alpha[1] + alpha[2]: 1,
+:  alpha[3] + alpha[5]: 1,
+:  alpha[2]: 1}
+
+#+begin_src sage
+  x9 = x.braid_action([[3,1],[5,1],[5,1],[5,1],[3,-1]])
+  hn_support(x9)
+#+end_src
+
+#+RESULTS:
+: {alpha[3] + alpha[4]: 2,
+:  alpha[5]: 6,
+:  alpha[4]: 3,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1,
+:  alpha[3] + alpha[5]: 22,
+:  alpha[1]: 1,
+:  alpha[1] + alpha[2]: 1,
+:  alpha[2]: 1}
+
+#+begin_src sage
+  x10 = x.braid_action([[3,1],[4,1],[4,1],[4,1],[4,1],[3,-1]])
+  hn_support(x10)
+#+end_src
+
+#+RESULTS:
+: {alpha[4]: 9,
+:  alpha[3] + alpha[5]: 4,
+:  alpha[3] + alpha[4]: 18,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1,
+:  alpha[1]: 1,
+:  alpha[1] + alpha[2]: 1,
+:  alpha[2]: 1}
+
+#+begin_src sage
+  x11 = x.braid_action([[3,1],[4,-1],[4,-1],[3,-1]])
+  hn_support(x11)
+#+end_src
+
+#+RESULTS:
+: {alpha[3] + alpha[4]: 14,
+:  alpha[5]: 3,
+:  alpha[3]: 3,
+:  alpha[4]: 3,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1,
+:  alpha[1]: 1,
+:  alpha[1] + alpha[2]: 1,
+:  alpha[3] + alpha[5]: 1,
+:  alpha[2]: 1}
+
+#+begin_src sage
+  x12 = x.braid_action([[1,1],[2,-1],[2,-1],[1,-1]])
+  hn_support(x12)
+#+end_src
+
+#+RESULTS:
+: {alpha[1] + alpha[2]: 6,
+:  alpha[4]: 1,
+:  alpha[1] + alpha[2] + alpha[3]: 1,
+:  alpha[5]: 3,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[4]: 3,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1,
+:  alpha[1]: 2,
+:  alpha[3] + alpha[4]: 1,
+:  alpha[3] + alpha[5]: 1}
+
+#+begin_src sage
+    for o in objects:
+        print(o["t_vector"])
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[1, 1, 1, 1, 3, 2, 1, 3, 3]
+[1, 1, 1, 1, 3, 10, 1, 10, 3]
+[1, 1, 1, 1, 4, 1, 1, 3, 3]
+[1, 1, 1, 1, 4, 1, 1, 3, 6]
+[1, 1, 1, 1, 4, 1, 1, 4, 3]
+[1, 1, 1, 1, 4, 1, 1, 4, 6]
+[1, 1, 1, 1, 4, 1, 1, 4, 9]
+[1, 1, 1, 1, 4, 1, 1, 5, 3]
+[1, 1, 1, 1, 4, 1, 1, 5, 6]
+[1, 1, 1, 1, 4, 1, 1, 6, 3]
+[1, 1, 1, 1, 4, 8, 1, 3, 3]
+[1, 1, 1, 1, 5, 8, 1, 3, 3]
+[1, 1, 1, 1, 5, 8, 1, 3, 14]
+[1, 1, 1, 1, 5, 11, 1, 3, 6]
+[1, 1, 1, 1, 5, 16, 1, 3, 3]
+[1, 1, 1, 1, 6, 8, 1, 3, 3]
+[1, 1, 1, 1, 8, 1, 1, 4, 7]
+[1, 1, 1, 1, 10, 1, 1, 3, 3]
+[1, 1, 1, 1, 10, 1, 1, 10, 3]
+[1, 1, 1, 1, 11, 1, 1, 4, 3]
+[1, 1, 1, 1, 11, 1, 1, 4, 13]
+[1, 1, 1, 1, 11, 1, 1, 12, 3]
+[1, 1, 1, 1, 12, 1, 1, 5, 3]
+[1, 1, 1, 1, 12, 15, 1, 3, 3]
+[1, 1, 1, 1, 14, 1, 1, 4, 6]
+[1, 1, 1, 1, 18, 1, 1, 4, 3]
+[1, 1, 1, 7, 3, 2, 1, 3, 3]
+[1, 1, 1, 7, 3, 16, 1, 16, 3]
+[1, 1, 1, 7, 4, 1, 1, 3, 3]
+[1, 1, 1, 7, 4, 1, 1, 3, 6]
+[1, 1, 1, 7, 4, 1, 1, 4, 3]
+[1, 1, 1, 7, 4, 1, 1, 4, 6]
+[1, 1, 1, 7, 4, 1, 1, 4, 9]
+[1, 1, 1, 7, 4, 1, 1, 5, 3]
+[1, 1, 1, 7, 4, 1, 1, 5, 6]
+[1, 1, 1, 7, 4, 1, 1, 6, 3]
+[1, 1, 1, 7, 4, 14, 1, 3, 3]
+[1, 1, 1, 7, 5, 14, 1, 3, 3]
+[1, 1, 1, 7, 5, 14, 1, 3, 20]
+[1, 1, 1, 7, 5, 17, 1, 3, 6]
+[1, 1, 1, 7, 5, 28, 1, 3, 3]
+[1, 1, 1, 7, 6, 14, 1, 3, 3]
+[1, 1, 1, 7, 16, 1, 1, 3, 3]
+[1, 1, 1, 7, 17, 1, 1, 4, 3]
+[1, 1, 1, 7, 17, 1, 1, 4, 19]
+[1, 1, 1, 7, 17, 1, 1, 18, 3]
+[1, 1, 1, 7, 18, 1, 1, 5, 3]
+[1, 1, 1, 7, 18, 27, 1, 3, 3]
+[1, 1, 1, 7, 20, 1, 1, 4, 6]
+[1, 1, 1, 7, 30, 1, 1, 4, 3]
+[1, 1, 1, 9, 4, 1, 9, 4, 3]
+[1, 1, 1, 13, 4, 1, 1, 3, 3]
+[1, 1, 1, 13, 4, 1, 1, 4, 3]
+[1, 1, 1, 13, 4, 1, 1, 4, 6]
+[1, 1, 1, 13, 4, 1, 1, 5, 3]
+[1, 1, 1, 13, 5, 20, 1, 3, 3]
+#+end_example
+#+begin_src sage
+  x = parse_chatbot_object(objects[-6])
+  hn_support(x)
+#+end_src
+
+#+RESULTS:
+: {alpha[3]: 4,
+:  alpha[4]: 4,
+:  alpha[3] + alpha[5]: 9,
+:  alpha[2]: 9,
+:  alpha[5]: 3,
+:  alpha[1] + alpha[2] + alpha[3] + alpha[5]: 1,
+:  alpha[1]: 1,
+:  alpha[3] + alpha[4]: 1,
+:  alpha[1] + alpha[2]: 1}
